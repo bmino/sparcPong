@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Sparc Pong</title>
+		<!-- Angular -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-route.min.js"></script>
+		
+		<!-- Filters -->
+		<script src="/javascripts/controllers/_filters.js"></script>
+		
+		<!-- Services -->
+		<script src="/javascripts/controllers/_services.js"></script>
+		
+		<!-- Controllers -->
+		<script src="/javascripts/controllers/_controllers.js"></script>
+		<script src="/javascripts/controllers/loginController.js"></script>
+		<script src="/javascripts/controllers/boardController.js"></script>
+		
+		<script src="/javascripts/sparcPongApp.js"></script>
+		<link rel='stylesheet' href='/stylesheets/style.css' />
+	</head>
+	<body ng-app="sparcPongApp">
+		<h1>Test</h1>
+		
+		<!-- Injected with Partials -->
+		<div ng-view></div>
+	</body>
+</html>
