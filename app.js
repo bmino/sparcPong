@@ -5,6 +5,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var mongoose = require('mongoose');
+var db_uri = 'mongodb://localhost/myapp';
+mongoose.connect(db_uri);
+
 var routes = require('./routes/basic');
 var players = require('./routes/players');
 
