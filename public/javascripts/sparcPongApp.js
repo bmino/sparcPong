@@ -9,16 +9,12 @@ angular.module('sparcPongApp', [
 .config(function ($routeProvider) {
 	$routeProvider
 		.when('/', {
-			templateUrl: '/partials/login.html',
-			controller: 'loginController'
+			templateUrl: '/partials/board.html',
+			controller: 'boardController'
 		})
 		.when('/login', {
 			templateUrl: '/partials/login.html',
 			controller: 'loginController'
-		})
-		.when('/board', {
-			templateUrl: '/partials/board.html',
-			controller: 'boardController'
 		})
 		.when('/create/newPlayer', {
 			templateUrl: '/partials/create/newPlayer.html',

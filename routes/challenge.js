@@ -16,39 +16,68 @@ router.post('/', function(req, res) {
 	challenge.save(function(err) {
 		if (err) {
 			return next(err);
+		} else if (challenge.challengerId == challenge.challengeeId) {
+			return next(new Error('Players cannot challenge themselves.'));
 		}
-		res.json({message: 'Challenge created!'});
+		res.json({message: 'Challenge issued!'});
 	});
 });
 
-/* GET all Challenge listing */
-router.get('/', function(req, res) {
-	Challenge.find({}, function(err, challenges) {
-		if (err) {
-			return next(err);
-		}
-		res.json(challenges);
-	})
-});
-
-/* PUT updated Challenge */
-router.put('/', function(req, res) {
-	// TODO: implement
-	res.json({message: 'Not implemented yet.'});
-	console.log('PUT Challenge not implemented.');
-});
-
-/* DELETE Challenge by challengerId
- *
- * @param: challengeId
+/* GET challenges issued by player
+ * 
+ * @param: playerId
  */
-router.delete('/', function(req, res) {
-	var challengeId = req.params.ChallengeId;
-	Challenge.remove({_id: challengeId}, function(err, challenge) {
+router.get('/outgoing/:playerId', function(req, res) {
+	var playerId = req.params.playerId;
+	Challenge.find({challengerId: playerId}, function(err, challenges) {
 		if (err) {
 			return next(err);
 		}
-		res.json({message: 'Succesfully deleted Challenge.'});
+		res.json({message: challenges});
+	});
+});
+
+/* GET challenges pending to a player
+ * 
+ * @param: playerId
+ */
+router.get('/incoming/:playerId', function(req, res) {
+	var playerId = req.params.playerId;
+	Challenge.find({challengeeId: playerId}, function(err, challenges) {
+		if (err) {
+			return next(err);
+		}
+		res.json({message: challenges});
+	});
+});
+
+/* DELETE wrongly issued Challenge by challengerId
+ *
+ * @param: challengerId
+ */
+router.delete('/revoke', function(req, res) {
+	var challengerId = req.body.challengerId;
+	Challenge.remove({challengerId: challengerId}, function(err, challenge) {
+		if (err) {
+			return next(err);
+		}
+		res.json({message: 'Succesfully revoked Challenge.'});
+	});
+});
+
+/* DELETE completed Challenge by challengerId and challengeeId
+ *
+ * @param: challengerId
+ * @param: challengeeId
+ */
+router.delete('/resolve', function(req, res) {
+	var challengerId = req.body.challengerId;
+	var challengeeId = req.body.challengeeId;
+	Challenge.remove({challengerId: challengerId, challengeeId: challengeeId}, function(err, challenge) {
+		if (err) {
+			return next(err);
+		}
+		res.json({message: 'Succesfully resolved Challenge.'});
 	});
 });
 

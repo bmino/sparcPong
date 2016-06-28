@@ -14,7 +14,8 @@ angular.module('filters')
 			// For each rank
 			for (var r=0; r<ranks.length; r++) {
 				if (playerRank == ranks[r]) {
-					console.log('Rank '+playerRank+' in ranks '+ranks);
+					// Uncomment for debugging
+					// console.log('Rank '+playerRank+' in ranks '+ranks);
 					tierPlayers.push(players[p]);
 				}
 			}
