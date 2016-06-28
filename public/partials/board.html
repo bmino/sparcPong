@@ -1,1 +1,13 @@
 this is board.html
+
+
+<div class="playerBoard">
+	<div class="tier" ng-repeat="t in tiers" ng-show="(players | tier: t).length">
+		<div>Tier: {{t}}</div>
+		<div class="player" ng-repeat="player in players | tier: t">
+			<span ng-bind="player.rank"></span>
+			<span> - </span>
+			<span ng-bind="player.name"></span>
+		</div>
+	</div>
+</div>
