@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var historySchema = new Schema({
-	playerId: { type: Schema.Types.ObjectId, required: true },
-	opponentId: { type: Schema.Types.ObjectId, required: true },
+	playerId: { type: Schema.ObjectId, ref: 'Player', required: true },
+	opponentId: { type: Schema.ObjectId, ref: 'Player', required: true },
 	playerScore: { type: Number, required: true },
 	opponentScore: { type: Number, required: true }
 	

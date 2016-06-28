@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var challengeSchema = new Schema({
-	challenger: { type: Schema.Types.ObjectId, required: true },
-	challengee: { type: Schema.Types.ObjectId, required: true }
+	challenger: { type: Schema.ObjectId, ref: 'Player', required: true },
+	challengee: { type: Schema.ObjectId, ref: 'Player', required: true }
 },
 {
 	timestamps: true
