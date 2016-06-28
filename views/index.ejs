@@ -2,24 +2,33 @@
 <html>
 	<head>
 		<title>Sparc Pong</title>
-		<!-- Angular -->
+		<!-- Angular: Essential Libraries -->
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-route.min.js"></script>
 		
-		<!-- Filters -->
+		<!-- Angular: Filters -->
 		<script src="/javascripts/filters/_filters.js"></script>
 		
-		<!-- Services -->
+		<!-- Angular: Services -->
 		<script src="/javascripts/services/_services.js"></script>
 		
-		<!-- Controllers -->
+		<!-- Angular: Controllers -->
 		<script src="/javascripts/controllers/_controllers.js"></script>
 		<script src="/javascripts/controllers/loginController.js"></script>
 		<script src="/javascripts/controllers/boardController.js"></script>
 		
+		<!-- Angular: Main App -->
 		<script src="/javascripts/sparcPongApp.js"></script>
+		
+		
+		<!-- CSS Styling -->
 		<link rel='stylesheet' href='/stylesheets/style.css' />
+		
+		
+		<!-- Socket Integration -->
+		<script src="https://cdn.socket.io/socket.io-1.4.4.js"></script>
+		<script src="/javascripts/sockets/client.js"></script>
 	</head>
 	<body ng-app="sparcPongApp">
 		<h1>Test</h1>
