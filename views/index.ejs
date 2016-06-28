@@ -18,6 +18,7 @@
 		
 		<!-- Angular: Controllers -->
 		<script src="/javascripts/controllers/_controllers.js"></script>
+		<script src="/javascripts/controllers/navController.js"></script>
 		<script src="/javascripts/controllers/loginController.js"></script>
 		<script src="/javascripts/controllers/boardController.js"></script>
 		<script src="/javascripts/controllers/newPlayerController.js"></script>
@@ -35,6 +36,12 @@
 		<script src="/javascripts/sockets/client.js"></script>
 	</head>
 	<body ng-app="sparcPongApp">
+		<div class="nav-bar" ng-controller="navController">
+			<select class="choose-username" ng-options="player.name for player in players" ng-model="player" ng-change="selectUser(player)">
+				<option value=""> -- choose username -- </option>
+			</select>
+		</div>
+		
 		<h1>Test</h1>
 		
 		<!-- Injected with Partials -->
