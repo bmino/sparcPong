@@ -1,4 +1,4 @@
-angular.module('controllers')
+angular.module('services')
 .service('playerService', function($http, $q) {
 	this.createPlayer = function(name, phone, email) {
 		var request = $http({
@@ -10,7 +10,7 @@ angular.module('controllers')
 				email: email
 			}
 		});
-		return request.then( handleSuccess, handleError);
+		return request.then( handleSuccess, handleError );
 	};
 	
 	this.getPlayers = function() {
@@ -18,8 +18,16 @@ angular.module('controllers')
 			method: "get",
 			url: "api/player/"
 		});
-		return request.then( handleSuccess, handleError);
+		return request.then( handleSuccess, handleError );
 	};
+	
+	this.countPlayers = function(playerName) {
+		var request = $http({
+			method: "get",
+			url: "api/player/count/"+playerName
+		});
+		return request.then( handleSuccess, handleError );
+	}
 	
 	this.updatePlayer = function(fill) {
 		// TODO: implement with PUT
@@ -33,7 +41,7 @@ angular.module('controllers')
 				playerId: playerId
 			}
 		});
-		return request.then( handleSuccess, handleError);
+		return request.then( handleSuccess, handleError );
 	};
 	
 	
@@ -41,12 +49,16 @@ angular.module('controllers')
 	
 	
 	function handleSuccess(response) {
-		return response.data;
+		var successMessage = response.data.message;
+		return successMessage;
 	}
 	
 	function handleError(response) {
-		// TODO: Check for consistent error
-		return response.data.
+		var dummy = document.createElement('body');
+		dummy.innerHTML = response.data;
+		var errorMessage = dummy.getElementsByTagName("h1")[0].innerHTML;
+		throw errorMessage;
+		return null;
 	}
 	
 });

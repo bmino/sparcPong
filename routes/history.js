@@ -19,7 +19,7 @@ router.post('/', function(req, res) {
 	
 	history.save(function(err) {
 		if (err) {
-			res.send(err);
+			return next(err);
 		}
 		res.json({message: 'History created!'});
 	});
@@ -29,7 +29,7 @@ router.post('/', function(req, res) {
 router.get('/', function(req, res) {
 	History.find({}, function(err, histories) {
 		if (err) {
-			res.send(err);
+			return next(err);
 		}
 		res.json(histories);
 	})
@@ -50,7 +50,7 @@ router.delete('/', function(req, res) {
 	var historyId = req.params.historyId;
 	History.remove({_id: historyId}, function(err, history) {
 		if (err) {
-			res.send(err);
+			return next(err);
 		}
 		res.json({message: 'Succesfully deleted History.'});
 	});

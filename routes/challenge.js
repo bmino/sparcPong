@@ -15,7 +15,7 @@ router.post('/', function(req, res) {
 	
 	challenge.save(function(err) {
 		if (err) {
-			res.send(err);
+			return next(err);
 		}
 		res.json({message: 'Challenge created!'});
 	});
@@ -25,7 +25,7 @@ router.post('/', function(req, res) {
 router.get('/', function(req, res) {
 	Challenge.find({}, function(err, challenges) {
 		if (err) {
-			res.send(err);
+			return next(err);
 		}
 		res.json(challenges);
 	})
@@ -46,7 +46,7 @@ router.delete('/', function(req, res) {
 	var challengeId = req.params.ChallengeId;
 	Challenge.remove({_id: challengeId}, function(err, challenge) {
 		if (err) {
-			res.send(err);
+			return next(err);
 		}
 		res.json({message: 'Succesfully deleted Challenge.'});
 	});

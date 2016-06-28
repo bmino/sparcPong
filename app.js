@@ -15,7 +15,7 @@ require('./models/Player');
 require('./models/History');
 require('./models/Challenge');
 
-var db_uri = 'mongodb://localhost/myapp';
+var db_uri = 'mongodb://localhost/pongers';
 mongoose.connect(db_uri);
 
 

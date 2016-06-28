@@ -20,6 +20,10 @@ angular.module('sparcPongApp', [
 			templateUrl: '/partials/board.html',
 			controller: 'boardController'
 		})
+		.when('/create/newPlayer', {
+			templateUrl: '/partials/create/newPlayer.html',
+			controller: 'newPlayerController'
+		})
 		.otherwise({
 			redirectTo: '/'
 		});

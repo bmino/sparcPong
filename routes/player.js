@@ -9,36 +9,48 @@ var Player = mongoose.model('Player');
  * @param: phone
  * @param: email
  */
-router.post('/', function(req, res) {
+router.post('/', function(req, res, next) {
 	var player = new Player();
 	player.name = req.body.name;
 	player.phone = req.body.phone;
 	player.email = req.body.email;
 	
-	player.save(function(err) {
+	player.save(function(err, saved, numAffected) {
 		if (err) {
-			res.send(err);
+			return next(err);
+		} else {
+			res.json({message: 'Player created!'});
 		}
-		res.json({message: 'Player created!'});
 	});
 });
 
 /* GET player listing */
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
 	Player.find({}, function(err, players) {
 		if (err) {
-			res.send(err);
+			return next(err);
+		} else {
+			res.json({message: players});
 		}
-		res.json(players);
 	})
 });
 
-/* GET player by name
+/* GET occurances of player name
  *
  * @param: name
  */
- router.get('/:name', function(req, res) {
-	// TODO: implement
+ router.get('/count/:name', function(req, res, next) {
+	var playerName = req.params.name;
+	Player.find({name: playerName}).count(function(err,count) {
+		if (err) {
+			return next(err);
+		} else if (count != 0) {
+			return next(new Error('Player name already exists.'));
+		} else {
+			// No occurances exist
+			res.json({message: 'Found ' +count+ ' players with that name.'});
+		}
+	});
 });
 
 /* PUT updated player */
@@ -53,9 +65,10 @@ router.delete('/', function(req, res) {
 	var playerId = req.params.playerId;
 	Player.remove({_id: playerId}, function(err, player) {
 		if (err) {
-			res.send(err);
+			return next(err);
+		} else {
+			res.json({message: 'Succesfully deleted player.'});
 		}
-		res.json({message: 'Succesfully deleted player.'});
 	});
 });
 
