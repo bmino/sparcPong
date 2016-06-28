@@ -35,9 +35,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/player', player);
-app.use('/history', history);
-app.use('/challenge', challenge);
+app.use('/api/player', player);
+app.use('/api/history', history);
+app.use('/api/challenge', challenge);
 
 
 // catch 404 and forward to error handler

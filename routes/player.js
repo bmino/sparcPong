@@ -3,10 +3,17 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
 
-/* POST new player */
+/* POST new player
+ *
+ * @param: name
+ * @param: phone
+ * @param: email
+ */
 router.post('/', function(req, res) {
 	var player = new Player();
 	player.name = req.body.name;
+	player.phone = req.body.phone;
+	player.email = req.body.email;
 	
 	player.save(function(err) {
 		if (err) {
@@ -24,6 +31,14 @@ router.get('/', function(req, res) {
 		}
 		res.json(players);
 	})
+});
+
+/* GET player by name
+ *
+ * @param: name
+ */
+ router.get('/:name', function(req, res) {
+	// TODO: implement
 });
 
 /* PUT updated player */
