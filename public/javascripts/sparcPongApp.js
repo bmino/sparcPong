@@ -12,9 +12,9 @@ angular.module('sparcPongApp', [
 			templateUrl: '/partials/board.html',
 			controller: 'boardController'
 		})
-		.when('/login', {
-			templateUrl: '/partials/login.html',
-			controller: 'loginController'
+		.when('/profile/:playerId', {
+			templateUrl: '/partials/profile.html',
+			controller: 'profileController'
 		})
 		.when('/create/newPlayer', {
 			templateUrl: '/partials/create/newPlayer.html',
