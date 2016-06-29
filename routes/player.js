@@ -62,7 +62,7 @@ router.put('/', function(req, res) {
 
 /* DELETE player */
 router.delete('/', function(req, res) {
-	var playerId = req.params.playerId;
+	var playerId = req.body.playerId;
 	Player.remove({_id: playerId}, function(err, player) {
 		if (err) {
 			return next(err);
