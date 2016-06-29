@@ -1,0 +1,20 @@
+this is profile.html
+
+
+<div class="profile">
+	<div class="header">
+		<span ng-bind="player.name"></span>
+	</div>
+	<div class="challenges">
+		<div>Incoming Challenges</div>
+		<div class="challenge-open" ng-repeat="challenge in challenges | challenge: {type: 'incoming', id: player._id}"></div>
+		
+		<div>Outgoing Challenges</div>
+		<div class="challenge-open" ng-repeat="challenge in challenges | challenge: {type: 'outgoing', id: player._id}"></div>
+	</div>
+	
+	<div class="history">
+		<div>History</div>
+		<div class="challenge-resolved" ng-repeat="challenge in challenges | challenge: {type: 'open'}"></div>
+	</div>
+</div>
