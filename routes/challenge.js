@@ -28,13 +28,13 @@ router.post('/', function(req, res, next) {
 	});
 });
 
-/* GET challenges issued by player
+/* GET unresolved challenges issued by player
  * 
  * @param: playerId
  */
 router.get('/outgoing/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;
-	Challenge.find({challenger: playerId}, function(err, challenges) {
+	Challenge.find({challenger: playerId, winner: null}, function(err, challenges) {
 		if (err) {
 			return next(err);
 		}
@@ -42,13 +42,13 @@ router.get('/outgoing/:playerId', function(req, res, next) {
 	});
 });
 
-/* GET challenges pending to a player
+/* GET unresolved challenges pending to a player
  * 
  * @param: playerId
  */
 router.get('/incoming/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;
-	Challenge.find({challengee: playerId}, function(err, challenges) {
+	Challenge.find({challengee: playerId, winner: null}, function(err, challenges) {
 		if (err) {
 			return next(err);
 		}
@@ -62,7 +62,7 @@ router.get('/incoming/:playerId', function(req, res, next) {
  */
 router.delete('/revoke', function(req, res, next) {
 	var challengerId = req.body.challengerId;
-	Challenge.remove({challenger: challengerId}, function(err, challenge) {
+	Challenge.remove({challenger: challengerId, winner: null}, function(err, challenges) {
 		if (err) {
 			return next(err);
 		}
@@ -70,15 +70,31 @@ router.delete('/revoke', function(req, res, next) {
 	});
 });
 
-/* DELETE completed Challenge by challengerId and challengeeId
+/* POST resolved Challenge by challengerId and challengeeId
  *
  * @param: challengerId
  * @param: challengeeId
  */
-router.delete('/resolve', function(req, res, next) {
+router.post('/resolve', function(req, res, next) {
 	var challengerId = req.body.challengerId;
 	var challengeeId = req.body.challengeeId;
-	Challenge.remove({challenger: challengerId, challengee: challengeeId}, function(err, challenge) {
+	var challengerScore = req.body.challengerScore;
+	var challengeeScore = req.body.challengeeScore;
+	var winner = challengerScore > challengeeScore ? challengerId : challengeeId;
+	
+	if (!challengerId || !challengeeId)
+		return next(new Error('Both players are required to resolve a challenge.'));
+	if (challengerScore == challengeeScore)
+		return next(new Error('The final score cannot be equal.'));
+	
+	
+						// Find Conditions
+	Challenge.update({	challenger: challengerId, 
+						challengee: challengeeId}, 
+						// Update Data
+					{	challengerScore: challengerScore, 
+						challengeeScore: challengeeScore, 
+						winner: winner}, function(err, challenges) {
 		if (err) {
 			return next(err);
 		}
@@ -87,18 +103,18 @@ router.delete('/resolve', function(req, res, next) {
 });
 
 function challengesOutgoing(playerId) {
-	Challenge.find({challenger: playerId}).count(function(err, count) {
+	Challenge.find({challenger: playerId, winner: null}).count(function(err, count) {
 		if (err) {
-			return next(err);
+			console.log(err);
 		}
 		return count;
 	});
 }
 
 function challengesIncoming(playerId) {
-	Challenge.find({challengee: playerId}).count(function(err, count) {
+	Challenge.find({challengee: playerId, winner: null}).count(function(err, count) {
 		if (err) {
-			return next(err);
+			console.log(err);
 		}
 		return count;
 	});

@@ -12,7 +12,6 @@ var port = 4200;
 var mongoose = require('mongoose');
 
 require('./models/Player');
-require('./models/History');
 require('./models/Challenge');
 
 var db_uri = 'mongodb://localhost/pongers';
@@ -21,7 +20,6 @@ mongoose.connect(db_uri);
 
 var routes = require('./routes/basic');
 var player = require('./routes/player');
-var history = require('./routes/history');
 var challenge = require('./routes/challenge');
 
 // view engine setup
@@ -36,7 +34,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/api/player', player);
-app.use('/api/history', history);
 app.use('/api/challenge', challenge);
 
 

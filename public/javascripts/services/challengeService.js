@@ -42,7 +42,7 @@ angular.module('services')
 	
 	this.resolveChallenge = function(challengerId, challengeeId, challengerScore, challengeeScore) {
 		var request = $http({
-			method: "delete",
+			method: "post",
 			url: "api/challenge/resolve/",
 			data: {
 				challengerId: challengerId,
