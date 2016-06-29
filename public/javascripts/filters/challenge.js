@@ -9,7 +9,7 @@ angular.module('filters')
 		
 		// For each challenge
 		for (var c=0; c<incoming.length; c++) {
-			if (type == 'open' && incoming[c].winner == null)
+			if (type == 'open' && incoming[c].winner == null) {
 				challenges.push(incoming[c]);
 			} else if (type == 'incoming' && incoming[c].challengee == playerId) {
 				challenges.push(incoming[c]);
