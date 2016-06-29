@@ -13,6 +13,15 @@ angular.module('services')
 		return request.then( handleSuccess, handleError );
 	};
 	
+	
+	this.getPlayer = function(playerId) {
+		var request = $http({
+			method: "get",
+			url: "api/player/fetch/"+playerId
+		});
+		return request.then( handleSuccess, handleError );
+	};
+	
 	this.getPlayers = function() {
 		var request = $http({
 			method: "get",

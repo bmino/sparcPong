@@ -28,13 +28,38 @@ router.post('/', function(req, res, next) {
 	});
 });
 
+
+/* GET all resolved challenges involving a player
+ * 
+ * @param: playerId
+ */
+router.get('/resolved/:playerId', function(req, res, next) {
+	var playerId = req.params.playerId;
+	Challenge.find({ $and: [
+						{$or: [{'challenger': playerId}, {'challengee': playerId}]}, 
+						{'winner': {$ne: null}}
+					]})
+					.populate('challenger')
+					.populate('challengee')
+					.exec(function(err, challenges) {
+		if (err) {
+			return next(err);
+		}
+		res.json({message: challenges});
+	});
+});
+
+
 /* GET unresolved challenges issued by player
  * 
  * @param: playerId
  */
 router.get('/outgoing/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;
-	Challenge.find({challenger: playerId, winner: null}, function(err, challenges) {
+	Challenge.find({challenger: playerId, winner: null})
+					.populate('challenger')
+					.populate('challengee')
+					.exec(function(err, challenges) {
 		if (err) {
 			return next(err);
 		}
@@ -48,7 +73,10 @@ router.get('/outgoing/:playerId', function(req, res, next) {
  */
 router.get('/incoming/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;
-	Challenge.find({challengee: playerId, winner: null}, function(err, challenges) {
+	Challenge.find({challengee: playerId, winner: null})
+					.populate('challenger')
+					.populate('challengee')
+					.exec(function(err, challenges) {
 		if (err) {
 			return next(err);
 		}

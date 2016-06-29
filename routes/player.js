@@ -35,6 +35,18 @@ router.get('/', function(req, res, next) {
 	})
 });
 
+/* GET player by id */
+router.get('/fetch/:playerId', function(req, res, next) {
+	var playerId = req.params.playerId;
+	Player.findById(playerId, function(err, players) {
+		if (err) {
+			return next(err);
+		} else {
+			res.json({message: players});
+		}
+	})
+});
+
 /* GET occurances of player name
  *
  * @param: name

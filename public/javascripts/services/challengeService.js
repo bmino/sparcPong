@@ -12,7 +12,15 @@ angular.module('services')
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.getChallengeOutgoing = function(playerId) {
+	this.getChallengesResolved = function(playerId) {
+		var request = $http({
+			method: "get",
+			url: "api/challenge/resolved/"+playerId
+		});
+		return request.then( handleSuccess, handleError );
+	};
+	
+	this.getChallengesOutgoing = function(playerId) {
 		var request = $http({
 			method: "get",
 			url: "api/challenge/outgoing/"+playerId
@@ -20,7 +28,7 @@ angular.module('services')
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.getChallengeIncoming = function(playerId) {
+	this.getChallengesIncoming = function(playerId) {
 		var request = $http({
 			method: "get",
 			url: "api/challenge/incoming/"+playerId
