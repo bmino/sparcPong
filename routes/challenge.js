@@ -3,7 +3,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Challenge = mongoose.model('Challenge');
 
-/* POST new Challenge
+/* POST new challenge
  *
  * @param: challengerId
  * @param: challengeeId
@@ -56,7 +56,7 @@ router.get('/incoming/:playerId', function(req, res, next) {
 	});
 });
 
-/* DELETE wrongly issued Challenge by challengerId
+/* DELETE wrongly issued challenge by challengerId
  *
  * @param: challengerId
  */
@@ -70,10 +70,12 @@ router.delete('/revoke', function(req, res, next) {
 	});
 });
 
-/* POST resolved Challenge by challengerId and challengeeId
+/* POST resolved challenge by adding a score and winner
  *
  * @param: challengerId
  * @param: challengeeId
+ * @param: challengerScore
+ * @param: challengeeScore
  */
 router.post('/resolve', function(req, res, next) {
 	var challengerId = req.body.challengerId;
