@@ -15,12 +15,8 @@ this is profile.html
 			<span ng-bind="challenge.challenger.name"></span>
 			<span> vs </span>
 			<span ng-bind="challenge.challengee.name"></span>
-			<div class="score" ng-show="challenge.winner">
-				<span>Score</span>
-				<span ng-bind="challenge.challengerScore"></span>
-				<span>|</span>
-				<span ng-bind="challenge.challengeeScore"></span>
-			</div>
+			<span>Challenged: </span>
+			<span ng-bind="challenge.createdAt | mongoDate"></span>
 		</div>
 		
 		<br />
@@ -31,12 +27,8 @@ this is profile.html
 			<span ng-bind="challenge.challenger.name"></span>
 			<span> vs </span>
 			<span ng-bind="challenge.challengee.name"></span>
-			<div class="score" ng-show="challenge.winner">
-				<span>Score</span>
-				<span ng-bind="challenge.challengerScore"></span>
-				<span>|</span>
-				<span ng-bind="challenge.challengeeScore"></span>
-			</div>
+			<span>Challenged: </span>
+			<span ng-bind="challenge.createdAt | mongoDate"></span>
 		</div>
 	</div>
 	
@@ -55,7 +47,7 @@ this is profile.html
 				<span>|</span>
 				<span ng-bind="challenge.challengeeScore"></span>
 			</div>
-			<span ng-bind="challenge.createdAt" ng-show="challenge.winner"></span>
+			<span ng-bind="challenge.createdAt | mongoDate" ng-show="challenge.winner"></span>
 		</div>
 	</div>
 </div>
