@@ -20,12 +20,11 @@
 		
 		<!-- Angualr: Directives -->
 		<script src="/javascripts/directives/_directives.js"></script>
-		<script src="/javascripts/directives/timeSince.js"></script>
-		<script src="/javascripts/directives/timeUntil.js"></script>
+		<script src="/javascripts/directives/timeGap.js"></script>
 		
 		<!-- Angular: Controllers -->
 		<script src="/javascripts/controllers/_controllers.js"></script>
-		<script src="/javascripts/controllers/navController.js"></script>
+		<script src="/javascripts/controllers/headerController.js"></script>
 		<script src="/javascripts/controllers/boardController.js"></script>
 		<script src="/javascripts/controllers/newPlayerController.js"></script>
 		<script src="/javascripts/controllers/profileController.js"></script>
@@ -47,11 +46,17 @@
 		<script src="/javascripts/globals/functions.js"></script>
 	</head>
 	<body ng-app="sparcPongApp">
-		<div class="nav-bar" ng-controller="navController">
+		<header ng-controller="headerController">
+			<div class="client-info" ng-show="myClient.player">
+				<span ng-bind="myClient.player.name"></span>
+			</div>
 			<select class="choose-username" ng-options="player.name for player in players" ng-model="player" ng-change="selectUser(player)">
 				<option value=""> -- choose username -- </option>
 			</select>
-		</div>
+			
+			<div class="nav-bar">
+			</div>
+		</header>
 		
 		<h1>Test</h1>
 		

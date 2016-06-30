@@ -1,21 +1,21 @@
 angular.module('controllers')
-.controller('navController', ['$scope', '$rootScope', 'playerService', function($scope, $rootScope, playerService) {
+.controller('headerController', ['$scope', '$rootScope', 'playerService', function($scope, $rootScope, playerService) {
 
 	$scope.player;
 	
 	init();
 	
 	function init() {
-		$rootScope.player = null;
+		$rootScope.myClient = {};
 		$scope.playerNames = playerService.getPlayers().then(function (players) {
 			$scope.players = players;
 		});
 	}
 	
 	$scope.selectUser = function(player) {
-		$rootScope.player = player;
+		$rootScope.myClient.player = player;
 		console.log('Set root player to:');
-		console.log($rootScope.player);
+		console.log($rootScope.myClient.player);
 	}
 	
 }]);

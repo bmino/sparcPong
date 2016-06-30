@@ -19,7 +19,7 @@ angular.module('controllers')
 	}
 	
 	$scope.challenge = function(challengeeId) {
-		var player = $rootScope.player;
+		var player = $rootScope.myClient.player;
 		if (!player) {
 			alert('You must select your username.');
 			// Defined @ globals/functions.js
