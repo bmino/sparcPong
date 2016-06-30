@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('newPlayerController', ['$scope', 'playerService', function($scope, playerService) {
+.controller('newPlayerController', ['$scope', '$rootScope', 'playerService', function($scope, $rootScope, playerService) {
 	$scope.test = 'sample controller';
 	$scope.player = {
 		name: '',
@@ -17,6 +17,7 @@ angular.module('controllers')
 				// Succesfully created a new player.
 				console.log('Succesfully created a new player.');
 				alert('Succesfully created a new player.');
+				$rootScope.$broadcast('newPlayer', $scope.player);
 			},
 			function (failure) {
 				// Did not create a new player.

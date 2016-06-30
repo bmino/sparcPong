@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('headerController', ['$scope', '$rootScope', 'playerService', function($scope, $rootScope, playerService) {
+.controller('headerController', ['$scope', 'playerService', function($scope, playerService) {
 
 	$scope.player;
 	
@@ -7,8 +7,15 @@ angular.module('controllers')
 	
 	function init() {
 		$rootScope.myClient = {};
+		populateUserList();
+	}
+	
+	function populateUserList() {
 		$scope.playerNames = playerService.getPlayers().then(function (players) {
-			$scope.players = players;
+			// Alphabetize and return
+			$scope.players = players.sort(function(a,b) {
+				return a.name.localeCompare(b.name);
+			});
 		});
 	}
 	
@@ -17,5 +24,10 @@ angular.module('controllers')
 		console.log('Set root player to:');
 		console.log($rootScope.myClient.player);
 	}
+	
+	$scope.$on('newPlayer', function() {
+		populateUserList();
+		console.log('New user detected.');
+	});
 	
 }]);
