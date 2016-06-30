@@ -59,8 +59,14 @@ server.listen(port);
 // Socket Events
 io.on('connection', function(socket) {
 	console.log('New connection...');
-	socket.on('msg', function(data) {
-		console.log('received: '+data);
+	
+	socket.on('challenge:resolved', function(challenge) {
+		console.log('Passing: [challenge:resolved]');
+		io.sockets.emit('challenge:resolved', challenge);
+	});
+	socket.on('challenge:revoked', function(challenge) {
+		console.log('Passing: [challenge:revoked]');
+		io.sockets.emit('challenge:revoked', challenge);
 	});
 });
 

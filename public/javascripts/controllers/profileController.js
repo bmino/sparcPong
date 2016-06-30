@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('profileController', ['$scope', '$rootScope', '$routeParams', 'playerService', 'challengeService', function($scope, $rootScope, $routeParams, playerService, challengeService) {
+.controller('profileController', ['$scope', '$routeParams', 'socket', 'playerService', 'challengeService', function($scope, $routeParams, socket, playerService, challengeService) {
 	
 	$scope.profileId;
 	$scope.challenges = {
@@ -25,19 +25,22 @@ angular.module('controllers')
 	}
 	
 	function fetchChallenges() {
-		console.log('Fetching challenges');
 		var playerId = $scope.profileId;
+		console.log('Fetching challenges for ' + playerId);
 		challengeService.getChallengesIncoming(playerId).then( incomingChallenges );
 		challengeService.getChallengesOutgoing(playerId).then( outgoingChallenges );
 		challengeService.getChallengesResolved(playerId).then( resolvedChallenges );
 	}
 	function incomingChallenges(challenges) {
+		console.log('Found incoming challenges.');
 		$scope.challenges.incoming = challenges;
 	}
 	function outgoingChallenges(challenges) {
+		console.log('Found outgoing challenges.');
 		$scope.challenges.outgoing = challenges;
 	}
 	function resolvedChallenges(challenges) {
+		console.log('Found resolved challenges.');
 		$scope.challenges.resolved = challenges;
 	}
 	
@@ -50,8 +53,7 @@ angular.module('controllers')
 			challengeService.resolveChallenge(challenge.challenger._id, challenge.challengee._id, challengerScore, challengeeScore).then(
 				function(success) {
 					console.log(success);
-					alert(success);
-					$rootScope.$broadcast('challenge:resolved', challenge);
+					socket.emit('challenge:resolved', challenge);
 				},
 				function(error) {
 					console.log(error);
@@ -69,7 +71,7 @@ angular.module('controllers')
 			function(success) {
 				console.log(success);
 				alert(success);
-				$rootScope.$broadcast('challenge:revoked', challenge);
+				socket.emit('challenge:revoked', challenge);
 			},
 			function(error) {
 				console.log(error);
@@ -79,11 +81,11 @@ angular.module('controllers')
 	}
 	
 	
-	$scope.$on('challenge:resolved', function(challenge) {
+	socket.on('challenge:resolved', function(challenge) {
 		fetchChallenges();
 	});
 	
-	$scope.$on('challenge:revoked', function(challenge) {
+	socket.on('challenge:revoked', function(challenge) {
 		fetchChallenges();
 	});
 	
