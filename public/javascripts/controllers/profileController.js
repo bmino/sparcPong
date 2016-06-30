@@ -70,7 +70,6 @@ angular.module('controllers')
 				console.log(success);
 				alert(success);
 				$rootScope.$broadcast('challenge:revoked', challenge);
-				fetchChallenges();
 			},
 			function(error) {
 				console.log(error);
