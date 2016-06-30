@@ -2,6 +2,13 @@
 <html>
 	<head>
 		<title>Sparc Pong</title>
+		<!-- Socket Integration -->
+		<script src="/socket.io/socket.io.js"></script>
+		<!--<script src="/javascripts/sockets/client.js"></script>-->
+		
+		<!-- Global Functions -->
+		<script src="/javascripts/globals/functions.js"></script>
+		
 		<!-- Angular: Essential Libraries -->
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
@@ -17,6 +24,7 @@
 		<script src="/javascripts/services/_services.js"></script>
 		<script src="/javascripts/services/playerService.js"></script>
 		<script src="/javascripts/services/challengeService.js"></script>
+		<script src="/javascripts/services/socket.js"></script>
 		
 		<!-- Angualr: Directives -->
 		<script src="/javascripts/directives/_directives.js"></script>
@@ -39,12 +47,7 @@
 		<link rel='stylesheet' href='/stylesheets/style.css' />
 		
 		
-		<!-- Socket Integration -->
-		<script src="https://cdn.socket.io/socket.io-1.4.4.js"></script>
-		<script src="/javascripts/sockets/client.js"></script>
 		
-		<!-- Global Functions -->
-		<script src="/javascripts/globals/functions.js"></script>
 	</head>
 	<body ng-app="sparcPongApp">
 		<header ng-controller="headerController">
