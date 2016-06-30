@@ -29,7 +29,6 @@ angular.module('controllers')
 		challengeService.getChallengesOutgoing(playerId).then( outgoingChallenges );
 		challengeService.getChallengesResolved(playerId).then( resolvedChallenges );
 	}
-	
 	function incomingChallenges(challenges) {
 		console.log('Found incoming challenges');
 		$scope.challenges.incoming = challenges;
@@ -41,6 +40,15 @@ angular.module('controllers')
 	function resolvedChallenges(challenges) {
 		console.log('Found resolved challenges');
 		$scope.challenges.resolved = challenges;
+	}
+	
+	$scope.resolveChallenge = function(challenge) {
+		// TODO: get score information
+		challengeService.resolveChallenge(challenge.challenger._id, challenge.challengee._id, challengerScore, challengeeScore).then( function(success) {}, function(error) {});
+	}
+	
+	$scope.revokeChallenge = function(challenge) {
+		challengeService.revokeChallenge(challenge.challenger._id, challenge.challengee._id).then( function(success) {}, function(error) {});
 	}
 	
 }]);

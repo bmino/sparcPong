@@ -19,6 +19,8 @@ this is profile.html
 			<span ng-bind="challenge.createdAt | mongoDate"></span>
 			[<time-gap date="challenge.createdAt" type="since"></time-gap>]
 			[<time-gap date="challenge.createdAt" type="until"></time-gap>]
+			<button logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
+			<button logged-in="challenge.challenger._id" ng-click="resolveChallenge(challenge)">Revoke</button>
 		</div>
 		
 		<br />
@@ -31,6 +33,8 @@ this is profile.html
 			<span ng-bind="challenge.challengee.name"></span>
 			<span>Challenged: </span>
 			<span ng-bind="challenge.createdAt | mongoDate"></span>
+			<button logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
+			<button logged-in="challenge.challenger._id" ng-click="resolveChallenge(challenge)">Revoke</button>
 		</div>
 	</div>
 	
