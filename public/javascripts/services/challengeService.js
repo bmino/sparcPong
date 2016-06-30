@@ -1,5 +1,9 @@
 angular.module('services')
 .service('challengeService', function($http, $q) {
+	
+	// Default Headers
+	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
+	
 	this.createChallenge = function(challengerId, challengeeId) {
 		var request = $http({
 			method: "post",

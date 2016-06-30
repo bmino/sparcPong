@@ -1,5 +1,10 @@
 angular.module('services')
 .service('playerService', function($http, $q) {
+	
+	// Default Headers
+	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
+	
+	
 	this.createPlayer = function(name, phone, email) {
 		var request = $http({
 			method: "post",
