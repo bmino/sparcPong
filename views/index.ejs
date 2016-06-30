@@ -48,21 +48,23 @@
 	</head>
 	<body ng-app="sparcPongApp">
 		<header ng-controller="headerController">
-			<div class="client-info" ng-show="myClient.player">
+		
+			<div class="client-info" logged-in>
 				<span ng-bind="myClient.player.name"></span>
 			</div>
+			
+			<!-- Username Selection -->
 			<select class="choose-username" ng-options="player.name for player in players" ng-model="player" ng-change="selectUser(player)">
 				<option value=""> -- choose username -- </option>
 			</select>
 			
+			<!-- Navigation Bar Links -->
 			<ul class="nav-bar">
 				<li><a href="#/board">Board</a></li>
-				<li logged-in><a href="#/profile/5771ffb133d82760252edbb4">My Profile</a></li>
+				<li logged-in><a href="#/profile/{{myClient.player._id}}">My Profile</a></li>
 				<li><a href="#/create/newPlayer">New Player</a></li>
 			</ul>
 		</header>
-		
-		<h1>Test</h1>
 		
 		<!-- Injected with Partials -->
 		<div ng-view></div>
