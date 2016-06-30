@@ -1,15 +1,23 @@
 angular.module('directives')
-.directive('timeSince', ['$filter', '$interval', function($filter, $interval) {	
+.directive('timeGap', ['$filter', '$interval', function($filter, $interval) {	
 	return {
 		restrict: 'E',
 		scope: {
 			date: '=',
+			type: '@'
 		},
 		link: function(scope, elem, attrs) {
 			
 			function updateTime(){
 				var oDate = parseDate(scope.date);
-				var elapsed = timeBetween(oDate, new Date());
+				if (scope.type == 'since')
+					var elapsed = timeBetween(oDate, new Date());
+				else if (scope.type == 'until')
+					var elapsed = timeBetween(new Date(), oDate);
+				else {
+					var elapsed = "You must specify a type of 'since' or 'until'";
+					console.log("You must specify a type of 'since' or 'until'");
+				}
 				elem.text(elapsed);
 			}
 			

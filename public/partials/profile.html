@@ -17,8 +17,8 @@ this is profile.html
 			<span ng-bind="challenge.challengee.name"></span>
 			<span>Challenged: </span>
 			<span ng-bind="challenge.createdAt | mongoDate"></span>
-			[<time-since date="challenge.createdAt"></time-since>]
-			[<time-until date="challenge.createdAt"></time-until>]
+			[<time-gap date="challenge.createdAt" type="since"></time-gap>]
+			[<time-gap date="challenge.createdAt" type="until"></time-gap>]
 		</div>
 		
 		<br />
