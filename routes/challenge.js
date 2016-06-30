@@ -90,11 +90,16 @@ router.get('/incoming/:playerId', function(req, res, next) {
  */
 router.delete('/revoke', function(req, res, next) {
 	var challengerId = req.body.challengerId;
-	Challenge.remove({challenger: challengerId, winner: null}, function(err, challenges) {
+	var challengeeId = req.body.challengeeId;
+	console.log(req.body);
+	if (!challengerId || !challengeeId)
+		return next(new Error('Both players are required to revoke a challenge.'));
+	
+	Challenge.remove({challenger: challengerId, challengee: challengeeId, winner: null}, function(err, challenges) {
 		if (err) {
 			return next(err);
 		}
-		res.json({message: 'Succesfully revoked Challenge.'});
+		res.json({message: 'Succesfully revoked challenge.'});
 	});
 });
 
@@ -128,7 +133,7 @@ router.post('/resolve', function(req, res, next) {
 		if (err) {
 			return next(err);
 		}
-		res.json({message: 'Succesfully resolved Challenge.'});
+		res.json({message: 'Succesfully resolved challenge.'});
 	});
 });
 
