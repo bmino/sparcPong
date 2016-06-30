@@ -1,6 +1,7 @@
 angular.module('controllers')
 .controller('profileController', ['$scope', '$routeParams', 'playerService', 'challengeService', function($scope, $routeParams, playerService, challengeService) {
 	
+	$scope.profileId;
 	$scope.challenges = {
 		incoming: [],
 		outgoing: [],
@@ -10,9 +11,9 @@ angular.module('controllers')
 	init();
 	
 	function init() {
-		var profileId = $routeParams.playerId;
-		console.log('Fetching profile for ' + profileId);
-		playerService.getPlayer(profileId).then( function(player) {
+		$scope.profileId = $routeParams.playerId;
+		console.log('Fetching profile for ' + $scope.profileId);
+		playerService.getPlayer($scope.profileId).then( function(player) {
 			if (!player) {
 				console.log('Could fetch profile');
 			} else {
@@ -20,10 +21,11 @@ angular.module('controllers')
 				$scope.profile = player;
 			}
 		});
-		fetchChallenges(profileId);
+		fetchChallenges();
 	}
 	
-	function fetchChallenges(playerId) {
+	function fetchChallenges() {
+		var playerId = $scope.profileId;
 		console.log('Fetching challenges');
 		challengeService.getChallengesIncoming(playerId).then( incomingChallenges );
 		challengeService.getChallengesOutgoing(playerId).then( outgoingChallenges );
@@ -48,7 +50,18 @@ angular.module('controllers')
 	}
 	
 	$scope.revokeChallenge = function(challenge) {
-		challengeService.revokeChallenge(challenge.challenger._id, challenge.challengee._id).then( function(success) {}, function(error) {});
+		console.log(challenge.challenger._id);
+		challengeService.revokeChallenge(challenge.challenger._id, challenge.challengee._id).then(
+			function(success) {
+				console.log(success);
+				alert(success);
+				fetchChallenges();
+			},
+			function(error) {
+				console.log(error);
+				alert(error);
+			}
+		);
 	}
 	
 }]);
