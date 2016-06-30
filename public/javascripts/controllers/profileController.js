@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('profileController', ['$scope', '$routeParams', 'playerService', 'challengeService', function($scope, $routeParams, playerService, challengeService) {
+.controller('profileController', ['$scope', '$rootScope', '$routeParams', 'playerService', 'challengeService', function($scope, $rootScope, $routeParams, playerService, challengeService) {
 	
 	$scope.profileId;
 	$scope.challenges = {
@@ -25,36 +25,51 @@ angular.module('controllers')
 	}
 	
 	function fetchChallenges() {
-		var playerId = $scope.profileId;
 		console.log('Fetching challenges');
+		var playerId = $scope.profileId;
 		challengeService.getChallengesIncoming(playerId).then( incomingChallenges );
 		challengeService.getChallengesOutgoing(playerId).then( outgoingChallenges );
 		challengeService.getChallengesResolved(playerId).then( resolvedChallenges );
 	}
 	function incomingChallenges(challenges) {
-		console.log('Found incoming challenges');
 		$scope.challenges.incoming = challenges;
 	}
 	function outgoingChallenges(challenges) {
-		console.log('Found outgoing challenges');
 		$scope.challenges.outgoing = challenges;
 	}
 	function resolvedChallenges(challenges) {
-		console.log('Found resolved challenges');
 		$scope.challenges.resolved = challenges;
 	}
 	
 	$scope.resolveChallenge = function(challenge) {
 		// TODO: get score information
-		challengeService.resolveChallenge(challenge.challenger._id, challenge.challengee._id, challengerScore, challengeeScore).then( function(success) {}, function(error) {});
+		var challengerScore = window.prompt(challenge.challenger.name + " score:", 3);
+		var challengeeScore = window.prompt(challenge.challengee.name + " score:", 3);
+		
+		if (challengerScore && challengeeScore) {
+			challengeService.resolveChallenge(challenge.challenger._id, challenge.challengee._id, challengerScore, challengeeScore).then(
+				function(success) {
+					console.log(success);
+					alert(success);
+					$rootScope.$broadcast('challenge:resolved', challenge);
+				},
+				function(error) {
+					console.log(error);
+					alert(error);
+				}
+			);
+		} else {
+			alert('You must give valid scores for both players');
+		}
 	}
 	
 	$scope.revokeChallenge = function(challenge) {
-		console.log(challenge.challenger._id);
+		console.log('Revoking challenge');
 		challengeService.revokeChallenge(challenge.challenger._id, challenge.challengee._id).then(
 			function(success) {
 				console.log(success);
 				alert(success);
+				$rootScope.$broadcast('challenge:revoked', challenge);
 				fetchChallenges();
 			},
 			function(error) {
@@ -63,5 +78,14 @@ angular.module('controllers')
 			}
 		);
 	}
+	
+	
+	$scope.$on('challenge:resolved', function(challenge) {
+		fetchChallenges();
+	});
+	
+	$scope.$on('challenge:revoked', function(challenge) {
+		fetchChallenges();
+	});
 	
 }]);

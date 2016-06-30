@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('headerController', ['$scope', 'playerService', function($scope, playerService) {
+.controller('headerController', ['$scope', '$rootScope', 'playerService', function($scope, $rootScope, playerService) {
 
 	$scope.player;
 	
