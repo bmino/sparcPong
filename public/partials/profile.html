@@ -10,7 +10,7 @@ this is profile.html
 	<br />
 	
 	<div class="challenges">
-		<div>Incoming Challenges</div>
+		<div><span ng-hide="challenges.incoming.length > 0">No </span>Incoming Challenges</div>
 		<div class="challenge-incoming" ng-repeat="challenge in challenges.incoming">
 			<span ng-bind="challenge.challenger.name"></span>
 			<span> vs </span>
@@ -20,13 +20,13 @@ this is profile.html
 			[<time-gap date="challenge.createdAt" type="since"></time-gap>]
 			[<time-gap date="challenge.createdAt" type="until"></time-gap>]
 			<button logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
-			<button logged-in="challenge.challenger._id" ng-click="resolveChallenge(challenge)">Revoke</button>
+			<button logged-in="challenge.challenger._id" ng-click="revokeChallenge(challenge)">Revoke</button>
 		</div>
 		
 		<br />
 		<br />
 		
-		<div>Outgoing Challenges</div>
+		<div><span ng-hide="challenges.outgoing.length > 0">No </span>Outgoing Challenges</div>
 		<div class="challenge-outgoing" ng-repeat="challenge in challenges.outgoing">
 			<span ng-bind="challenge.challenger.name"></span>
 			<span> vs </span>
@@ -34,7 +34,7 @@ this is profile.html
 			<span>Challenged: </span>
 			<span ng-bind="challenge.createdAt | mongoDate"></span>
 			<button logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
-			<button logged-in="challenge.challenger._id" ng-click="resolveChallenge(challenge)">Revoke</button>
+			<button logged-in="challenge.challenger._id" ng-click="revokeChallenge(challenge)">Revoke</button>
 		</div>
 	</div>
 	
@@ -42,7 +42,7 @@ this is profile.html
 	<br />
 	
 	<div class="history">
-		<div>History</div>
+		<div><span ng-hide="challenges.resolved.length > 0">No </span>History</div>
 		<div class="challenge-resolved" ng-repeat="challenge in challenges.resolved">
 			<span ng-bind="challenge.challenger.name"></span>
 			<span> vs </span>
