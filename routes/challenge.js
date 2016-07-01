@@ -20,12 +20,20 @@ router.post('/', function(req, res, next) {
 	if (challengerId == challengeeId)
 		return next(new Error('Players cannot challenge themselves.'));
 	
-	challenge.save(function(err) {
-		if (err) {
+	challengeExists(challengerId, challengeeId, function(err, exists) {
+		if (err)
 			return next(err);
-		}
-		res.json({message: 'Challenge issued!'});
-	});
+		if (exists)
+			return next(new Error('A challenge already exists between these players.'));
+			
+		challenge.save(function(err) {
+			if (err) {
+				return next(err);
+			}
+			res.json({message: 'Challenge issued!'});
+		});
+
+	});	
 });
 
 
@@ -130,12 +138,11 @@ router.post('/resolve', function(req, res, next) {
 	if (challengerScore == challengeeScore)
 		return next(new Error('The final score cannot be equal.'));
 	
-	Challenge.findOne({ _id: challengeId}, function(err, challenge) {
+	Challenge.findById(challengeId, function(err, challenge) {
 		if (err)
 			return next(err);
 		
-		var found = challenge.length;
-		if (found == 0) {
+		if (challenge.length == 0) {
 			return next(new Error('Could not find the challenge for ['+challengeId+'].'));
 		} else {
 			console.log('Resolving challenge id ['+challengeId+']');
@@ -153,6 +160,20 @@ router.post('/resolve', function(req, res, next) {
 	});
 });
 
+function challengeExists(playerId1, playerId2, callback) {
+	Challenge.find({$or: [ 
+						{$and: [{challenger: playerId1}, {challengee: playerId2}, {winner: null}]}, 
+						{$and: [{challenger: playerId2}, {challengee: playerId1}, {winner: null}]}
+					]}, function(err, challenges) {
+		
+		if (err) {
+			callback(err, false);
+		} else {
+			var c = (challenges.length > 0) ? true : false
+			return callback(null, c);
+		}
+	});
+}
 
 
 module.exports = router;
