@@ -45,6 +45,7 @@ router.get('/resolved/:playerId', function(req, res, next) {
 		if (err) {
 			return next(err);
 		}
+		console.log('Found ' + challenges.length + ' resolved challenges ' + ' for playerId [' + playerId + ']');
 		res.json({message: challenges});
 	});
 });
@@ -63,6 +64,7 @@ router.get('/outgoing/:playerId', function(req, res, next) {
 		if (err) {
 			return next(err);
 		}
+		console.log('Found ' + challenges.length + ' outgoing challenges ' + ' for playerId [' + playerId + ']');
 		res.json({message: challenges});
 	});
 });
@@ -80,6 +82,7 @@ router.get('/incoming/:playerId', function(req, res, next) {
 		if (err) {
 			return next(err);
 		}
+		console.log('Found ' + challenges.length + ' incoming challenges ' + ' for playerId [' + playerId + ']');
 		res.json({message: challenges});
 	});
 });
@@ -91,7 +94,7 @@ router.get('/incoming/:playerId', function(req, res, next) {
 router.delete('/revoke', function(req, res, next) {
 	var challengerId = req.body.challengerId;
 	var challengeeId = req.body.challengeeId;
-	console.log(req.body);
+	
 	if (!challengerId || !challengeeId)
 		return next(new Error('Both players are required to revoke a challenge.'));
 	
@@ -99,61 +102,57 @@ router.delete('/revoke', function(req, res, next) {
 		if (err) {
 			return next(err);
 		}
-		res.json({message: 'Succesfully revoked challenge.'});
+		
+		if (challenges.result && challenges.result.n) {
+			console.log('Revoking ' + challenges.result.n + ' challenge(s).');
+			res.json({message: 'Succesfully revoked challenge.'});
+		} else {
+			return next(new Error('Could not find the challenge.'));
+		}
 	});
 });
 
 /* POST resolved challenge by adding a score and winner
  *
- * @param: challengerId
- * @param: challengeeId
+ * @param: challengeId
  * @param: challengerScore
  * @param: challengeeScore
  */
 router.post('/resolve', function(req, res, next) {
-	var challengerId = req.body.challengerId;
-	var challengeeId = req.body.challengeeId;
+	var challengeId = req.body.challengeId;
 	var challengerScore = req.body.challengerScore;
 	var challengeeScore = req.body.challengeeScore;
-	var winner = challengerScore > challengeeScore ? challengerId : challengeeId;
 	
-	if (!challengerId || !challengeeId)
-		return next(new Error('Both players are required to resolve a challenge.'));
+	if (!challengeId) {
+		console.log(challengeId + ' is not a valid challenge id.');
+		return next(new Error('This is not a valid challenge.'));
+	}
 	if (challengerScore == challengeeScore)
 		return next(new Error('The final score cannot be equal.'));
 	
-	
-						// Find Conditions
-	Challenge.update({	challenger: challengerId, 
-						challengee: challengeeId}, 
-						// Update Data
-					{	challengerScore: challengerScore, 
-						challengeeScore: challengeeScore, 
-						winner: winner}, function(err, challenges) {
-		if (err) {
+	Challenge.findOne({ _id: challengeId}, function(err, challenge) {
+		if (err)
 			return next(err);
+		
+		var found = challenge.length;
+		if (found == 0) {
+			return next(new Error('Could not find the challenge for ['+challengeId+'].'));
+		} else {
+			console.log('Resolving challenge id ['+challengeId+']');
 		}
+		
+		var winnerId = challengerScore > challengeeScore ? challenge.challenger : challenge.challengee;
+		
+		challenge.winner = winnerId;
+		challenge.challengerScore = challengerScore;
+		challenge.challengeeScore = challengeeScore;
+		
+		challenge.save();
+		
 		res.json({message: 'Succesfully resolved challenge.'});
 	});
 });
 
-function challengesOutgoing(playerId) {
-	Challenge.find({challenger: playerId, winner: null}).count(function(err, count) {
-		if (err) {
-			console.log(err);
-		}
-		return count;
-	});
-}
-
-function challengesIncoming(playerId) {
-	Challenge.find({challengee: playerId, winner: null}).count(function(err, count) {
-		if (err) {
-			console.log(err);
-		}
-		return count;
-	});
-}
 
 
 module.exports = router;

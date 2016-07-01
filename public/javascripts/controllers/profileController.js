@@ -32,25 +32,23 @@ angular.module('controllers')
 		challengeService.getChallengesResolved(playerId).then( resolvedChallenges );
 	}
 	function incomingChallenges(challenges) {
-		console.log('Found incoming challenges.');
 		$scope.challenges.incoming = challenges;
 	}
 	function outgoingChallenges(challenges) {
-		console.log('Found outgoing challenges.');
 		$scope.challenges.outgoing = challenges;
 	}
 	function resolvedChallenges(challenges) {
-		console.log('Found resolved challenges.');
 		$scope.challenges.resolved = challenges;
 	}
 	
 	$scope.resolveChallenge = function(challenge) {
-		// TODO: get score information
-		var challengerScore = window.prompt(challenge.challenger.name + " score:", 3);
-		var challengeeScore = window.prompt(challenge.challengee.name + " score:", 3);
+		console.log(challenge);
+		console.log();
+		var challengerScore = window.prompt(challenge.challenger.name + " score:", 0);
+		var challengeeScore = window.prompt(challenge.challengee.name + " score:", 0);
 		
 		if (challengerScore && challengeeScore) {
-			challengeService.resolveChallenge(challenge.challenger._id, challenge.challengee._id, challengerScore, challengeeScore).then(
+			challengeService.resolveChallenge(challenge._id, challengerScore, challengeeScore).then(
 				function(success) {
 					console.log(success);
 					socket.emit('challenge:resolved', challenge);

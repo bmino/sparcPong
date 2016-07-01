@@ -52,13 +52,12 @@ angular.module('services')
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.resolveChallenge = function(challengerId, challengeeId, challengerScore, challengeeScore) {
+	this.resolveChallenge = function(challengeId, challengerScore, challengeeScore) {
 		var request = $http({
 			method: "post",
 			url: "api/challenge/resolve/",
 			data: {
-				challengerId: challengerId,
-				challengeeId: challengeeId,
+				challengeId: challengeId,
 				challengerScore: challengerScore,
 				challengeeScore: challengeeScore
 			}
