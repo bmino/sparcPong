@@ -60,6 +60,11 @@ server.listen(socketPort);
 io.on('connection', function(socket) {
 	console.log('New connection...');
 	
+	/* Player Events */
+	socket.on('player:new', function(newPlayer) {
+		forwardMessage('player:new', newPlayer);
+	});
+	/* Challenge Events */
 	socket.on('challenge:resolved', function(challenge) {
 		forwardMessage('challenge:resolved', challenge);
 	});

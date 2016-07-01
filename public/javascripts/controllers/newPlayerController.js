@@ -1,6 +1,6 @@
 angular.module('controllers')
-.controller('newPlayerController', ['$scope', '$rootScope', 'playerService', function($scope, $rootScope, playerService) {
-	$scope.test = 'sample controller';
+.controller('newPlayerController', ['$scope', 'socket', 'playerService', function($scope, socket, playerService) {
+
 	$scope.player = {
 		name: '',
 		phone: null,
@@ -8,16 +8,15 @@ angular.module('controllers')
 	};
 	
 	$scope.verifyPlayer = function() {
-		playerService.countPlayers($scope.player.name).then(createPlayer, invalidPlayer);
+		playerService.countPlayers($scope.player.name).then(validPlayer, invalidPlayer);
 	};
-	
-	function createPlayer() {
+	function validPlayer() {
 		playerService.createPlayer($scope.player.name, $scope.player.phone, $scope.player.email).then(
 			function (success) {
 				// Succesfully created a new player.
 				console.log('Succesfully created a new player.');
 				alert('Succesfully created a new player.');
-				$rootScope.$broadcast('newPlayer', $scope.player);
+				socket.emit('player:new', $scope.player);
 			},
 			function (failure) {
 				// Did not create a new player.
@@ -25,7 +24,6 @@ angular.module('controllers')
 				console.log(failure);
 			});
 	}
-	
 	function invalidPlayer() {
 		// This player name is already in use
 		console.log('This player name is already in use.');
