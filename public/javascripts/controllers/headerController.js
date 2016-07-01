@@ -1,7 +1,8 @@
 angular.module('controllers')
-.controller('headerController', ['$scope', '$rootScope', 'playerService', function($scope, $rootScope, playerService) {
+.controller('headerController', ['$scope', '$rootScope', 'socket', 'playerService', function($scope, $rootScope, socket, playerService) {
 
 	$scope.player;
+	$scope.clients;
 	
 	init();
 	
@@ -25,9 +26,17 @@ angular.module('controllers')
 		console.log($rootScope.myClient.player);
 	}
 	
-	$scope.$on('newPlayer', function() {
-		populateUserList();
+	socket.on('player:new', function(player) {
 		console.log('New user detected.');
+		populateUserList();
+	});
+	socket.on('client:enter', function(clients) {
+		console.log('Detected client entering.');
+		$scope.clients = clients;
+	});
+	socket.on('client:leave', function(clients) {
+		console.log('Detected client leaving.');
+		$scope.clients = clients;
 	});
 	
 }]);

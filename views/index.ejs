@@ -56,6 +56,10 @@
 				<span ng-bind="myClient.player.name"></span>
 			</div>
 			
+			<div class="clients-info">
+				<span ng-bind="clients"></span><span> currently viewing.</span>
+			</div>
+			
 			<!-- Username Selection -->
 			<select class="choose-username" ng-options="player.name for player in players" ng-model="player" ng-change="selectUser(player)">
 				<option value=""> -- choose username -- </option>

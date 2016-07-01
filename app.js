@@ -56,9 +56,18 @@ app.use(function(err, req, res, next) {
 // Socket Handling
 server.listen(socketPort);
 
+// Socket Tracking Variables
+var clients = 0;
+
 // Socket Events
 io.on('connection', function(socket) {
 	console.log('New connection...');
+	
+	/* Client Events */
+	io.sockets.emit('client:enter', ++clients);
+	socket.on('disconnect', function() {
+		io.sockets.emit('client:leave', --clients);
+	});
 	
 	/* Player Events */
 	socket.on('player:new', function(newPlayer) {
