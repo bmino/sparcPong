@@ -6,7 +6,7 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
-var port = 4200;
+var socketPort = process.env.PORT || 4200;
 
 // Mongo
 var mongoose = require('mongoose');
@@ -54,20 +54,23 @@ app.use(function(err, req, res, next) {
 });
 
 // Socket Handling
-server.listen(port);
+server.listen(socketPort);
 
 // Socket Events
 io.on('connection', function(socket) {
 	console.log('New connection...');
 	
 	socket.on('challenge:resolved', function(challenge) {
-		console.log('Passing: [challenge:resolved]');
-		io.sockets.emit('challenge:resolved', challenge);
+		forwardMessage('challenge:resolved', challenge);
 	});
 	socket.on('challenge:revoked', function(challenge) {
-		console.log('Passing: [challenge:revoked]');
-		io.sockets.emit('challenge:revoked', challenge);
+		forwardMessage('challenge:revoked', challenge);
 	});
 });
+
+function forwardMessage(eventName, data) {
+	console.log('Passing: ['+eventName+']');
+	io.sockets.emit(eventName, data);
+}
 
 module.exports = app;
