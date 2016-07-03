@@ -99,7 +99,6 @@ function getLowestRank(callback) {
 			callback(err, null);
 		var lowestRank = 0;
 		if (lowestRankPlayer && lowestRankPlayer.length > 0) {
-			console.log(lowestRankPlayer);
 			lowestRank = lowestRankPlayer[0].rank;
 		}
 		console.log('Found lowest rank of ' + lowestRank);

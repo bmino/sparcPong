@@ -76,7 +76,7 @@ angular.module('services')
 	function handleError(response) {
 		var dummy = document.createElement('body');
 		dummy.innerHTML = response.data;
-		var errorMessage = dummy.getElementsByTagName("h1")[0].innerHTML;
+		var errorMessage = dummy.getElementsByTagName("h1")[0].innerHTML || 'Uh oh, something unexpected happened.';
 		throw errorMessage;
 		return null;
 	}
