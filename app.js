@@ -61,7 +61,7 @@ var clients = 0;
 
 // Socket Events
 io.on('connection', function(socket) {
-	console.log('New connection...');
+	console.log('New client connection...');
 	
 	/* Client Events */
 	io.sockets.emit('client:enter', ++clients);

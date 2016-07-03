@@ -113,7 +113,7 @@ router.delete('/revoke', function(req, res, next) {
 		
 		if (challenges.result && challenges.result.n) {
 			console.log('Revoking ' + challenges.result.n + ' challenge(s).');
-			res.json({message: 'Succesfully revoked challenge.'});
+			res.json({message: 'Successfully revoked challenge.'});
 		} else {
 			return next(new Error('Could not find the challenge.'));
 		}
@@ -156,7 +156,7 @@ router.post('/resolve', function(req, res, next) {
 		
 		challenge.save();
 		
-		res.json({message: 'Succesfully resolved challenge.'});
+		res.json({message: 'Successfully resolved challenge.'});
 	});
 });
 
