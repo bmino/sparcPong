@@ -10,7 +10,10 @@ var Player = mongoose.model('Player');
  * @param: email
  */
 router.post('/', function(req, res, next) {
-	var playerName = req.body.name;
+	var playerName = req.body.name.trim();
+	
+	if (!playerName)
+		return next(new Error('A name is required to create a player.'));
 	
 	// Verify player name is new
 	Player.count({name: playerName}, function(err,count) {
@@ -19,20 +22,26 @@ router.post('/', function(req, res, next) {
 		} else if (count != 0) {
 			return next(new Error('Player name already exists.'));
 		} else {
-			// Create new player
-			var player = new Player();
-			player.name = playerName;
-			player.phone = req.body.phone;
-			player.email = req.body.email;
-			
-			// Saves player to DB
-			player.save(function(err, saved) {
-				if (err) {
+			getLowestRank(function(err, lowestRank) {
+				if (err)
 					return next(err);
-				} else {
-					res.json({message: 'Player created!'});
-				}
-			});
+				
+				// Create new player
+				var player = new Player();
+				player.name = playerName;
+				player.rank = lowestRank + 1;
+				player.phone = req.body.phone;
+				player.email = req.body.email;
+				
+				// Saves player to DB
+				player.save(function(err, saved) {
+					if (err) {
+						return next(err);
+					} else {
+						res.json({message: 'Player created!'});
+					}
+				});
+			});			
 		}
 	});
 });
@@ -83,6 +92,20 @@ router.delete('/', function(req, res) {
 	});
 });
 
+
+function getLowestRank(callback) {
+	Player.find().sort({'rank': -1}).limit(1).exec(function(err, lowestRankPlayer) {
+		if (err)
+			callback(err, null);
+		var lowestRank = 0;
+		if (lowestRankPlayer && lowestRankPlayer.length > 0) {
+			console.log(lowestRankPlayer);
+			lowestRank = lowestRankPlayer[0].rank;
+		}
+		console.log('Found lowest rank of ' + lowestRank);
+		callback(err, lowestRank);
+	});
+}
 
 
 module.exports = router;

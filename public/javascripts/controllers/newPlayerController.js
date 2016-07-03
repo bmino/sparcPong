@@ -11,14 +11,17 @@ angular.module('controllers')
 		playerService.createPlayer($scope.player.name, $scope.player.phone, $scope.player.email).then(
 			function (success) {
 				// Successfully created a new player.
-				console.log('Successfully created a new player.');
+				console.log(success);
 				alert('Successfully created a new player.');
 				socket.emit('player:new', $scope.player);
 			},
 			function (failure) {
 				// Did not create a new player.
-				console.log('Did not create a new player.');
 				console.log(failure);
-			});
+				alert(failure);
+			}
+		);
 	}
+	
+	
 }]);
