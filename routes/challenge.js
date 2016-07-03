@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Challenge = mongoose.model('Challenge');
+var Player = mongoose.model('Player');
 
 /* POST new challenge
  *
@@ -53,7 +54,7 @@ router.get('/resolved/:playerId', function(req, res, next) {
 		if (err) {
 			return next(err);
 		}
-		console.log('Found ' + challenges.length + ' resolved challenges ' + ' for playerId [' + playerId + ']');
+		//console.log('Found ' + challenges.length + ' resolved challenges ' + ' for playerId [' + playerId + ']');
 		res.json({message: challenges});
 	});
 });
@@ -72,7 +73,7 @@ router.get('/outgoing/:playerId', function(req, res, next) {
 		if (err) {
 			return next(err);
 		}
-		console.log('Found ' + challenges.length + ' outgoing challenges ' + ' for playerId [' + playerId + ']');
+		//console.log('Found ' + challenges.length + ' outgoing challenges ' + ' for playerId [' + playerId + ']');
 		res.json({message: challenges});
 	});
 });
@@ -90,7 +91,7 @@ router.get('/incoming/:playerId', function(req, res, next) {
 		if (err) {
 			return next(err);
 		}
-		console.log('Found ' + challenges.length + ' incoming challenges ' + ' for playerId [' + playerId + ']');
+		//console.log('Found ' + challenges.length + ' incoming challenges ' + ' for playerId [' + playerId + ']');
 		res.json({message: challenges});
 	});
 });
@@ -138,7 +139,7 @@ router.post('/resolve', function(req, res, next) {
 	if (challengerScore == challengeeScore)
 		return next(new Error('The final score cannot be equal.'));
 	
-	Challenge.findById(challengeId, function(err, challenge) {
+	Challenge.findById(challengeId).populate('challenger').populate('challengee').exec(function(err, challenge) {
 		if (err)
 			return next(err);
 		
@@ -148,13 +149,27 @@ router.post('/resolve', function(req, res, next) {
 			console.log('Resolving challenge id ['+challengeId+']');
 		}
 		
-		var winnerId = challengerScore > challengeeScore ? challenge.challenger : challenge.challengee;
+		var winner = challengerScore > challengeeScore ? challenge.challenger : challenge.challengee;
+		var loser  = challengerScore < challengeeScore ? challenge.challenger : challenge.challengee;
 		
-		challenge.winner = winnerId;
+		challenge.winner = winner._id;
 		challenge.challengerScore = challengerScore;
 		challenge.challengeeScore = challengeeScore;
 		
 		challenge.save();
+		
+		// Adjusts Rankings
+		if (loser.rank < winner.rank) {
+			console.log('Swapping rankings between ' + winner.name + ' and ' + loser.name);
+			// Winner should move up ranking
+			swapRanks(winner._id, loser._id, function(err) {
+				if (err)
+					return next(err);
+				console.log('Swapping rankings completed successfully.');
+			});
+		} else {
+			console.log('Swapping rankings is not required.');
+		}
 		
 		res.json({message: 'Successfully resolved challenge.'});
 	});
@@ -174,6 +189,36 @@ function challengeExists(playerId1, playerId2, callback) {
 		}
 	});
 }
+
+function swapRanks(playerId1, playerId2, callback) {
+	setRank(playerId1, TEMP_RANK, function(err, oldRank, newRank) {
+		if (err)
+			callback(err);
+		var player1_oldRank = oldRank;
+		setRank(playerId2, player1_oldRank, function(err, oldRank, newRank) {
+			if (err)
+				callback(err);
+			var player2_oldRank = oldRank;
+			setRank(playerId1, player2_oldRank, function(err, oldRank, newRank) {
+				callback(err);
+			});
+		});
+	});
+}
+
+var TEMP_RANK = -1;
+function setRank(playerId, newRank, callback) {
+	Player.findById(playerId, function(err, player) {
+		if (err)
+			callback(err, null, null);
+		var oldRank = player.rank;
+		player.rank = newRank;
+		player.save(function(err) {
+			callback(err, oldRank, newRank);
+		});
+	});
+}
+
 
 
 module.exports = router;
