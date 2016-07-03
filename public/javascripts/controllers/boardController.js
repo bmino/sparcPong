@@ -1,13 +1,12 @@
 angular.module('controllers')
-.controller('boardController', ['$scope', '$rootScope', 'playerService', 'challengeService', function($scope, $rootScope, playerService, challengeService) {
+.controller('boardController', ['$scope', '$rootScope', 'socket', 'playerService', 'challengeService', function($scope, $rootScope, socket, playerService, challengeService) {
 	
 	init();
 	
 	function init() {
-		$scope.tiers = generateTiers(10);
-		playerService.getPlayers().then( function(players) {
-			$scope.players = players;
-		});
+		// TODO: implement a better solution than guessing big at 12 tiers
+		generateTiers(12);
+		populatePlayers();
 	}
 	
 	function generateTiers(tiers) {
@@ -15,7 +14,13 @@ angular.module('controllers')
 		for (var t=1; t<tiers; t++) {
 			arr.push(t);
 		}
-		return arr;
+		$scope.tiers = arr;
+	}
+	
+	function populatePlayers() {
+		playerService.getPlayers().then( function(players) {
+			$scope.players = players;
+		});
 	}
 	
 	$scope.challenge = function(challengeeId) {
@@ -27,15 +32,17 @@ angular.module('controllers')
 		} else {
 			var myId = player._id;
 			challengeService.createChallenge(myId, challengeeId).then( goodChallenge, badChallenge );
-		}
-		
+		}	
 	}
-	
 	function goodChallenge(success) {
 		console.log('Challenge issued.');
+		socket.emit('challenge:issued');
 	}
-	
 	function badChallenge(error) {
 		console.log('Challenge not issued.');
 	}
+	
+	socket.on('challenge:resolved', function(challenge) {
+		populatePlayers();
+	});
 }]);

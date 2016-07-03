@@ -78,11 +78,12 @@ angular.module('controllers')
 		);
 	}
 	
-	
+	socket.on('challenge:issued', function(challenge) {
+		fetchChallenges();
+	});
 	socket.on('challenge:resolved', function(challenge) {
 		fetchChallenges();
 	});
-	
 	socket.on('challenge:revoked', function(challenge) {
 		fetchChallenges();
 	});

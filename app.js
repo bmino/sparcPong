@@ -74,6 +74,9 @@ io.on('connection', function(socket) {
 		forwardMessage('player:new', newPlayer);
 	});
 	/* Challenge Events */
+	socket.on('challenge:issued', function(challenge) {
+		forwardMessage('challenge:issued', challenge);
+	});
 	socket.on('challenge:resolved', function(challenge) {
 		forwardMessage('challenge:resolved', challenge);
 	});

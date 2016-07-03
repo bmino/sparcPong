@@ -27,25 +27,36 @@ router.post('/', function(req, res, next) {
 		if (exists)
 			return next(new Error('A challenge already exists between these players.'));
 		
-		Player.findById(challengerId, function(err, challenger) {
+		// Verifies challenger is allowed to issue a challenge
+		allowedToChallenge(challengerId, function(err, allowed, message) {
 			if (err)
 				return next(err);
-			Player.findById(challengeeId, function(err, challengee) {
-				if (err)
-					return next(err);
-				
-				if (challenger.rank < challengee.rank)
-					return next(new Error('You cannot challenger a player below your rank.'));
-				else if (Math.abs(getTier(challenger.rank) - getTier(challengee.rank)) > 1)
-					return next(new Error('You cannot challenge a player beyond 1 tier.'));
-				
-				challenge.save(function(err) {
-					if (err) {
+			if (!allowed) {
+				// Not allowed to issue challenges
+				return next(new Error(message));
+			} else {
+				// Grabs player info on both challenge participants
+				Player.findById(challengerId, function(err, challenger) {
+					if (err)
 						return next(err);
-					}
-					res.json({message: 'Challenge issued!'});
+					Player.findById(challengeeId, function(err, challengee) {
+						if (err)
+							return next(err);
+						
+						if (challenger.rank < challengee.rank)
+							return next(new Error('You cannot challenger a player below your rank.'));
+						else if (Math.abs(getTier(challenger.rank) - getTier(challengee.rank)) > 1)
+							return next(new Error('You cannot challenge a player beyond 1 tier.'));
+						
+						challenge.save(function(err) {
+							if (err) {
+								return next(err);
+							}
+							res.json({message: 'Challenge issued!'});
+						});
+					});
 				});
-			});
+			}
 		});
 	});	
 });
@@ -200,6 +211,30 @@ function challengeExists(playerId1, playerId2, callback) {
 			var c = (challenges.length > 0) ? true : false
 			return callback(null, c);
 		}
+	});
+}
+
+var ALLOWED_CHALLENGES = 1;
+function allowedToChallenge(playerId, callback) {
+	outgoingChallenges(playerId, function(err, issued) {
+		if (err)
+			callback(err);
+		if (issued >= ALLOWED_CHALLENGES)
+			callback(err, false, 'You already have too many outgoing challenges.');
+		callback(err, true);
+		// TODO: create incoming challenges rule also?
+	});
+}
+
+function outgoingChallenges(playerId, callback) {
+	Challenge.find({challenger: playerId, winner: null}, function(err, challenges) {
+		if (err) {
+			return next(err);
+		}
+		var found = 0;
+		if (challenges)
+			found = challenges.length;
+		callback(err, found);
 	});
 }
 
