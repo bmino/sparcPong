@@ -10,16 +10,29 @@ var Player = mongoose.model('Player');
  * @param: email
  */
 router.post('/', function(req, res, next) {
-	var player = new Player();
-	player.name = req.body.name;
-	player.phone = req.body.phone;
-	player.email = req.body.email;
+	var playerName = req.body.name;
 	
-	player.save(function(err, saved, numAffected) {
+	// Verify player name is new
+	Player.count({name: playerName}, function(err,count) {
 		if (err) {
 			return next(err);
+		} else if (count != 0) {
+			return next(new Error('Player name already exists.'));
 		} else {
-			res.json({message: 'Player created!'});
+			// Create new player
+			var player = new Player();
+			player.name = playerName;
+			player.phone = req.body.phone;
+			player.email = req.body.email;
+			
+			// Saves player to DB
+			player.save(function(err, saved) {
+				if (err) {
+					return next(err);
+				} else {
+					res.json({message: 'Player created!'});
+				}
+			});
 		}
 	});
 });
@@ -38,48 +51,34 @@ router.get('/', function(req, res, next) {
 /* GET player by id */
 router.get('/fetch/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;
+	
+	if (!playerId)
+		return next(new Error('You must specify a player id.'));
+	
 	Player.findById(playerId, function(err, players) {
 		if (err) {
 			return next(err);
+		} else if (!players) {
+			console.log('Could not find player with id: ' + playerId);
+			return next(new Error('No player was found for that id.'));
 		} else {
 			res.json({message: players});
 		}
 	})
 });
 
-/* GET occurances of player name
- *
- * @param: name
- */
- router.get('/count/:name', function(req, res, next) {
-	var playerName = req.params.name;
-	Player.find({name: playerName}).count(function(err,count) {
-		if (err) {
-			return next(err);
-		} else if (count != 0) {
-			return next(new Error('Player name already exists.'));
-		} else {
-			// No occurances exist
-			res.json({message: 'Found ' +count+ ' players with that name.'});
-		}
-	});
-});
-
-/* PUT updated player */
-router.put('/', function(req, res) {
-	// TODO: implement
-	res.json({message: 'Not implemented yet.'});
-	console.log('PUT player not implemented.');
-});
-
 /* DELETE player */
 router.delete('/', function(req, res) {
 	var playerId = req.body.playerId;
+	
+	if (!playerId)
+		return next(new Error('You must specify a player id.'));
+	
 	Player.remove({_id: playerId}, function(err, player) {
 		if (err) {
 			return next(err);
 		} else {
-			res.json({message: 'Succesfully deleted player.'});
+			res.json({message: 'Successfully deleted player.'});
 		}
 	});
 });

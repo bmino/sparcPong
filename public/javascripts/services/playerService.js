@@ -35,18 +35,6 @@ angular.module('services')
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.countPlayers = function(playerName) {
-		var request = $http({
-			method: "get",
-			url: "api/player/count/"+playerName
-		});
-		return request.then( handleSuccess, handleError );
-	}
-	
-	this.updatePlayer = function(fill) {
-		// TODO: implement with PUT
-	};
-	
 	this.deletePlayer = function(playerId) {
 		var request = $http({
 			method: "delete",
