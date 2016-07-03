@@ -26,14 +26,27 @@ router.post('/', function(req, res, next) {
 			return next(err);
 		if (exists)
 			return next(new Error('A challenge already exists between these players.'));
-			
-		challenge.save(function(err) {
-			if (err) {
+		
+		Player.findById(challengerId, function(err, challenger) {
+			if (err)
 				return next(err);
-			}
-			res.json({message: 'Challenge issued!'});
+			Player.findById(challengeeId, function(err, challengee) {
+				if (err)
+					return next(err);
+				
+				if (challenger.rank < challengee.rank)
+					return next(new Error('You cannot challenger a player below your rank.'));
+				else if (Math.abs(getTier(challenger.rank) - getTier(challengee.rank)) > 1)
+					return next(new Error('You cannot challenge a player beyond 1 tier.'));
+				
+				challenge.save(function(err) {
+					if (err) {
+						return next(err);
+					}
+					res.json({message: 'Challenge issued!'});
+				});
+			});
 		});
-
 	});	
 });
 
@@ -217,6 +230,35 @@ function setRank(playerId, newRank, callback) {
 			callback(err, oldRank, newRank);
 		});
 	});
+}
+
+function getTier(rank) {
+	var tier = 1;
+	
+	while (true) {
+		var tierRanks = getRanks(tier, 1, 0, []);
+		for (var r=0; r<tierRanks.length; r++) {
+			if (rank == tierRanks[r]) {
+				// Found tier
+				return tier;
+			}
+		}
+		tier++;
+	}
+}
+
+function getRanks(tier, currentTier, lastRank, ranks) {
+	if (ranks.length >= tier) {
+		return ranks;
+	}
+	
+	var ranks = [];
+	for (var r=lastRank+1; r<=lastRank+currentTier; r++) {
+		ranks.push(r);
+	}
+	lastRank = ranks[ranks.length-1];
+	
+	return getRanks(tier, ++currentTier, lastRank, ranks);
 }
 
 
