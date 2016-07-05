@@ -199,6 +199,16 @@ router.post('/resolve', function(req, res, next) {
 	});
 });
 
+
+/*
+ * Determines if an open challenge between two players exists.
+ *
+ * @param: playerId1
+ * @param: playerId2
+ *
+ * @return: err
+ * @return: boolean - true if challenges exist, false if none exist
+ */
 function challengeExists(playerId1, playerId2, callback) {
 	Challenge.find({$or: [ 
 						{$and: [{challenger: playerId1}, {challengee: playerId2}, {winner: null}]}, 
@@ -214,30 +224,64 @@ function challengeExists(playerId1, playerId2, callback) {
 	});
 }
 
+
+/*
+ * Determines if a given player is eligible to issue challenges.
+ *
+ * @param: playerId
+ *
+ * @return: err
+ * @return: boolean - true if allowed, and false if not allowed
+ * @return: String - error message if not allowed
+ */
 var ALLOWED_CHALLENGES = 1;
 function allowedToChallenge(playerId, callback) {
-	outgoingChallenges(playerId, function(err, issued) {
+	countChallenges(playerId, function(err, incoming, outgoing) {
 		if (err)
 			callback(err);
-		if (issued >= ALLOWED_CHALLENGES)
-			callback(err, false, 'You already have too many outgoing challenges.');
+		if (incoming > 1)
+			callback(err, false, 'Players must resolve incoming challenges before issuing new ones.');
+		if (outgoing >= ALLOWED_CHALLENGES)
+			callback(err, false, 'Players may only have '+ALLOWED_CHALLENGES+' outgoing challenges.');
 		callback(err, true);
-		// TODO: create incoming challenges rule also?
 	});
 }
 
-function outgoingChallenges(playerId, callback) {
+/*
+ * Counts incoming and outgoing challenges for a given player.
+ *
+ * @param: playerId
+ *
+ * @return: incoming challenges
+ * @return: outgoing challenges
+ */
+function countChallenges(playerId, callback) {
 	Challenge.find({challenger: playerId, winner: null}, function(err, challenges) {
 		if (err) {
-			return next(err);
+			callback(err);
 		}
-		var found = 0;
+		var outgoing = 0;
 		if (challenges)
-			found = challenges.length;
-		callback(err, found);
+			outgoing = challenges.length;
+		Challenge.find({challengee: playerId, winner: null}, function(err, challenges) {
+			if (err)
+				callback(err);
+			var incoming = 0;
+			if (challenges)
+				incoming = challenges.length;
+			callback(err, incoming, outgoing);
+		});
 	});
 }
 
+/*
+ * Swaps the rankings for two given players.
+ *
+ * @param: playerId1
+ * @param: playerId2
+ *
+ * @return: err
+ */
 function swapRanks(playerId1, playerId2, callback) {
 	setRank(playerId1, TEMP_RANK, function(err, oldRank, newRank) {
 		if (err)
@@ -254,6 +298,17 @@ function swapRanks(playerId1, playerId2, callback) {
 	});
 }
 
+
+/*
+ * Manually sets the rank of a given player.
+ *
+ * @param: playerId
+ * @param: newRank
+ *
+ * @return: err
+ * @return: oldRank
+ * @return: newRank
+ */
 var TEMP_RANK = -1;
 function setRank(playerId, newRank, callback) {
 	Player.findById(playerId, function(err, player) {
@@ -267,6 +322,14 @@ function setRank(playerId, newRank, callback) {
 	});
 }
 
+
+/*
+ * Calculates the tier for a given ranking.
+ *
+ * @param: rank
+ *
+ * @return: number - tier
+ */
 function getTier(rank) {
 	var tier = 1;
 	
@@ -282,6 +345,17 @@ function getTier(rank) {
 	}
 }
 
+
+/*
+ * Calculates the possible ranks for a given tier.
+ *
+ * @param: tier
+ * @param: currentTier - defaults to 1
+ * @param: lastRank - defaults to 0
+ * @param: ranks - defaults to []
+ *
+ * @return: array - contains possible ranks
+ */
 function getRanks(tier, currentTier, lastRank, ranks) {
 	if (ranks.length >= tier) {
 		return ranks;
