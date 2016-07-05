@@ -4,7 +4,7 @@
 		<div class="player" ng-repeat="player in players | tier: t">
 			<span ng-bind="player.rank"></span>
 			<span> - </span>
-			<span ng-bind="player.name"></span>
+			<a ng-href="#/profile/{{player._id}}"><span ng-bind="player.name"></span></a>
 			<button ng-click="challenge(player._id)">Challenge</button>
 		</div>
 		<br />
