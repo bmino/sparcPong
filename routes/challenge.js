@@ -131,17 +131,27 @@ router.delete('/revoke', function(req, res, next) {
 	if (!challengerId || !challengeeId)
 		return next(new Error('Both players are required to revoke a challenge.'));
 	
-	Challenge.remove({challenger: challengerId, challengee: challengeeId, winner: null}, function(err, challenges) {
-		if (err) {
+	// Checks for forfeit
+	Challenge.find({challenger: challengerId, challengee: challengeeId, winner: null}, function(err, challenges) {
+		if (err)
 			return next(err);
-		}
-		
-		if (challenges.result && challenges.result.n) {
-			console.log('Revoking ' + challenges.result.n + ' challenge(s).');
-			res.json({message: 'Successfully revoked challenge.'});
-		} else {
+		if (!challenges || challenges.length == 0)
 			return next(new Error('Could not find the challenge.'));
-		}
+		if (hasForfeit(challenges[0].createdAt))
+			return next(new Error('This challenge has expired and must be forfeited.'));
+		
+		Challenge.remove({challenger: challengerId, challengee: challengeeId, winner: null}, function(err, challenges) {
+			if (err) {
+				return next(err);
+			}
+			
+			if (challenges.result && challenges.result.n) {
+				console.log('Revoking ' + challenges.result.n + ' challenge(s).');
+				res.json({message: 'Successfully revoked challenge.'});
+			} else {
+				return next(new Error('Could not find the challenge.'));
+			}
+		});
 	});
 });
 
@@ -167,11 +177,17 @@ router.post('/resolve', function(req, res, next) {
 		if (err)
 			return next(err);
 		
-		if (challenge.length == 0) {
+		if (!challenge || challenge.length == 0) {
 			return next(new Error('Could not find the challenge for ['+challengeId+'].'));
+		} else if (hasForfeit(challenge.createdAt)) {
+			return next(new Error('This challenge has expired. '+challenge.challengee.name+' must forfeit.'));
 		} else {
 			console.log('Resolving challenge id ['+challengeId+']');
 		}
+		
+		// Checks for forfeit
+		if (hasForfeit(challenge))
+			return next(new Error('This challenge has expired and must be forfeited.'));
 		
 		var winner = challengerScore > challengeeScore ? challenge.challenger : challenge.challengee;
 		var loser  = challengerScore < challengeeScore ? challenge.challenger : challenge.challengee;
@@ -196,6 +212,33 @@ router.post('/resolve', function(req, res, next) {
 		}
 		
 		res.json({message: 'Successfully resolved challenge.'});
+	});
+});
+
+/*
+ * Forfeits an expired challenge.
+ *
+ * @param: challengeId
+ */
+router.post('/forfeit', function(req, res, next) {
+	var challengeId = req.body.challengeId;
+	if (!challengeId)
+		return next(new Error('This is not a valid challenge id.'));
+	Challenge.findById(challengeId, function(err, challenge) {
+		if (err)
+			return next(err);
+		if (!hasForfeit())
+			return next(new Error('This challenge has not expired.'));
+		swapRanks(challenge.challenger, challenge.challengee, function(err) {
+			if (err)
+				return next(err);
+			
+			// Challenger wins in the event of a forfeit
+			challenge.winner = challenge.challenger;
+			challenge.save();
+			
+			res.json({message: 'Challenge successfully forfeited.'});
+		});
 	});
 });
 
@@ -224,6 +267,69 @@ function challengeExists(playerId1, playerId2, callback) {
 	});
 }
 
+var ALLOWED_CHALLENGE_DAYS = 3;
+function hasForfeit(dateIssued) {
+	var between = businessTimeBetween(dateIssued, new Date());
+	if (between.neg || between.days >= ALLOWED_CHALLENGE_DAYS)
+		return true;
+	else
+		return false;
+}
+
+function businessTimeBetween(date1, date2) {	
+	var between = {
+		days: 0,
+		hours: 0,
+		minutes: 0,
+		seconds: 0,
+		neg: false
+	};
+	
+	// Improper date range
+	if (date1 >= date2) {
+		between.days = 0;
+		between.neg = true;
+	} else {
+		while (true) {
+			// Have we checked the whole range?
+			if (   date1.getDay() == date2.getDay() 
+				&& date1.getMonth() == date2.getMonth() 
+				&& date1.getYear() == date2.getYear()) {
+				break;
+			}
+			
+			// Are we looking at a week day?
+			if (date1.getDay() != 0 && date1.getDay() != 6)
+				between.days++;
+			
+			// Looks at next day
+			date1.setDate(date1.getDate()+1);
+		}
+	}
+	
+	var timeBetween = timeBetweens(date1, date2);
+	between.hours = timeBetween.hours;
+	between.minutes = timeBetween.minutes;
+	between.seconds = timeBetween.seconds;
+	
+	return between;
+}
+
+function timeBetweens(date1, date2) {
+	var between = {
+		hours: 0,
+		minutes: 0,
+		seconds: 0
+	};
+	var diff =  Math.abs(date2 - date1);
+	var seconds = Math.floor(diff/1000);
+	var minutes = Math.floor(seconds/60); 
+	var hours = Math.floor(minutes/60);
+	between.seconds = seconds % 60;
+	between.minutes = minutes % 60;
+	between.hours = hours % 24;
+	return between;
+}
 
 /*
  * Determines if a given player is eligible to issue challenges.
