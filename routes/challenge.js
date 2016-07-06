@@ -35,6 +35,11 @@ router.post('/', function(req, res, next) {
 				// Not allowed to issue challenges
 				return next(new Error(message));
 			} else {
+				// Not allowed to issue challenges on weekends
+				var today = new Date();
+				if (today.getDay() == 0 || today.getDay() == 6)
+					return next(new Error('You can only issue challenges on business days.'));
+				
 				// Grabs player info on both challenge participants
 				Player.findById(challengerId, function(err, challenger) {
 					if (err)
@@ -267,68 +272,51 @@ function challengeExists(playerId1, playerId2, callback) {
 	});
 }
 
+/*
+ * Determines if the given challenge issue date should be forfeited.
+ *
+ * @param: dateIssued - date the challenge was issued
+ */
 var ALLOWED_CHALLENGE_DAYS = 3;
 function hasForfeit(dateIssued) {
-	var between = businessTimeBetween(dateIssued, new Date());
-	if (between.neg || between.days >= ALLOWED_CHALLENGE_DAYS)
+	var expires = addBusinessDays(dateIssued, ALLOWED_CHALLENGE_DAYS);
+	// Challenge expired before today
+	if (expires < new Date())
 		return true;
 	else
 		return false;
 }
 
-function businessTimeBetween(date1, date2) {	
-	var between = {
-		days: 0,
-		hours: 0,
-		minutes: 0,
-		seconds: 0,
-		neg: false
-	};
+/*
+ * Adds business days to a date.
+ *
+ * @param: date - the starting date
+ * @param: days - number of days to add
+ */
+function addBusinessDays(date, days) {
+	// Bad Inputs
+	if (!days || days == 0)
+		return date;
 	
-	// Improper date range
-	if (date1 >= date2) {
-		between.days = 0;
-		between.neg = true;
-	} else {
-		while (true) {
-			// Have we checked the whole range?
-			if (   date1.getDay() == date2.getDay() 
-				&& date1.getMonth() == date2.getMonth() 
-				&& date1.getYear() == date2.getYear()) {
-				break;
-			}
-			
-			// Are we looking at a week day?
-			if (date1.getDay() != 0 && date1.getDay() != 6)
-				between.days++;
-			
-			// Looks at next day
-			date1.setDate(date1.getDate()+1);
+	var d = date;
+	var added = 0;
+	while (added < days) {
+		// Looks at tomorrow's day
+		d.setDate(d.getDate()+1);
+		if (isBusinessDay(d)) {
+			added++;
 		}
 	}
-	
-	var timeBetween = timeBetweens(date1, date2);
-	between.hours = timeBetween.hours;
-	between.minutes = timeBetween.minutes;
-	between.seconds = timeBetween.seconds;
-	
-	return between;
+	return d;
 }
 
-function timeBetweens(date1, date2) {
-	var between = {
-		hours: 0,
-		minutes: 0,
-		seconds: 0
-	};
-	var diff =  Math.abs(date2 - date1);
-	var seconds = Math.floor(diff/1000);
-	var minutes = Math.floor(seconds/60); 
-	var hours = Math.floor(minutes/60);
-	between.seconds = seconds % 60;
-	between.minutes = minutes % 60;
-	between.hours = hours % 24;
-	return between;
+/*
+ * Determines if the given date is a business day.
+ *
+ * @param: date
+ */
+function isBusinessDay(date) {
+	return date.getDay() != 0 && date.getDay() != 6;
 }
 
 /*
