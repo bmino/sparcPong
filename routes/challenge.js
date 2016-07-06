@@ -137,13 +137,13 @@ router.delete('/revoke', function(req, res, next) {
 		return next(new Error('Both players are required to revoke a challenge.'));
 	
 	// Checks for forfeit
-	Challenge.find({challenger: challengerId, challengee: challengeeId, winner: null}, function(err, challenges) {
+	Challenge.find({challenger: challengerId, challengee: challengeeId, winner: null}).populate('challengee').exec(function(err, challenges) {
 		if (err)
 			return next(err);
 		if (!challenges || challenges.length == 0)
 			return next(new Error('Could not find the challenge.'));
 		if (hasForfeit(challenges[0].createdAt))
-			return next(new Error('This challenge has expired and must be forfeited.'));
+			return next(new Error('This challenge has expired. '+challenges[0].challengee.name+' must forfeit.'));
 		
 		Challenge.remove({challenger: challengerId, challengee: challengeeId, winner: null}, function(err, challenges) {
 			if (err) {
@@ -190,10 +190,6 @@ router.post('/resolve', function(req, res, next) {
 			console.log('Resolving challenge id ['+challengeId+']');
 		}
 		
-		// Checks for forfeit
-		if (hasForfeit(challenge))
-			return next(new Error('This challenge has expired and must be forfeited.'));
-		
 		var winner = challengerScore > challengeeScore ? challenge.challenger : challenge.challengee;
 		var loser  = challengerScore < challengeeScore ? challenge.challenger : challenge.challengee;
 		
@@ -232,8 +228,8 @@ router.post('/forfeit', function(req, res, next) {
 	Challenge.findById(challengeId, function(err, challenge) {
 		if (err)
 			return next(err);
-		if (!hasForfeit())
-			return next(new Error('This challenge has not expired.'));
+		//if (!hasForfeit(challenge.createdAt))
+		//	return next(new Error('This challenge has not expired.'));
 		swapRanks(challenge.challenger, challenge.challengee, function(err) {
 			if (err)
 				return next(err);

@@ -83,6 +83,9 @@ io.on('connection', function(socket) {
 	socket.on('challenge:revoked', function(challenge) {
 		forwardMessage('challenge:revoked', challenge);
 	});
+	socket.on('challenge:forfeited', function(challenge) {
+		forwardMessage('challenge:forfeited', challenge);
+	});
 });
 
 function forwardMessage(eventName, data) {

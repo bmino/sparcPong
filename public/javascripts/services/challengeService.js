@@ -65,6 +65,17 @@ angular.module('services')
 		return request.then( handleSuccess, handleError );
 	};
 	
+	this.forfeitChallenge = function(challengeId) {
+		var request = $http({
+			method: "post",
+			url: "api/challenge/forfeit/",
+			data: {
+				challengeId: challengeId
+			}
+		});
+		return request.then( handleSuccess, handleError );
+	};
+	
 	
 	
 	

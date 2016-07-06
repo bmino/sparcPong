@@ -77,6 +77,24 @@ angular.module('controllers')
 			}
 		);
 	}
+	$scope.forfeitChallenge = function(challenge) {
+		var confirmed = confirm('Are you sure you wish to forfeit?');
+		if (!confirmed)
+			return;
+		console.log('Forfeiting challenge');
+		challengeService.forfeitChallenge(challenge._id).then(
+			function(success) {
+				console.log(success);
+				alert(success);
+				socket.emit('challenge:forfeited', challenge);
+			},
+			function(error) {
+				console.log(error);
+				alert(error);
+			}
+		);
+	}
+	
 	
 	socket.on('challenge:issued', function(challenge) {
 		fetchChallenges();
@@ -85,6 +103,9 @@ angular.module('controllers')
 		fetchChallenges();
 	});
 	socket.on('challenge:revoked', function(challenge) {
+		fetchChallenges();
+	});
+	socket.on('challenge:forfeited', function(challenge) {
 		fetchChallenges();
 	});
 	
