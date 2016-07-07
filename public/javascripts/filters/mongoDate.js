@@ -12,9 +12,8 @@ angular.module('filters')
 		var dateTime = new Date(date + ' ' + time);
 		
 		if (!filterString)
-			filterString = 'MM/dd/yyyy h:mm:ss a';
+			filterString = 'M/d/yyyy h:mm a';
 
 		return formatDate(dateTime, filterString);
 	}
 });
-

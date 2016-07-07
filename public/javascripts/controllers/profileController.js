@@ -81,7 +81,7 @@ angular.module('controllers')
 				modalService.showAlertModal({}, modalOptions);
 			}
 		});		
-	}
+	};
 	
 	$scope.revokeChallenge = function(challenge) {
 		var modalOptions = {
@@ -114,7 +114,7 @@ angular.module('controllers')
 				}
 			);
 		});
-	}
+	};
 	$scope.forfeitChallenge = function(challenge) {
 		var modalOptions = {
             closeButtonText: 'Cancel',
@@ -146,7 +146,11 @@ angular.module('controllers')
 				}
 			);
         });
-	}
+	};
+	
+	$scope.hadForfeit = function(challenge) {
+		return !challenge.challengerScore && !challenge.challengeeScore;
+	};
 	
 	
 	socket.on('challenge:issued', function(challenge) {

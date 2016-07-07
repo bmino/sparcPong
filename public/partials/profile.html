@@ -37,16 +37,15 @@
 	<div class="history">
 		<div><span ng-hide="challenges.resolved.length > 0">No </span>History</div>
 		<div class="challenge-resolved" ng-repeat="challenge in challenges.resolved">
-			<span ng-bind="challenge.challenger.name"></span>
+			<a ng-href="#/profile/{{challenge.challenger._id}}"><span ng-bind="challenge.challenger.name"></span></a>
+			<span>({{challenge.challengerScore || '-'}})</span>
 			<span> vs </span>
-			<span ng-bind="challenge.challengee.name"></span>
-			<div class="score" ng-show="challenge.winner">
-				<span>Score</span>
-				<span ng-bind="challenge.challengerScore"></span>
-				<span>|</span>
-				<span ng-bind="challenge.challengeeScore"></span>
-			</div>
+			<a ng-href="#/profile/{{challenge.challengee._id}}"><span ng-bind="challenge.challengee.name" ></span></a>
+			<span>({{challenge.challengeeScore || 'forfeit'}})</span>
+			<br />
 			<span ng-bind="challenge.createdAt | mongoDate" ng-show="challenge.winner"></span>
+			<br />
+			<br />
 		</div>
 	</div>
 </div>
