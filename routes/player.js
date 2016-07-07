@@ -22,6 +22,7 @@ router.post('/', function(req, res, next) {
 		} else if (count != 0) {
 			return next(new Error('Player name already exists.'));
 		} else {
+			console.log('Creating new player.');
 			getLowestRank(function(err, lowestRank) {
 				if (err)
 					return next(err);
@@ -38,6 +39,7 @@ router.post('/', function(req, res, next) {
 					if (err) {
 						return next(err);
 					} else {
+						console.log('Successfully created a new player.');
 						res.json({message: 'Player created!'});
 					}
 				});
@@ -83,6 +85,11 @@ router.delete('/', function(req, res) {
 	if (!playerId)
 		return next(new Error('You must specify a player id.'));
 	
+	console.log('Deleting player with id [' + playerId + ']');
+	console.log('Deleting players is not enabled.');
+	res.json({message: 'This feature is not yet implemented.'});
+	
+	/*
 	Player.remove({_id: playerId}, function(err, player) {
 		if (err) {
 			return next(err);
@@ -90,6 +97,7 @@ router.delete('/', function(req, res) {
 			res.json({message: 'Successfully deleted player.'});
 		}
 	});
+	*/
 });
 
 
