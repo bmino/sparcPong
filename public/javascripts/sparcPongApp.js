@@ -1,5 +1,6 @@
 angular.module('sparcPongApp', [
 	'ngRoute',
+	'ui.bootstrap',
 	'filters',
 	'services',
 	'directives',

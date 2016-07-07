@@ -32,6 +32,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Include scripts
+app.use('/bower', express.static(path.join(__dirname, 'bower_components')));
+
 app.use('/', routes);
 app.use('/api/player', player);
 app.use('/api/challenge', challenge);

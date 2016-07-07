@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('profileController', ['$scope', '$routeParams', 'socket', 'playerService', 'challengeService', function($scope, $routeParams, socket, playerService, challengeService) {
+.controller('profileController', ['$scope', '$routeParams', 'socket', 'modalService', 'playerService', 'challengeService', function($scope, $routeParams, socket, modalService, playerService, challengeService) {
 	
 	$scope.profileId;
 	$scope.challenges = {
@@ -78,6 +78,17 @@ angular.module('controllers')
 		);
 	}
 	$scope.forfeitChallenge = function(challenge) {
+		var modalOptions = {
+            closeButtonText: 'Cancel',
+            actionButtonText: 'Forfeit',
+            headerText: 'Forfeit to ' + challenge.challengee.name + '?',
+            bodyText: 'Are you sure you wish to forfeit?'
+        };
+
+        modalService.showModal({}, modalOptions).then(function (result) {
+            console.log(result);
+        });
+		
 		var confirmed = confirm('Are you sure you wish to forfeit?');
 		if (!confirmed)
 			return;
