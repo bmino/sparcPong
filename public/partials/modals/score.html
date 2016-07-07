@@ -4,7 +4,7 @@
 <div class="modal-body">
 	<div class="scoreContainer">
 		<label for="challengerScore" class="score">{{modalOptions.challenge.challenger.name}}</label>
-		<input type="number" id="challengerScore" class="score" ng-model="modalOptions.challenge.challengerScore" />
+		<input type="number" id="challengerScore" class="score" ng-model="modalOptions.challenge.challengerScore" focus-first />
 		<br />
 		<br />
 		<label for="challengeeScore" class="score">{{modalOptions.challenge.challengee.name}}</label>
@@ -15,7 +15,7 @@
 	<button type="button" class="btn" data-ng-click="modalOptions.close()">
 		{{modalOptions.closeButtonText}}
 	</button>
-	<button class="btn btn-primary" data-ng-click="modalOptions.ok(modalOptions);">
+	<button class="btn btn-primary" data-ng-click="modalOptions.ok(modalOptions)">
 		{{modalOptions.actionButtonText}}
 	</button>
 </div>
