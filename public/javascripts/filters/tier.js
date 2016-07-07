@@ -42,4 +42,3 @@ angular.module('filters')
 		return getRanks(tier, ++currentTier, lastRank, ranks);
 	}
 });
-

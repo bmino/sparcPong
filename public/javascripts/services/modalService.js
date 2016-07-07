@@ -14,9 +14,15 @@ angular.module('services')
 		headerText: 'Proceed?',
 		bodyText: 'Perform this action?'
 	};
-
-	this.showConfirmModal = function(customModalDefaults, customModalOptions) {
-		customModalDefaults.templateUrl = '/partials/modals/confirm.html';
+	
+	this.showAlertModal = function(customModalDefaults, customModalOptions) {
+		customModalDefaults.templateUrl = '/partials/modals/alert.html';
+		customModalOptions.actionButtonText = 'OK';
+		return this.showModal(customModalDefaults, customModalOptions);
+	}
+	
+	this.showScoreModal = function(customModalDefaults, customModalOptions) {
+		customModalDefaults.templateUrl = '/partials/modals/score.html';
 		return this.showModal(customModalDefaults, customModalOptions);
 	}
 	

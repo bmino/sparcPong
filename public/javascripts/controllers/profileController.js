@@ -13,9 +13,9 @@ angular.module('controllers')
 	function init() {
 		$scope.profileId = $routeParams.playerId;
 		console.log('Fetching profile for ' + $scope.profileId);
-		playerService.getPlayer($scope.profileId).then( function(player) {
+		playerService.getPlayer($scope.profileId).then(function(player) {
 			if (!player) {
-				console.log('Could fetch profile');
+				console.log('Could not fetch profile');
 			} else {
 				console.log('Found profile');
 				$scope.profile = player;
@@ -41,69 +41,111 @@ angular.module('controllers')
 		$scope.challenges.resolved = challenges;
 	}
 	
-	$scope.resolveChallenge = function(challenge) {
-		console.log(challenge);
-		console.log();
-		var challengerScore = window.prompt(challenge.challenger.name + " score:", 0);
-		var challengeeScore = window.prompt(challenge.challengee.name + " score:", 0);
-		
-		if (challengerScore && challengeeScore) {
-			challengeService.resolveChallenge(challenge._id, challengerScore, challengeeScore).then(
-				function(success) {
-					console.log(success);
-					socket.emit('challenge:resolved', challenge);
-				},
-				function(error) {
-					console.log(error);
-					alert(error);
-				}
-			);
-		} else {
-			alert('You must give valid scores for both players');
-		}
+	$scope.resolveChallenge = function(challenge) {		
+		var modalOptions = {
+			headerText: 'Resolve Challenge',
+			challenge: challenge
+		};
+		modalService.showScoreModal({}, modalOptions).then(function(result) {
+			if (!result)
+				return;
+			console.log('Resolving challenge');
+			var challengerScore = result.challenge.challengerScore;
+			var challengeeScore = result.challenge.challengeeScore;
+			
+			if (challengerScore && challengeeScore) {
+				challengeService.resolveChallenge(challenge._id, challengerScore, challengeeScore).then(
+					function(success) {
+						console.log(success);
+						socket.emit('challenge:resolved', challenge);
+						var modalOptions = {
+							headerText: 'Resolve Challenge',
+							bodyText: success
+						};
+						modalService.showAlertModal({}, modalOptions);
+					},
+					function(error) {
+						console.log(error);
+						var modalOptions = {
+							headerText: 'Resolve Challenge',
+							bodyText: error
+						};
+						modalService.showAlertModal({}, modalOptions);
+					}
+				);
+			} else {
+				var modalOptions = {
+					headerText: 'Resolve Challenge',
+					bodyText: 'You must give valid scores for both players.'
+				};
+				modalService.showAlertModal({}, modalOptions);
+			}
+		});		
 	}
 	
 	$scope.revokeChallenge = function(challenge) {
-		console.log('Revoking challenge');
-		challengeService.revokeChallenge(challenge.challenger._id, challenge.challengee._id).then(
-			function(success) {
-				console.log(success);
-				alert(success);
-				socket.emit('challenge:revoked', challenge);
-			},
-			function(error) {
-				console.log(error);
-				alert(error);
-			}
-		);
+		var modalOptions = {
+            closeButtonText: 'Cancel',
+            actionButtonText: 'Revoke Challenge',
+            headerText: 'Revoke',
+            bodyText: 'Are you sure you wish to revoke this challenge?'
+        };
+        modalService.showModal({}, modalOptions).then(function (okay) {
+			if (!okay)
+				return;
+			console.log('Revoking challenge');
+			challengeService.revokeChallenge(challenge.challenger._id, challenge.challengee._id).then(
+				function(success) {
+					console.log(success);
+					socket.emit('challenge:revoked', challenge);
+					var modalOptions = {
+						headerText: 'Revoke Challenge',
+						bodyText: success
+					};
+					modalService.showAlertModal({}, modalOptions);
+				},
+				function(error) {
+					console.log(error);
+					var modalOptions = {
+						headerText: 'Revoke Challenge',
+						bodyText: error
+					};
+					modalService.showAlertModal({}, modalOptions);
+				}
+			);
+		});
 	}
 	$scope.forfeitChallenge = function(challenge) {
 		var modalOptions = {
             closeButtonText: 'Cancel',
-            actionButtonText: 'Forfeit',
-            headerText: 'Forfeit to ' + challenge.challengee.name + '?',
-            bodyText: 'Are you sure you wish to forfeit?'
+            actionButtonText: 'Forfeit Challenge',
+            headerText: 'Forfeit',
+            bodyText: 'Are you sure you wish to forfeit to '+challenge.challengee.name +'?'
         };
-
-        modalService.showModal({}, modalOptions).then(function (result) {
-            console.log(result);
+        modalService.showModal({}, modalOptions).then(function (okay) {
+			if (!okay)
+				return;
+			console.log('Forfeiting challenge');
+			challengeService.forfeitChallenge(challenge._id).then(
+				function(success) {
+					console.log(success);
+					socket.emit('challenge:forfeited', challenge);
+					var modalOptions = {
+						headerText: 'Forfeit Challenge',
+						bodyText: success
+					};
+					modalService.showAlertModal({}, modalOptions);
+				},
+				function(error) {
+					console.log(error);
+					var modalOptions = {
+						headerText: 'Forfeit Challenge',
+						bodyText: error
+					};
+					modalService.showAlertModal({}, modalOptions);
+				}
+			);
         });
-		
-		var confirmed = confirm('Are you sure you wish to forfeit?');
-		if (!confirmed)
-			return;
-		console.log('Forfeiting challenge');
-		challengeService.forfeitChallenge(challenge._id).then(
-			function(success) {
-				console.log(success);
-				alert(success);
-				socket.emit('challenge:forfeited', challenge);
-			},
-			function(error) {
-				console.log(error);
-				alert(error);
-			}
-		);
 	}
 	
 	

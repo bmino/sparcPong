@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('newPlayerController', ['$scope', 'socket', 'playerService', function($scope, socket, playerService) {
+.controller('newPlayerController', ['$scope', 'socket', 'modalService', 'playerService', function($scope, socket, modalService, playerService) {
 
 	$scope.player = {
 		name: '',
@@ -12,13 +12,21 @@ angular.module('controllers')
 			function (success) {
 				// Successfully created a new player.
 				console.log(success);
-				alert('Successfully created a new player.');
 				socket.emit('player:new', $scope.player);
+				var modalOptions = {
+					headerText: 'New Player',
+					bodyText: success
+				};
+				modalService.showAlertModal({}, modalOptions);
 			},
 			function (failure) {
 				// Did not create a new player.
 				console.log(failure);
-				alert(failure);
+				var modalOptions = {
+					headerText: 'New Player',
+					bodyText: failure
+				};
+				modalService.showAlertModal({}, modalOptions);
 			}
 		);
 	}
