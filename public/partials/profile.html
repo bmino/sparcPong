@@ -9,13 +9,9 @@
 	<div class="challenges">
 		<div><span ng-hide="challenges.incoming.length > 0">No </span>Incoming Challenges</div>
 		<div class="challenge-incoming" ng-repeat="challenge in challenges.incoming">
-			<span ng-bind="challenge.challenger.name"></span>
-			<span> vs </span>
-			<span ng-bind="challenge.challengee.name"></span>
-			<span>Challenged: </span>
-			<span ng-bind="challenge.createdAt | mongoDate"></span>
-			[<time-gap date="challenge.createdAt" type="since"></time-gap>]
-			[<time-gap date="challenge.createdAt" type="until"></time-gap>]
+			<a ng-href="#/profile/{{challenge.challenger._id}}" ng-bind="challenge.challenger.name"></a>
+			<span>Until Forfeit: </span>
+			[<until-forfeit date="challenge.createdAt"></until-forfeit>]
 			<button logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
 			<button logged-in="challenge.challenger._id" ng-click="revokeChallenge(challenge)">Revoke</button>
 			<button logged-in="challenge.challengee._id" ng-click="forfeitChallenge(challenge)">Forfeit</button>
@@ -26,11 +22,9 @@
 		
 		<div><span ng-hide="challenges.outgoing.length > 0">No </span>Outgoing Challenges</div>
 		<div class="challenge-outgoing" ng-repeat="challenge in challenges.outgoing">
-			<span ng-bind="challenge.challenger.name"></span>
-			<span> vs </span>
-			<span ng-bind="challenge.challengee.name"></span>
-			<span>Challenged: </span>
-			<span ng-bind="challenge.createdAt | mongoDate"></span>
+			<a ng-href="#/profile/{{challenge.challengee._id}}" ng-bind="challenge.challengee.name"></a>
+			<span>Until Forfeit: </span>
+			[<until-forfeit date="challenge.createdAt"></until-forfeit>]
 			<button logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
 			<button logged-in="challenge.challenger._id" ng-click="revokeChallenge(challenge)">Revoke</button>
 			<button logged-in="challenge.challengee._id" ng-click="forfeitChallenge(challenge)">Forfeit</button>

@@ -32,7 +32,6 @@ router.post('/', function(req, res, next) {
 			if (err)
 				return next(err);
 			if (!allowed) {
-				// Not allowed to issue challenges
 				return next(new Error(message));
 			} else {
 				// Not allowed to issue challenges on weekends
@@ -225,21 +224,32 @@ router.post('/forfeit', function(req, res, next) {
 	var challengeId = req.body.challengeId;
 	if (!challengeId)
 		return next(new Error('This is not a valid challenge id.'));
-	Challenge.findById(challengeId, function(err, challenge) {
+	Challenge.findById(challengeId).populate('challenger').populate('challengee').exec(function(err, challenge) {
 		if (err)
 			return next(err);
 		//if (!hasForfeit(challenge.createdAt))
 		//	return next(new Error('This challenge has not expired.'));
-		swapRanks(challenge.challenger, challenge.challengee, function(err) {
-			if (err)
-				return next(err);
-			
-			// Challenger wins in the event of a forfeit
-			challenge.winner = challenge.challenger;
-			challenge.save();
-			
-			res.json({message: 'Challenge successfully forfeited.'});
-		});
+	
+		console.log('Forfeiting challenge id ['+challengeId+']');
+	
+		// Is a rank adjustment needed?
+		var winner = challenge.challenger;
+		var forfeiter = challenge.challengee;
+		if (winner.rank < forfeiter.rank) {
+			console.log('Swapping rankings between ' + winner.name + ' and ' + forfeiter.name);
+			swapRanks(winner._id, forfeiter._id, function(err) {
+				if (err)
+					return next(err);
+				
+				// Challenger wins in the event of a forfeit
+				challenge.winner = winner._id;
+				challenge.save();
+				
+				res.json({message: 'Challenge successfully forfeited.'});
+			});
+		} else {
+			console.log('Swapping rankings is not required.');
+		}
 	});
 });
 
@@ -294,7 +304,7 @@ function addBusinessDays(date, days) {
 	if (!days || days == 0)
 		return date;
 	
-	var d = date;
+	var d = new Date(date.getTime());
 	var added = 0;
 	while (added < days) {
 		// Looks at tomorrow's day
