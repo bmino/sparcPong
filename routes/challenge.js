@@ -206,12 +206,12 @@ router.post('/resolve', function(req, res, next) {
 				if (err)
 					return next(err);
 				console.log('Swapping rankings completed successfully.');
+				res.json({message: 'Successfully resolved challenge.'});
 			});
 		} else {
 			console.log('Swapping rankings is not required.');
+			res.json({message: 'Successfully resolved challenge.'});
 		}
-		
-		res.json({message: 'Successfully resolved challenge.'});
 	});
 });
 
@@ -231,24 +231,23 @@ router.post('/forfeit', function(req, res, next) {
 		//	return next(new Error('This challenge has not expired.'));
 	
 		console.log('Forfeiting challenge id ['+challengeId+']');
-	
-		// Is a rank adjustment needed?
+		
+		// Challenger wins in the event of a forfeit
 		var winner = challenge.challenger;
-		var forfeiter = challenge.challengee;
-		if (winner.rank < forfeiter.rank) {
-			console.log('Swapping rankings between ' + winner.name + ' and ' + forfeiter.name);
-			swapRanks(winner._id, forfeiter._id, function(err) {
+		var loser = challenge.challengee;
+		challenge.winner = winner._id;
+		challenge.save();
+		
+		if (loser.rank < winner.rank) {
+			console.log('Swapping rankings between ' + winner.name + ' and ' + loser.name);
+			swapRanks(winner._id, loser._id, function(err) {
 				if (err)
 					return next(err);
-				
-				// Challenger wins in the event of a forfeit
-				challenge.winner = winner._id;
-				challenge.save();
-				
 				res.json({message: 'Challenge successfully forfeited.'});
 			});
 		} else {
 			console.log('Swapping rankings is not required.');
+			res.json({message: 'Challenge successfully forfeited.'});
 		}
 	});
 });
