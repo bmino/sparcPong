@@ -32,7 +32,7 @@ angular.module('controllers')
 		} else {
 			var myId = player._id;
 			challengeService.createChallenge(myId, challengeeId).then( goodChallenge, badChallenge );
-		}	
+		}
 	}
 	function goodChallenge(success) {
 		console.log('Challenge issued.');
@@ -42,7 +42,13 @@ angular.module('controllers')
 		console.log('Challenge not issued.');
 	}
 	
+	socket.on('player:new', function(player) {
+		populatePlayers();
+	});
 	socket.on('challenge:resolved', function(challenge) {
+		populatePlayers();
+	});
+	socket.on('challenge:forfeited', function(challenge) {
 		populatePlayers();
 	});
 }]);
