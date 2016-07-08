@@ -81,14 +81,14 @@
 						
 						<!-- Navigation Links -->
 						<li role="presentation"><a href="#/board">Board</a></li>
+						<li role="presentation" logged-in>
+							<a ng-href="#/profile/{{myClient.player._id}}">Profile</a>
+						</li>
 						<li role="presentation" class="dropdown">
 							<a class="dropdown-toggle" data-toggle="dropdown" role="button">New <span class="caret"></span></a>
 							<ul class="dropdown-menu">
-								<li role="presentation"><a ng-href="#/create/newPlayer">New Player</a></li>
+								<li role="presentation"><a ng-href="#/create/newPlayer">Player</a></li>
 							</ul>
-							<li role="presentation" ng-show="myClient.player">
-								<a ng-href="#/profile/{{myClient.player._id}}">Profile</a>
-							</li>
 						</li>
 					</ul>
 					
@@ -97,7 +97,10 @@
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container-fluid -->
 		</nav>
-			
+		
+		<div class="page-header">
+			<h1 ng-bind="pageTitle"></h1>
+		</div>
 		
 		<!-- Injected with Partials -->
 		<div ng-view></div>

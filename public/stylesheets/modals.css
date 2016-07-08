@@ -1,3 +1,4 @@
+/* Score */
 .modal-body .scoreContainer {
 	width: 70%;
 	margin-left: auto;
@@ -7,4 +8,13 @@
 	width: 5em;
 	text-align: center;
 	float: right;
+}
+
+
+/* Sign In */
+.modal-body .signInContainer select {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
 }
