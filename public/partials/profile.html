@@ -1,11 +1,4 @@
 <div class="profile">
-	<div class="header">
-		<span>Profile for: <span ng-bind="profile.name"></span></span>
-	</div>
-	
-	<br />
-	<br />
-	
 	<div class="challenges">
 		<div><span ng-hide="challenges.incoming.length > 0">No </span>Incoming Challenges</div>
 		<div class="challenge-incoming" ng-repeat="challenge in challenges.incoming">

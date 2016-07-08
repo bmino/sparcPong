@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('profileController', ['$scope', '$routeParams', 'socket', 'modalService', 'playerService', 'challengeService', function($scope, $routeParams, socket, modalService, playerService, challengeService) {
+.controller('profileController', ['$scope', '$rootScope', '$routeParams', 'socket', 'modalService', 'playerService', 'challengeService', function($scope, $rootScope, $routeParams, socket, modalService, playerService, challengeService) {
 	
 	$scope.profileId;
 	$scope.challenges = {
@@ -11,6 +11,7 @@ angular.module('controllers')
 	init();
 	
 	function init() {
+		$rootScope.pageTitle = 'Profile'; // Appended later with player name
 		$scope.profileId = $routeParams.playerId;
 		console.log('Fetching profile for ' + $scope.profileId);
 		playerService.getPlayer($scope.profileId).then(function(player) {
@@ -18,6 +19,7 @@ angular.module('controllers')
 				console.log('Could not fetch profile');
 			} else {
 				console.log('Found profile');
+				$rootScope.pageTitle = 'Profile - ' + player.name;
 				$scope.profile = player;
 			}
 		});

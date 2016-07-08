@@ -1,13 +1,12 @@
-<div>Adding new player</div>
-<br />
-
-<form ng-submit="createPlayer()">
-	<label for="name">Username</label>
-	<input id ="name" type="string" ng-model="player.name" focus-first /><br />
-	<label for="number">Phone Number</label>
-	<input id ="number" type="number" ng-model="player.phone" /><br />
-	<label for="email">Email</label>
-	<input id ="email" type="string" ng-model="player.email" /><br />
-	<br />
-	<input type="submit" value="Create"/>
-</form>
+<div class="newPlayer">
+	<form ng-submit="createPlayer()">
+		<label for="name">Username</label>
+		<input id ="name" type="string" ng-model="player.name" focus-first /><br />
+		<label for="number">Phone Number</label>
+		<input id ="number" type="number" ng-model="player.phone" /><br />
+		<label for="email">Email</label>
+		<input id ="email" type="string" ng-model="player.email" /><br />
+		<br />
+		<input type="submit" value="Create"/>
+	</form>
+</div>

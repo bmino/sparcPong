@@ -4,6 +4,7 @@ angular.module('controllers')
 	init();
 	
 	function init() {
+		$rootScope.pageTitle = 'Board';
 		// TODO: implement a better solution than guessing big at 12 tiers
 		generateTiers(12);
 		populatePlayers();

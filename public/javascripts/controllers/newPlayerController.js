@@ -1,11 +1,17 @@
 angular.module('controllers')
-.controller('newPlayerController', ['$scope', 'socket', 'modalService', 'playerService', function($scope, socket, modalService, playerService) {
+.controller('newPlayerController', ['$scope', '$rootScope', 'socket', 'modalService', 'playerService', function($scope, $rootScope, socket, modalService, playerService) {
 
 	$scope.player = {
 		name: '',
 		phone: null,
 		email: ''
 	};
+	
+	init();
+	
+	function init() {
+		$rootScope.pageTitle = 'New Player';
+	}
 	
 	$scope.createPlayer = function() {
 		playerService.createPlayer($scope.player.name, $scope.player.phone, $scope.player.email).then(
