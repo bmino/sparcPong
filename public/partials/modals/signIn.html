@@ -1,0 +1,18 @@
+<div class="modal-header">
+	<h3>{{modalOptions.headerText}}</h3>
+</div>
+<div class="modal-body">
+	<div class="signInContainer">
+		<select class="choose-username" ng-options="player.name for player in modalOptions.players" ng-model="player">
+			<option value=""> -- choose username -- </option>
+		</select>
+	</div>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn" data-ng-click="modalOptions.close()">
+		{{modalOptions.closeButtonText}}
+	</button>
+	<button class="btn btn-primary" data-ng-click="modalOptions.ok(player)">
+		{{modalOptions.actionButtonText}}
+	</button>
+</div>

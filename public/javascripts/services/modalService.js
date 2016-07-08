@@ -26,6 +26,11 @@ angular.module('services')
 		return this.showModal(customModalDefaults, customModalOptions);
 	}
 	
+	this.showSignInModal = function(customModalDefaults, customModalOptions) {
+		customModalDefaults.templateUrl = '/partials/modals/signIn.html';
+		return this.showModal(customModalDefaults, customModalOptions);
+	}	
+	
 	this.showModal = function (customModalDefaults, customModalOptions) {
 		if (!customModalDefaults) customModalDefaults = {};
 		customModalDefaults.backdrop = 'static';

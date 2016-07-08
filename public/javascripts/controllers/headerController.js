@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('headerController', ['$scope', '$rootScope', 'socket', 'playerService', function($scope, $rootScope, socket, playerService) {
+.controller('headerController', ['$scope', '$rootScope', 'socket', 'modalService', 'playerService', function($scope, $rootScope, socket, modalService, playerService) {
 
 	$scope.player;
 	$scope.clients;
@@ -12,7 +12,7 @@ angular.module('controllers')
 	}
 	
 	function populateUserList() {
-		$scope.playerNames = playerService.getPlayers().then(function (players) {
+		playerService.getPlayers().then(function (players) {
 			// Alphabetize and return
 			$scope.players = players.sort(function(a,b) {
 				return a.name.localeCompare(b.name);
@@ -20,11 +20,41 @@ angular.module('controllers')
 		});
 	}
 	
-	$scope.selectUser = function(player) {
-		$rootScope.myClient.player = player;
-		console.log('Set root player to:');
-		console.log($rootScope.myClient.player);
-	}
+	$scope.changeUser = function() {
+		var modalOptions;
+		if ($rootScope.myClient.player) {
+			// Sign Out
+			$rootScope.myClient = {};
+			modalOptions = {
+				headerText: 'Sign Out',
+				bodyText: 'Successfully logged out'
+			};
+			modalService.showAlertModal({}, modalOptions);
+			
+		} else {
+			// Sign In
+			modalOptions = {
+				headerText: 'Sign In',
+				closeButtonText: 'Cancel',
+				actionButtonText: 'Sign In',
+				players: $scope.players
+			};
+			modalService.showSignInModal({}, modalOptions).then(function(player) {
+				if (!player)
+					return;
+				
+				$rootScope.myClient.player = player;
+				console.log('Signed in as:');
+				console.log($rootScope.myClient.player);
+				
+				modalOptions = {
+					headerText: 'Sign In',
+					bodyText: 'Successfully logged in as '+$rootScope.myClient.player.name
+				};
+				modalService.showAlertModal({}, modalOptions);
+			});
+		}
+	};
 	
 	socket.on('player:new', function(player) {
 		console.log('New user detected.');
