@@ -1,26 +1,38 @@
 <div class="profile">
 	<div class="challenges">
-		<div><span ng-hide="challenges.incoming.length > 0">No </span>Incoming Challenges</div>
-		<div class="challenge-incoming" ng-repeat="challenge in challenges.incoming">
-			<a ng-href="#/profile/{{challenge.challenger._id}}" ng-bind="challenge.challenger.name"></a>
-			<span>Until Forfeit: </span>
-			[<until-forfeit date="challenge.createdAt"></until-forfeit>]
-			<button logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
-			<button logged-in="challenge.challenger._id" ng-click="revokeChallenge(challenge)">Revoke</button>
-			<button logged-in="challenge.challengee._id" ng-click="forfeitChallenge(challenge)">Forfeit</button>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">{{challenges.incoming.length == 0 ? 'No' : challenges.incoming.length}} Incoming Challenges</h3>
+			</div>
+			<ul class="list-group">
+				<li class="list-group-item challenge-incoming" ng-repeat="challenge in challenges.incoming">
+					<a ng-href="#/profile/{{challenge.challenger._id}}" ng-bind="challenge.challenger.name"></a>
+					<span>Until Forfeit: </span>
+					[<until-forfeit date="challenge.createdAt"></until-forfeit>]
+					<button logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
+					<button logged-in="challenge.challenger._id" ng-click="revokeChallenge(challenge)">Revoke</button>
+					<button logged-in="challenge.challengee._id" ng-click="forfeitChallenge(challenge)">Forfeit</button>
+				</li>
+			</ul>
 		</div>
 		
 		<br />
 		<br />
 		
-		<div><span ng-hide="challenges.outgoing.length > 0">No </span>Outgoing Challenges</div>
-		<div class="challenge-outgoing" ng-repeat="challenge in challenges.outgoing">
-			<a ng-href="#/profile/{{challenge.challengee._id}}" ng-bind="challenge.challengee.name"></a>
-			<span>Until Forfeit: </span>
-			[<until-forfeit date="challenge.createdAt"></until-forfeit>]
-			<button logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
-			<button logged-in="challenge.challenger._id" ng-click="revokeChallenge(challenge)">Revoke</button>
-			<button logged-in="challenge.challengee._id" ng-click="forfeitChallenge(challenge)">Forfeit</button>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">{{challenges.outgoing.length == 0 ? 'No' : challenges.outgoing.length}} Outgoing Challenges</h3>
+			</div>
+			<ul class="list-group">
+				<li class="list-group-item challenge-outgoing" ng-repeat="challenge in challenges.outgoing">
+					<a ng-href="#/profile/{{challenge.challengee._id}}" ng-bind="challenge.challengee.name"></a>
+					<span>Until Forfeit: </span>
+					[<until-forfeit date="challenge.createdAt"></until-forfeit>]
+					<button logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
+					<button logged-in="challenge.challenger._id" ng-click="revokeChallenge(challenge)">Revoke</button>
+					<button logged-in="challenge.challengee._id" ng-click="forfeitChallenge(challenge)">Forfeit</button>
+				</li>
+			</ul>
 		</div>
 	</div>
 	
@@ -28,17 +40,21 @@
 	<br />
 	
 	<div class="history">
-		<div><span ng-hide="challenges.resolved.length > 0">No </span>History</div>
-		<div class="challenge-resolved" ng-repeat="challenge in challenges.resolved">
-			<a ng-href="#/profile/{{challenge.challenger._id}}"><span ng-bind="challenge.challenger.name"></span></a>
-			<span>({{challenge.challengerScore || '-'}})</span>
-			<span> vs </span>
-			<a ng-href="#/profile/{{challenge.challengee._id}}"><span ng-bind="challenge.challengee.name" ></span></a>
-			<span>({{challenge.challengeeScore || 'forfeit'}})</span>
-			<br />
-			<span ng-bind="challenge.createdAt | mongoDate" ng-show="challenge.winner"></span>
-			<br />
-			<br />
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">{{challenges.resolved.length == 0 ? 'No' : challenges.resolved.length}} Ranked Matches</h3>
+			</div>
+			<ul class="list-group">
+				<li class="list-group-item challenge-resolved" ng-repeat="challenge in challenges.resolved">
+					<a ng-href="#/profile/{{challenge.challenger._id}}"><span ng-bind="challenge.challenger.name"></span></a>
+					<span>({{challenge.challengerScore || '-'}})</span>
+					<span> vs </span>
+					<a ng-href="#/profile/{{challenge.challengee._id}}"><span ng-bind="challenge.challengee.name" ></span></a>
+					<span>({{challenge.challengeeScore || 'forfeit'}})</span>
+					<br />
+					<span ng-bind="challenge.createdAt | mongoDate" ng-show="challenge.winner"></span>
+				</li>
+			</ul>
 		</div>
 	</div>
 </div>

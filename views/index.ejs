@@ -64,8 +64,8 @@
 		
 	</head>
 	<body ng-app="sparcPongApp">
-		<nav class="navbar navbar-default" ng-controller="headerController">
-			<div class="container-fluid">
+		<nav class="navbar navbar-default navbar-fixed-top" ng-controller="headerController">
+			<div class="container">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
 						<span class="sr-only">Toggle navigation</span>
@@ -76,26 +76,41 @@
 					<!--<a class="navbar-brand"></a-->
 				</div>
 
-				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<div class="navbar-collapse collapse" id="bs-example-navbar-collapse-1">
+					
+					<!-- Navigation Links -->
 					<ul class="nav navbar-nav">
-						
-						<!-- Navigation Links -->
 						<li role="presentation"><a href="#/board">Board</a></li>
 						<li role="presentation" logged-in>
 							<a ng-href="#/profile/{{myClient.player._id}}">Profile</a>
 						</li>
+						<!-- New Links -->
 						<li role="presentation" class="dropdown">
 							<a class="dropdown-toggle" data-toggle="dropdown" role="button">New <span class="caret"></span></a>
 							<ul class="dropdown-menu">
 								<li role="presentation"><a ng-href="#/create/newPlayer">Player</a></li>
 							</ul>
 						</li>
+						<!-- Info Links -->
+						<li role="presentation" class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" role="button">Info <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li role="presentation"><a ng-href="#/info/challenge">Challenges</a></li>
+								<li role="presentation"><a ng-href="#/info/rules">Game Rules</a></li>
+							</ul>
+						</li>
+						
 					</ul>
 					
 					<!-- Sign In/Out -->
-					<button type="button" class="btn btn-default navbar-btn" ng-click="changeUser()" ng-bind="myClient.player ? 'Sign Out' : 'Sign In'">Sign In</button>
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							<button type="button" class="btn btn-default navbar-btn" ng-click="changeUser()" ng-bind="myClient.player ? 'Sign Out' : 'Sign In'">Sign In</button>
+						</li>
+					</ul>
+					
 				</div><!-- /.navbar-collapse -->
-			</div><!-- /.container-fluid -->
+			</div><!-- /.container -->
 		</nav>
 		
 		<div class="page-header">
