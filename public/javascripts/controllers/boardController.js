@@ -30,11 +30,11 @@ angular.module('controllers')
 			var modalOptions = {
 				actionButtonText: 'OK',
 				headerText: 'Challenge',
-				bodyText: 'You must select your username.'
+				bodyText: 'You must sign in first.'
 			};
 			modalService.showAlertModal({}, modalOptions).then(function(result) {
 				// Defined @ globals/functions.js
-				flash($(".choose-username"), 3);
+				flash($("#signInOut"), 2);
 			});
 		} else {
 			var myId = player._id;
