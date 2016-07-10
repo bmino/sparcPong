@@ -14,7 +14,7 @@ var mongoose = require('mongoose');
 require('./models/Player');
 require('./models/Challenge');
 
-var db_uri = 'mongodb://localhost/pongers';
+var db_uri = process.env.MONGODB_URI || 'mongodb://localhost/pongers';
 mongoose.connect(db_uri);
 
 
