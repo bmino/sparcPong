@@ -6,7 +6,7 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
-var socketPort = 4200;
+var socketPort = process.env.PORT || 4200;
 
 // Mongo
 var mongoose = require('mongoose');
