@@ -2,11 +2,11 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+server.listen(4200);
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
-var socketPort = process.env.PORT || 4200;
 
 // Mongo
 var mongoose = require('mongoose');
@@ -56,8 +56,6 @@ app.use(function(err, req, res, next) {
 	});
 });
 
-// Socket Handling
-server.listen(socketPort);
 
 // Socket Tracking Variables
 var clients = 0;
