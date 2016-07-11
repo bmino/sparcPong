@@ -11,7 +11,6 @@ angular.module('controllers')
 	init();
 	
 	function init() {
-		$rootScope.pageTitle = 'Profile'; // Appended later with player name
 		$scope.profileId = $routeParams.playerId;
 		console.log('Fetching profile for ' + $scope.profileId);
 		playerService.getPlayer($scope.profileId).then(function(player) {
@@ -19,7 +18,7 @@ angular.module('controllers')
 				console.log('Could not fetch profile');
 			} else {
 				console.log('Found profile');
-				$rootScope.pageTitle = 'Profile - ' + player.name;
+				$rootScope.pageTitle = player.name;
 				$scope.profile = player;
 			}
 		});

@@ -3,9 +3,11 @@
 </div>
 <div class="modal-body">
 	<div class="signInContainer">
-		<select class="choose-username" ng-options="player.name for player in modalOptions.players" ng-model="player" focus-first>
-			<option value=""> -- choose username -- </option>
-		</select>
+		<div class="form-group">
+			<select class="form-control choose-username" ng-options="player.name for player in modalOptions.players" ng-model="player" focus-first>
+				<option value=""> Select your user name. </option>
+			</select>
+		</div>
 	</div>
 </div>
 <div class="modal-footer">
