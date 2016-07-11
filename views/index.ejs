@@ -70,7 +70,7 @@
 		<nav class="navbar navbar-default navbar-fixed-top" ng-controller="headerController">
 			<div class="container">
 				<div class="navbar-header">
-					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
 						<span class="sr-only">Toggle navigation</span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
@@ -79,7 +79,7 @@
 					<!--<a class="navbar-brand"></a-->
 				</div>
 
-				<div class="navbar-collapse collapse" id="bs-example-navbar-collapse-1">
+				<div class="navbar-collapse collapse" id="navbar-collapse-1">
 					
 					<!-- Navigation Links -->
 					<ul class="nav navbar-nav">
@@ -102,13 +102,12 @@
 								<li role="presentation"><a ng-href="#/info/rules">Game Rules</a></li>
 							</ul>
 						</li>
-						
 					</ul>
 					
 					<!-- Sign In/Out -->
 					<ul class="nav navbar-nav navbar-right">
-						<li>
-							<button type="button" class="btn btn-default navbar-btn" id="signInOut" ng-click="changeUser()" ng-bind="myClient.player ? 'Sign Out' : 'Sign In'">Sign In</button>
+						<li role="presentation">
+							<a ng-href="#" id="signInOut" ng-click="changeUser()" ng-bind="myClient.player ? 'Sign Out' : 'Sign In'"></a>
 						</li>
 					</ul>
 					

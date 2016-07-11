@@ -56,6 +56,13 @@ angular.module('controllers')
 		}
 	};
 	
+	/* Collapses the nav bar after a link is activated. */
+	$(document).on('click','.navbar-collapse.in',function(e) {
+		if( $(e.target).is('a') && $(e.target).attr('class') != 'dropdown-toggle' ) {
+			$(this).collapse('hide');
+		}
+	});
+	
 	socket.on('player:new', function(player) {
 		console.log('New user detected.');
 		populateUserList();
