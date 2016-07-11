@@ -1,14 +1,14 @@
-<div class="playerBoard">
-	<div class="tier" ng-repeat="t in tiers" ng-show="(players | tier: t).length">
+<div class="partial-board">
+	<!-- Each Tier -->
+	<div ng-repeat="t in tiers" ng-show="(players | tier: t).length">
 		<label>Tier: {{t}}</label>
 		<ul class="list-group">
-			<li class="list-group-item" class="player" ng-repeat="player in players | tier: t">
-				<span ng-bind="player.rank"></span>
-				<span> - </span>
-				<a ng-href="#/profile/{{player._id}}"><span ng-bind="player.name"></span></a>
-				<button ng-click="challenge(player._id)">Challenge</button>
+			<!-- Each Player -->
+			<li class="list-group-item" ng-repeat="player in players | tier: t">
+				<div class="rank" ng-bind="player.rank"></div>
+				<a class="name" ng-href="#/profile/{{player._id}}" ng-bind="player.name"></a>
+				<div class="challenge"><button class="btn btn-block" ng-click="challenge(player._id)">Challenge</button></div>
 			</li>
 		</ul>
 	</div>
 </div>
-

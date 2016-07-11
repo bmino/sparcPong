@@ -1,0 +1,21 @@
+.partial-board .rank {
+	display: inline-block;
+	width: 2.15em;
+	text-align: center;
+	border: 1px solid black;
+	border-radius: 5px;
+	margin-right: 10px;
+}
+
+.partial-board .name {
+	display: inline-block;
+	word-wrap: normal;
+}
+
+.partial-board .challenge {
+	float: right;
+}
+.partial-board .challenge button {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}

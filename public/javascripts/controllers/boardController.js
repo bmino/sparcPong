@@ -42,7 +42,7 @@ angular.module('controllers')
 		}
 	}
 	function goodChallenge(success) {
-		console.log('Challenge issued.');
+		console.log(success);
 		socket.emit('challenge:issued');
 		var modalOptions = {
             headerText: 'Challenge',
@@ -51,7 +51,7 @@ angular.module('controllers')
         modalService.showAlertModal({}, modalOptions);
 	}
 	function badChallenge(error) {
-		console.log('Challenge not issued.');
+		console.log(error);
 		var modalOptions = {
             headerText: 'Challenge',
             bodyText: error

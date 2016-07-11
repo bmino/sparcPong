@@ -1,10 +1,10 @@
 <div class="profile">
 	<div class="challenges">
 		<div class="panel panel-default">
-			<div class="panel-heading">
+			<div class="panel-heading" data-toggle="collapse" data-target="#incomingChallenges">
 				<h3 class="panel-title">{{challenges.incoming.length == 0 ? 'No' : challenges.incoming.length}} Incoming Challenges</h3>
 			</div>
-			<ul class="list-group">
+			<ul class="list-group in" id="incomingChallenges">
 				<li class="list-group-item challenge-incoming" ng-repeat="challenge in challenges.incoming">
 					<a ng-href="#/profile/{{challenge.challenger._id}}" ng-bind="challenge.challenger.name"></a>
 					<span>Until Forfeit: </span>
@@ -17,10 +17,10 @@
 		</div>
 		
 		<div class="panel panel-default">
-			<div class="panel-heading">
+			<div class="panel-heading" data-toggle="collapse" data-target="#outgoingChallenges">
 				<h3 class="panel-title">{{challenges.outgoing.length == 0 ? 'No' : challenges.outgoing.length}} Outgoing Challenges</h3>
 			</div>
-			<ul class="list-group">
+			<ul class="list-group in" id="outgoingChallenges">
 				<li class="list-group-item challenge-outgoing" ng-repeat="challenge in challenges.outgoing">
 					<a ng-href="#/profile/{{challenge.challengee._id}}" ng-bind="challenge.challengee.name"></a>
 					<span>Until Forfeit: </span>
@@ -35,10 +35,10 @@
 	
 	<div class="history">
 		<div class="panel panel-default">
-			<div class="panel-heading">
+			<div class="panel-heading" data-toggle="collapse" data-target="#resolvedChallenges">
 				<h3 class="panel-title">{{challenges.resolved.length == 0 ? 'No' : challenges.resolved.length}} Ranked Matches</h3>
 			</div>
-			<ul class="list-group">
+			<ul class="list-group in" id="resolvedChallenges">
 				<li class="list-group-item challenge-resolved" ng-repeat="challenge in challenges.resolved">
 					<a ng-href="#/profile/{{challenge.challenger._id}}"><span ng-bind="challenge.challenger.name"></span></a>
 					<span>({{challenge.challengerScore || '-'}})</span>

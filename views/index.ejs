@@ -1,66 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
+		<!-- Meta -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		
 		<title>Sparc Pong</title>
 		<!-- Socket Integration -->
-		<script src="/socket.io/socket.io.js"></script>
+		<script src='/socket.io/socket.io.js'></script>
 		
 		<!-- Global Functions -->
-		<script src="/javascripts/globals/functions.js"></script>
+		<script src='/javascripts/globals/functions.js'></script>
 		
 		<!-- Angular: Essential Libraries -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-route.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.js"></script>
-		<script src="/bower/angular-bootstrap/ui-bootstrap.min.js"></script>
-		<script src="/bower/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+		<script src='/bower/angular-bootstrap/ui-bootstrap.min.js'></script>
+		<script src='/bower/angular-bootstrap/ui-bootstrap-tpls.js'></script>		
+		
+		<!-- Angular: Filters -->
+		<script src='/javascripts/filters/_filters.js'></script>
+		<script src='/javascripts/filters/tier.js'></script>
+		<script src='/javascripts/filters/challenge.js'></script>
+		<script src='/javascripts/filters/mongoDate.js'></script>
+		
+		<!-- Angular: Services -->
+		<script src='/javascripts/services/_services.js'></script>
+		<script src='/javascripts/services/playerService.js'></script>
+		<script src='/javascripts/services/challengeService.js'></script>
+		<script src='/javascripts/services/socket.js'></script>
+		<script src='/javascripts/services/timeService.js'></script>
+		<script src='/javascripts/services/modalService.js'></script>
+		
+		<!-- Angular: Directives -->
+		<script src='/javascripts/directives/_directives.js'></script>
+		<script src='/javascripts/directives/timeGap.js'></script>
+		<script src='/javascripts/directives/loggedIn.js'></script>
+		<script src='/javascripts/directives/untilForfeit.js'></script>
+		<script src='/javascripts/directives/focusFirst.js'></script>
+		
+		<!-- Angular: Controllers -->
+		<script src='/javascripts/controllers/_controllers.js'></script>
+		<script src='/javascripts/controllers/headerController.js'></script>
+		<script src='/javascripts/controllers/boardController.js'></script>
+		<script src='/javascripts/controllers/newPlayerController.js'></script>
+		<script src='/javascripts/controllers/profileController.js'></script>
+		
+		<!-- Angular: Main App -->
+		<script src='/javascripts/sparcPongApp.js'></script>
 		
 		<!-- Bootstrap: Essential JS -->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 		
-		
-		<!-- Angular: Filters -->
-		<script src="/javascripts/filters/_filters.js"></script>
-		<script src="/javascripts/filters/tier.js"></script>
-		<script src="/javascripts/filters/challenge.js"></script>
-		<script src="/javascripts/filters/mongoDate.js"></script>
-		
-		<!-- Angular: Services -->
-		<script src="/javascripts/services/_services.js"></script>
-		<script src="/javascripts/services/playerService.js"></script>
-		<script src="/javascripts/services/challengeService.js"></script>
-		<script src="/javascripts/services/socket.js"></script>
-		<script src="/javascripts/services/timeService.js"></script>
-		<script src="/javascripts/services/modalService.js"></script>
-		
-		<!-- Angualr: Directives -->
-		<script src="/javascripts/directives/_directives.js"></script>
-		<script src="/javascripts/directives/timeGap.js"></script>
-		<script src="/javascripts/directives/loggedIn.js"></script>
-		<script src="/javascripts/directives/untilForfeit.js"></script>
-		<script src="/javascripts/directives/focusFirst.js"></script>
-		
-		<!-- Angular: Controllers -->
-		<script src="/javascripts/controllers/_controllers.js"></script>
-		<script src="/javascripts/controllers/headerController.js"></script>
-		<script src="/javascripts/controllers/boardController.js"></script>
-		<script src="/javascripts/controllers/newPlayerController.js"></script>
-		<script src="/javascripts/controllers/profileController.js"></script>
-		
-		
-		<!-- Angular: Main App -->
-		<script src="/javascripts/sparcPongApp.js"></script>
+		<!-- Bootstrap CSS -->
+		<link rel='stylesheet' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+		<link rel='stylesheet' href='/stylesheets/bootstrapTheme.css' />
 		
 		
 		<!-- CSS Styling -->
 		<link rel='stylesheet' href='/stylesheets/style.css' />
 		<link rel='stylesheet' href='/stylesheets/modals.css' />
-		
-		<!-- Bootstrap CSS -->
-		<link rel='stylesheet' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"></script>
-		
-		
+		<link rel='stylesheet' href='/stylesheets/partials/board.css' />
 		
 	</head>
 	<body ng-app="sparcPongApp">
