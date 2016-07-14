@@ -27,7 +27,7 @@ angular.module('controllers')
 			$rootScope.myClient = {};
 			modalOptions = {
 				headerText: 'Sign Out',
-				bodyText: 'Successfully logged out'
+				bodyText: 'Successfully signed out'
 			};
 			modalService.showAlertModal({}, modalOptions);
 			
@@ -49,7 +49,7 @@ angular.module('controllers')
 				
 				modalOptions = {
 					headerText: 'Sign In',
-					bodyText: 'Successfully logged in as '+$rootScope.myClient.player.name
+					bodyText: 'Successfully signed in as '+$rootScope.myClient.player.name
 				};
 				modalService.showAlertModal({}, modalOptions);
 			});
@@ -65,6 +65,10 @@ angular.module('controllers')
 	
 	socket.on('player:new', function(player) {
 		console.log('New user detected.');
+		populateUserList();
+	});
+	socket.on('player:nameChange', function(player) {
+		console.log('Name change detected.');
 		populateUserList();
 	});
 	socket.on('client:enter', function(clients) {
