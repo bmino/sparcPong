@@ -153,7 +153,9 @@ angular.module('controllers')
 		return !challenge.challengerScore && !challenge.challengeeScore;
 	};
 	
-	
+	socket.on('player:nameChange', function(player) {
+		fetchChallenges();
+	});
 	socket.on('challenge:issued', function(challenge) {
 		fetchChallenges();
 	});

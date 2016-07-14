@@ -62,6 +62,9 @@ angular.module('controllers')
 	socket.on('player:new', function(player) {
 		populatePlayers();
 	});
+	socket.on('player:nameChange', function(player) {
+		populatePlayers();
+	});
 	socket.on('challenge:resolved', function(challenge) {
 		populatePlayers();
 	});
