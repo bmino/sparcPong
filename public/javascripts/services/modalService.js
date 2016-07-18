@@ -26,8 +26,8 @@ angular.module('services')
 		return this.showModal(customModalDefaults, customModalOptions);
 	}
 	
-	this.showSignInModal = function(customModalDefaults, customModalOptions) {
-		customModalDefaults.templateUrl = '/partials/modals/signIn.html';
+	this.showLogInModal = function(customModalDefaults, customModalOptions) {
+		customModalDefaults.templateUrl = '/partials/modals/logIn.html';
 		return this.showModal(customModalDefaults, customModalOptions);
 	}	
 	

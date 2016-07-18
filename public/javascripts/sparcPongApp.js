@@ -22,17 +22,17 @@ angular.module('sparcPongApp', [
 			templateUrl: '/partials/edit/editPlayer.html',
 			controller: 'editPlayerController'
 		})
-		.when('/new/newPlayer', {
-			templateUrl: '/partials/new/newPlayer.html',
-			controller: 'newPlayerController'
+		.when('/signUp', {
+			templateUrl: '/partials/signUp.html',
+			controller: 'signUpController'
 		})
 		.when('/info/challenges', {
-			templateUrl: '/partials/info/challenges.html'
-			/* No controller */
+			templateUrl: '/partials/info/challenges.html',
+			controller: 'infoChallengesController'
 		})
 		.when('/info/rules', {
-			templateUrl: '/partials/info/rules.html'
-			/* No controller */
+			templateUrl: '/partials/info/rules.html',
+			controller: 'infoRulesController'
 		})
 		.otherwise({
 			redirectTo: '/'

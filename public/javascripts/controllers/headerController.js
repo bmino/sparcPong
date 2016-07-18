@@ -23,33 +23,33 @@ angular.module('controllers')
 	$scope.changeUser = function() {
 		var modalOptions;
 		if ($rootScope.myClient.player) {
-			// Sign Out
+			// Log Out
 			$rootScope.myClient = {};
 			modalOptions = {
-				headerText: 'Sign Out',
-				bodyText: 'Successfully signed out'
+				headerText: 'Log Out',
+				bodyText: 'Successfully logged out'
 			};
 			modalService.showAlertModal({}, modalOptions);
 			
 		} else {
-			// Sign In
+			// Log In
 			modalOptions = {
-				headerText: 'Sign In',
+				headerText: 'Log In',
 				closeButtonText: 'Cancel',
-				actionButtonText: 'Sign In',
+				actionButtonText: 'Log In',
 				players: $scope.players
 			};
-			modalService.showSignInModal({}, modalOptions).then(function(player) {
+			modalService.showLogInModal({}, modalOptions).then(function(player) {
 				if (!player)
 					return;
 				
 				$rootScope.myClient.player = player;
-				console.log('Signed in as:');
+				console.log('Logged in as:');
 				console.log($rootScope.myClient.player);
 				
 				modalOptions = {
-					headerText: 'Sign In',
-					bodyText: 'Successfully signed in as '+$rootScope.myClient.player.name
+					headerText: 'Log In',
+					bodyText: 'Successfully logged in as '+$rootScope.myClient.player.name
 				};
 				modalService.showAlertModal({}, modalOptions);
 			});
@@ -73,11 +73,11 @@ angular.module('controllers')
 	});
 	socket.on('client:enter', function(clients) {
 		console.log('Detected client entering.');
-		$scope.clients = clients;
+		$rootScope.clients = clients;
 	});
 	socket.on('client:leave', function(clients) {
 		console.log('Detected client leaving.');
-		$scope.clients = clients;
+		$rootScope.clients = clients;
 	});
 	
 }]);
