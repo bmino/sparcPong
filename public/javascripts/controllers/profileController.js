@@ -121,7 +121,7 @@ angular.module('controllers')
             closeButtonText: 'Cancel',
             actionButtonText: 'Forfeit Challenge',
             headerText: 'Forfeit',
-            bodyText: 'Are you sure you wish to forfeit to '+challenge.challengee.name +'?'
+            bodyText: 'Are you sure you wish to forfeit to '+challenge.challenger.name +'?'
         };
         modalService.showModal({}, modalOptions).then(function (okay) {
 			if (!okay)

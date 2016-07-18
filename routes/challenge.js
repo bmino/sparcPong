@@ -341,7 +341,7 @@ function allowedToChallenge(playerId, callback) {
 		if (incoming > 1)
 			callback(err, false, 'Players must resolve incoming challenges before issuing new ones.');
 		if (outgoing >= ALLOWED_CHALLENGES)
-			callback(err, false, 'Players may only have '+ALLOWED_CHALLENGES+' outgoing challenges.');
+			callback(err, false, 'Players cannot issue more than '+ALLOWED_CHALLENGES+' outgoing challenges.');
 		callback(err, true);
 	});
 }
