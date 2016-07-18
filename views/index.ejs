@@ -46,8 +46,10 @@
 		<script src='/javascripts/controllers/_controllers.js'></script>
 		<script src='/javascripts/controllers/headerController.js'></script>
 		<script src='/javascripts/controllers/boardController.js'></script>
-		<script src='/javascripts/controllers/newPlayerController.js'></script>
+		<script src='/javascripts/controllers/signUpController.js'></script>
 		<script src='/javascripts/controllers/profileController.js'></script>
+		<script src='/javascripts/controllers/info/infoChallengesController.js'></script>
+		<script src='/javascripts/controllers/info/infoRulesController.js'></script>
 		
 		<!-- Angular: Main App -->
 		<script src='/javascripts/sparcPongApp.js'></script>
@@ -67,60 +69,60 @@
 		
 	</head>
 	<body ng-app="sparcPongApp">
-		<nav class="navbar navbar-default navbar-fixed-top" ng-controller="headerController">
-			<div class="container">
-				<div class="navbar-header">
-					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar" aria-expanded="false">
-						<span class="sr-only">Toggle navigation</span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-					<!--<a class="navbar-brand"></a-->
-				</div>
+		<div class="container">
+			<nav class="navbar navbar-default navbar-fixed-top" ng-controller="headerController">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar" aria-expanded="false">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<!--<a class="navbar-brand"></a-->
+					</div>
 
-				<div class="navbar-collapse collapse" id="main-navbar">
-					
-					<!-- Navigation Links -->
-					<ul class="nav navbar-nav">
-						<li role="presentation"><a href="#/board">Board</a></li>
-						<li role="presentation" logged-in>
-							<a ng-href="#/profile/{{myClient.player._id}}">Profile</a>
-						</li>
-						<!-- New Links -->
-						<li role="presentation" class="dropdown">
-							<a class="dropdown-toggle" data-toggle="dropdown" role="button">New <span class="caret"></span></a>
-							<ul class="dropdown-menu">
-								<li role="presentation"><a ng-href="#/new/newPlayer">Player</a></li>
-							</ul>
-						</li>
-						<!-- Info Links -->
-						<li role="presentation" class="dropdown">
-							<a class="dropdown-toggle" data-toggle="dropdown" role="button">Info <span class="caret"></span></a>
-							<ul class="dropdown-menu">
-								<li role="presentation"><a ng-href="#/info/challenges">Challenges</a></li>
-								<li role="presentation"><a ng-href="#/info/rules">Game Rules</a></li>
-							</ul>
-						</li>
-					</ul>
-					
-					<!-- Sign In/Out -->
-					<ul class="nav navbar-nav navbar-right">
-						<li role="presentation">
-							<a href='' id="signInOut" ng-click="changeUser()" ng-bind="myClient.player ? 'Sign Out' : 'Sign In'"></a>
-						</li>
-					</ul>
-					
-				</div><!-- /.navbar-collapse -->
-			</div><!-- /.container -->
-		</nav>
+					<div class="navbar-collapse collapse" id="main-navbar">
+						
+						<!-- Navigation Links -->
+						<ul class="nav navbar-nav">
+							<li role="presentation"><a href="#/board">Board</a></li>
+							<li role="presentation" logged-in>
+								<a ng-href="#/profile/{{myClient.player._id}}">Profile</a>
+							</li>
+							<!-- Info Links -->
+							<li role="presentation" class="dropdown">
+								<a class="dropdown-toggle" data-toggle="dropdown" role="button">Info <span class="caret"></span></a>
+								<ul class="dropdown-menu">
+									<li role="presentation"><a ng-href="#/info/challenges">Challenges</a></li>
+									<li role="presentation"><a ng-href="#/info/rules">Game Rules</a></li>
+								</ul>
+							</li>
+						</ul>
+						
+						<!-- Log In/Out -->
+						<ul class="nav navbar-nav navbar-right">
+							<li role="presentation"><a ng-href="#/signUp">Sign Up</a></li>
+							<li role="presentation">
+								<a href='' id="logInOut" ng-click="changeUser()" ng-bind="myClient.player ? 'Log Out' : 'Log In'"></a>
+							</li>
+						</ul>
+						
+					</div><!-- /.navbar-collapse -->
+				</div><!-- /.container -->
+			</nav>
+			
+			<div class="page-header">
+				<h1 ng-bind="pageTitle"></h1>
+			</div>
+			
+			<!-- Injected with Partials -->
+			<div ng-view></div>
+			
+			<footer>
+				<span ng-bind="clients"></span> <span ng-bind="clients == 1 ? 'ponger' : 'pongers'"></span> currently online
+			</footer>
 		
-		<div class="page-header">
-			<h1 ng-bind="pageTitle"></h1>
-		</div>
-		
-		<!-- Injected with Partials -->
-		<div ng-view></div>
-		
+		</div><!-- /.container -->
 	</body>
 </html>
