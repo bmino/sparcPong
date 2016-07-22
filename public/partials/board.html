@@ -7,6 +7,7 @@
 			<li class="list-group-item" ng-repeat="player in players | tier: t">
 				<div class="rank" ng-bind="player.rank"></div>
 				<a class="name" ng-href="#/profile/{{player._id}}" ng-bind="player.name"></a>
+				[<time-gap type="since" date="player.lastGame"></time-gap>]
 				<div class="challenge"><button class="btn btn-block" ng-click="challenge(player._id)">Challenge</button></div>
 			</li>
 		</ul>

@@ -195,23 +195,26 @@ router.post('/resolve', function(req, res, next) {
 		challenge.winner = winner._id;
 		challenge.challengerScore = challengerScore;
 		challenge.challengeeScore = challengeeScore;
-		
 		challenge.save();
 		
-		// Adjusts Rankings
-		if (loser.rank < winner.rank) {
-			console.log('Swapping rankings between ' + winner.name + ' and ' + loser.name);
-			// Winner should move up ranking
-			swapRanks(winner._id, loser._id, function(err) {
-				if (err)
-					return next(err);
-				console.log('Swapping rankings completed successfully.');
+		updateLastGames(challenge, function(err) {
+			if (err)
+				return next(err);
+			// Adjusts Rankings
+			if (loser.rank < winner.rank) {
+				console.log('Swapping rankings between ' + winner.name + ' and ' + loser.name);
+				// Winner should move up ranking
+				swapRanks(winner._id, loser._id, function(err) {
+					if (err)
+						return next(err);
+					console.log('Swapping rankings completed successfully.');
+					res.json({message: 'Successfully resolved challenge.'});
+				});
+			} else {
+				console.log('Swapping rankings is not required.');
 				res.json({message: 'Successfully resolved challenge.'});
-			});
-		} else {
-			console.log('Swapping rankings is not required.');
-			res.json({message: 'Successfully resolved challenge.'});
-		}
+			}
+		});
 	});
 });
 
@@ -238,17 +241,21 @@ router.post('/forfeit', function(req, res, next) {
 		challenge.winner = winner._id;
 		challenge.save();
 		
-		if (loser.rank < winner.rank) {
-			console.log('Swapping rankings between ' + winner.name + ' and ' + loser.name);
-			swapRanks(winner._id, loser._id, function(err) {
-				if (err)
-					return next(err);
+		updateLastGames(challenge, function(err) {
+			if (err)
+				return next(err);
+			if (loser.rank < winner.rank) {
+				console.log('Swapping rankings between ' + winner.name + ' and ' + loser.name);
+				swapRanks(winner._id, loser._id, function(err) {
+					if (err)
+						return next(err);
+					res.json({message: 'Challenge successfully forfeited.'});
+				});
+			} else {
+				console.log('Swapping rankings is not required.');
 				res.json({message: 'Challenge successfully forfeited.'});
-			});
-		} else {
-			console.log('Swapping rankings is not required.');
-			res.json({message: 'Challenge successfully forfeited.'});
-		}
+			}
+		});
 	});
 });
 
@@ -417,6 +424,52 @@ function setRank(playerId, newRank, callback) {
 		player.rank = newRank;
 		player.save(function(err) {
 			callback(err, oldRank, newRank);
+		});
+	});
+}
+
+
+/*
+ * Updates the last game time of both players.
+ *
+ * @param: challenge
+ *
+ * @return: err
+ */
+function updateLastGames(challenge, callback) {
+	if (!challenge.challenger._id || !challenge.challengee._id) {
+		console.log("This error is likely caused by not calling populate().")
+		callback(new Error('Two players were not provided.'));
+		return;
+	}
+	
+	var gameTime = challenge.updatedAt;
+	if (!gameTime) {
+		console.log("This error is likely caused by not saving the challenge first.");
+		callback(new Error('Challenge time was not updated.'));
+		return;
+	}
+	
+	var challengerId = challenge.challenger._id;
+	var challengeeId = challenge.challengee._id;
+	
+	
+	// Update challenger
+	Player.findById(challengerId, function(err, player) {
+		if (err)
+			callback(err);
+		player.lastGame = gameTime;
+		player.save();
+		
+		// Update challengee
+		Player.findById(challengeeId, function(err, player) {
+			if (err)
+				callback(err);
+			player.lastGame = gameTime;
+			player.save();
+			
+			// Done successfully
+			callback(null);
 		});
 	});
 }

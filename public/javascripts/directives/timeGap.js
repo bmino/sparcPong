@@ -8,7 +8,7 @@ angular.module('directives')
 		},
 		link: function(scope, elem, attrs) {
 			
-			var oDate = timeService.parseDate(scope.date);
+			var oDate = scope.date ? timeService.parseDate(scope.date) : null;
 			
 			function updateTime() {
 				if (scope.type == 'since')
@@ -16,8 +16,8 @@ angular.module('directives')
 				else if (scope.type == 'until')
 					var elapsed = timeService.timeBetween(new Date(), oDate);
 				else {
-					var elapsed = "You must specify a type of 'since' or 'until'";
-					console.log(elapsed);
+					var elapsed = "ERROR";
+					console.log("You must specify a type of 'since' or 'until'");
 				}
 				elem.text(elapsed);
 			}
@@ -29,8 +29,8 @@ angular.module('directives')
 				}, 1000);
 			}
 			
-			updateLater();			
+			if (oDate)
+				updateLater();			
 		}
 	}
 }]);
-
