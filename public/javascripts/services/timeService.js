@@ -14,6 +14,14 @@ angular.module('services')
 			return new Date($filter('date')(date));
 	}
 	
+	this.hoursBetween = function(date1, date2) {
+		var diff =  Math.abs(date2 - date1);
+		var seconds = Math.floor(diff/1000);
+		var minutes = Math.floor(seconds/60);
+		var hours = Math.floor(minutes/60);
+		return hours;
+	}
+	
 	this.timeBetween = function (date1, date2) {
 		var neg = (date2 - date1) < 0;
 		var diff =  Math.abs(date2 - date1);

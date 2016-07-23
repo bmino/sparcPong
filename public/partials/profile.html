@@ -8,9 +8,9 @@
 				<li class="list-group-item challenge-incoming" ng-repeat="challenge in challenges.incoming">
 					<a ng-href="#/profile/{{challenge.challenger._id}}" ng-bind="challenge.challenger.name"></a>
 					[<until-forfeit date="challenge.createdAt"></until-forfeit>]
-					<button logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
-					<button logged-in="challenge.challenger._id" ng-click="revokeChallenge(challenge)">Revoke</button>
-					<button logged-in="challenge.challengee._id" ng-click="forfeitChallenge(challenge)">Forfeit</button>
+					<button class="btn" logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
+					<button class="btn" logged-in="challenge.challenger._id" ng-click="revokeChallenge(challenge)">Revoke</button>
+					<button class="btn" logged-in="challenge.challengee._id" ng-click="forfeitChallenge(challenge)">Forfeit</button>
 				</li>
 			</ul>
 		</div>
@@ -24,9 +24,9 @@
 					<a ng-href="#/profile/{{challenge.challengee._id}}" ng-bind="challenge.challengee.name"></a>
 					<span>Until Forfeit: </span>
 					[<until-forfeit date="challenge.createdAt"></until-forfeit>]
-					<button logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
-					<button logged-in="challenge.challenger._id" ng-click="revokeChallenge(challenge)">Revoke</button>
-					<button logged-in="challenge.challengee._id" ng-click="forfeitChallenge(challenge)">Forfeit</button>
+					<button class="btn" logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolveChallenge(challenge)">Resolve</button>
+					<button class="btn" logged-in="challenge.challenger._id" ng-click="revokeChallenge(challenge)">Revoke</button>
+					<button class="btn" logged-in="challenge.challengee._id" ng-click="forfeitChallenge(challenge)">Forfeit</button>
 				</li>
 			</ul>
 		</div>

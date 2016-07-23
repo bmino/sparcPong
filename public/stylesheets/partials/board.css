@@ -1,4 +1,4 @@
-.partial-board .rank {
+.partial-board li .rank {
 	display: inline-block;
 	width: 2.15em;
 	text-align: center;
@@ -7,15 +7,16 @@
 	margin-right: 10px;
 }
 
-.partial-board .name {
+.partial-board li .name {
 	display: inline-block;
 	word-wrap: normal;
 }
 
-.partial-board .challenge {
-	float: right;
+.partial-board li time-gap {
+	padding: 3px;
+	border-radius: 2px;
 }
-.partial-board .challenge button {
-	padding-top: 0px;
-	padding-bottom: 0px;
+
+.partial-board li .challenge {
+	float: right;
 }

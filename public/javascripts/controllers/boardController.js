@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('boardController', ['$scope', '$rootScope', 'socket', 'modalService', 'playerService', 'challengeService', function($scope, $rootScope, socket, modalService, playerService, challengeService) {
+.controller('boardController', ['$scope', '$rootScope', 'socket', 'modalService', 'timeService', 'playerService', 'challengeService', function($scope, $rootScope, socket, modalService, timeService, playerService, challengeService) {
 	
 	init();
 	
@@ -24,6 +24,16 @@ angular.module('controllers')
 		});
 	}
 	
+	$scope.dangerLevel = function(gameTime) {
+		var hours = timeService.hoursBetween(new Date(gameTime), new Date());
+		if (hours <= 48)
+			return 'alert-success';
+		if (hours > 48 && hours <= 72)
+			return 'alert-warning';
+		if (hours > 72)
+			return 'alert-danger';
+	};
+	
 	$scope.challenge = function(challengeeId) {
 		var player = $rootScope.myClient.player;
 		if (!player) {
@@ -40,7 +50,7 @@ angular.module('controllers')
 			var myId = player._id;
 			challengeService.createChallenge(myId, challengeeId).then( goodChallenge, badChallenge );
 		}
-	}
+	};
 	function goodChallenge(success) {
 		console.log(success);
 		socket.emit('challenge:issued');
