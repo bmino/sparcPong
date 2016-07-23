@@ -48,6 +48,7 @@
 		<script src='/javascripts/controllers/boardController.js'></script>
 		<script src='/javascripts/controllers/signUpController.js'></script>
 		<script src='/javascripts/controllers/profileController.js'></script>
+		<script src='/javascripts/controllers/changeNameController.js'></script>
 		<script src='/javascripts/controllers/info/infoChallengesController.js'></script>
 		<script src='/javascripts/controllers/info/infoRulesController.js'></script>
 		
@@ -90,6 +91,16 @@
 							<li role="presentation" logged-in>
 								<a ng-href="#/profile/{{myClient.player._id}}">Profile</a>
 							</li>
+							<!-- Account Links -->
+							<li role="presentation" class="dropdown" logged-in>
+								<a class="dropdown-toggle" data-toggle="dropdown" role="button">Account <span class="caret"></span></a>
+								<ul class="dropdown-menu">
+									<li role="presentation">
+										<a ng-href="#/account/changeName">Change Name</a>
+									</li>
+								</ul>
+							</li>
+							
 							<!-- Info Links -->
 							<li role="presentation" class="dropdown">
 								<a class="dropdown-toggle" data-toggle="dropdown" role="button">Info <span class="caret"></span></a>

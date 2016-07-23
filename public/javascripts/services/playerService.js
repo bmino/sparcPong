@@ -18,6 +18,18 @@ angular.module('services')
 		return request.then( handleSuccess, handleError );
 	};
 	
+	this.changeName = function(playerId, newName) {
+		var request = $http({
+			method: "post",
+			url: "api/player/change/name/",
+			data: {
+				playerId: playerId,
+				newName: newName
+			}
+		});
+		return request.then( handleSuccess, handleError );
+	};
+	
 	
 	this.getPlayer = function(playerId) {
 		var request = $http({

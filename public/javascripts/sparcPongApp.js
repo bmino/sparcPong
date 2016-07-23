@@ -26,6 +26,10 @@ angular.module('sparcPongApp', [
 			templateUrl: '/partials/signUp.html',
 			controller: 'signUpController'
 		})
+		.when('/account/changeName', {
+			templateUrl: '/partials/account/changeName.html',
+			controller: 'changeNameController'
+		})
 		.when('/info/challenges', {
 			templateUrl: '/partials/info/challenges.html',
 			controller: 'infoChallengesController'

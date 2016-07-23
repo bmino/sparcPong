@@ -48,6 +48,41 @@ router.post('/', function(req, res, next) {
 	});
 });
 
+/* POST changes player name
+ *
+ * @param: newName
+ */
+router.post('/change/name', function(req, res, next) {
+	var playerId = req.body.playerId;
+	var newName = req.body.newName.trim();
+	if (!playerId)
+		return next(new Error('You must provide a valid player id.'));
+	
+	Player.count({name: newName}, function(err,count) {
+		if (err) {
+			return next(err);
+		} else if (count != 0) {
+			return next(new Error('Player name already exists.'));
+		} else {
+			// Valid name
+			console.log('Changing player name.');
+			Player.findById(playerId, function(err, player) {
+				if (err)
+					return next(err);
+				if (!player)
+					return next(new Error('Could not find your current account.'));
+				var oldName = player.name;
+				player.name = newName;
+				player.save(function(err) {
+					if (err)
+						return next(err);
+					res.json({message: 'Successfully changed your username from '+ oldName +' to '+ newName +'!'});
+				});
+			});
+		}
+	});
+});
+
 /* GET player listing */
 router.get('/', function(req, res, next) {
 	Player.find({}, function(err, players) {
