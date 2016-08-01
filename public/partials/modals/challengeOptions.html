@@ -1,0 +1,13 @@
+<div class="modal-header">
+	<h3>Challenge Options</h3>
+</div>
+<div class="modal-body">
+	<button class="btn" logged-in="[modalOptions.challenge.challenger._id, modalOptions.challenge.challengee._id]" ng-click="modalOptions.ok('resolve')">Resolve</button>
+	<button class="btn" logged-in="modalOptions.challenge.challenger._id" ng-click="modalOptions.ok('revoke')">Revoke</button>
+	<button class="btn" logged-in="modalOptions.challenge.challengee._id" ng-click="modalOptions.ok('forfeit')">Forfeit</button>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn" data-ng-click="modalOptions.close()">
+		Cancel
+	</button>
+</div>

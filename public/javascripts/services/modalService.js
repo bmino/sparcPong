@@ -15,6 +15,11 @@ angular.module('services')
 		bodyText: 'Perform this action?'
 	};
 	
+	this.showChallengeOptions = function(customModalDefaults, customModalOptions) {
+		customModalDefaults.templateUrl = '/partials/modals/challengeOptions.html';
+		return this.showModal(customModalDefaults, customModalOptions);
+	}
+	
 	this.showAlertModal = function(customModalDefaults, customModalOptions) {
 		customModalDefaults.templateUrl = '/partials/modals/alert.html';
 		customModalOptions.actionButtonText = 'OK';
@@ -36,6 +41,7 @@ angular.module('services')
 		customModalDefaults.backdrop = 'static';
 		return this.show(customModalDefaults, customModalOptions);
 	};
+	
 
 	this.show = function (customModalDefaults, customModalOptions) {
 		

@@ -42,7 +42,36 @@ angular.module('controllers')
 		$scope.challenges.resolved = challenges;
 	}
 	
-	$scope.resolveChallenge = function(challenge) {		
+	$scope.expandChallenge = function(challenge) {
+		var modalOptions = {
+			challenge: challenge
+		};
+		modalService.showChallengeOptions({}, modalOptions).then(function(result) {
+			if (!result) return;
+			switch (result) {
+				case 'resolve':
+					resolveChallenge(challenge);
+					break;
+				case 'revoke':
+					revokeChallenge(challenge);
+					break;
+				case 'forfeit':
+					forfeitChallenge(challenge);
+					break;
+			}
+		});
+	};
+	
+	function resolveChallenge(challenge) {
+		if ($rootScope.myClient.player._id != challenge.challengee._id && $rootScope.myClient.player._id != challenge.challenger._id) {
+			var modalOptions = {
+				headerText: 'Resolve Challenge',
+				bodyText: 'You are logged in as '+ $rootScope.myClient.player.name +'. '+
+						  'Only '+ challenge.challenger.name +' or '+ challenge.challengee.name +' can resolve this challenge.'
+			};
+			modalService.showAlertModal({}, modalOptions);
+			return;
+		}
 		var modalOptions = {
 			headerText: 'Resolve Challenge',
 			challenge: challenge
@@ -54,37 +83,39 @@ angular.module('controllers')
 			var challengerScore = result.challenge.challengerScore;
 			var challengeeScore = result.challenge.challengeeScore;
 			
-			if (challengerScore && challengeeScore) {
-				challengeService.resolveChallenge(challenge._id, challengerScore, challengeeScore).then(
-					function(success) {
-						console.log(success);
-						socket.emit('challenge:resolved', challenge);
-						var modalOptions = {
-							headerText: 'Resolve Challenge',
-							bodyText: success
-						};
-						modalService.showAlertModal({}, modalOptions);
-					},
-					function(error) {
-						console.log(error);
-						var modalOptions = {
-							headerText: 'Resolve Challenge',
-							bodyText: error
-						};
-						modalService.showAlertModal({}, modalOptions);
-					}
-				);
-			} else {
-				var modalOptions = {
-					headerText: 'Resolve Challenge',
-					bodyText: 'You must give valid scores for both players.'
-				};
-				modalService.showAlertModal({}, modalOptions);
-			}
+			challengeService.resolveChallenge(challenge._id, challengerScore, challengeeScore).then(
+				function(success) {
+					console.log(success);
+					socket.emit('challenge:resolved', challenge);
+					var modalOptions = {
+						headerText: 'Resolve Challenge',
+						bodyText: success
+					};
+					modalService.showAlertModal({}, modalOptions);
+				},
+				function(error) {
+					console.log(error);
+					var modalOptions = {
+						headerText: 'Resolve Challenge',
+						bodyText: error
+					};
+					modalService.showAlertModal({}, modalOptions);
+				}
+			);
 		});		
 	};
 	
-	$scope.revokeChallenge = function(challenge) {
+	function revokeChallenge(challenge) {
+		if (challenge.challenger._id != $rootScope.myClient.player._id) {
+			var modalOptions = {
+				headerText: 'Revoke Challenge',
+				bodyText: 'You are logged in as '+ $rootScope.myClient.player.name +'. '+
+						  'Only '+ challenge.challenger.name +' can revoke this challenge.'
+			};
+			modalService.showAlertModal({}, modalOptions);
+			return;
+		}
+		
 		var modalOptions = {
             closeButtonText: 'Cancel',
             actionButtonText: 'Revoke Challenge',
@@ -116,12 +147,22 @@ angular.module('controllers')
 			);
 		});
 	};
-	$scope.forfeitChallenge = function(challenge) {
+	function forfeitChallenge(challenge) {
+		if (challenge.challengee._id != $rootScope.myClient.player._id) {
+			var modalOptions = {
+				headerText: 'Forfeit Challenge',
+				bodyText: 'You are logged in as '+ $rootScope.myClient.player.name +'. '+
+						  'Only '+ challenge.challengee.name +' can forfeit this challenge.'
+			};
+			modalService.showAlertModal({}, modalOptions);
+			return;
+		}
+		
 		var modalOptions = {
             closeButtonText: 'Cancel',
             actionButtonText: 'Forfeit Challenge',
             headerText: 'Forfeit',
-            bodyText: 'Are you sure you wish to forfeit to '+challenge.challenger.name +'?'
+            bodyText: 'Are you sure you wish to forfeit to '+ challenge.challenger.name +'?'
         };
         modalService.showModal({}, modalOptions).then(function (okay) {
 			if (!okay)

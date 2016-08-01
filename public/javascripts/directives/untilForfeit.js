@@ -13,7 +13,7 @@ angular.module('directives')
 			
 			function updateTime() {
 				var remaining = timeService.timeBetween(new Date(), expireDate);
-				elem.text(remaining);
+				elem.text('[' + remaining + ']');
 			}
 			
 			function updateLater() {
