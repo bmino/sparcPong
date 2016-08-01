@@ -70,7 +70,7 @@
 		
 	</head>
 	<body ng-app="sparcPongApp">
-		<div class="container">
+		<div class="wrapper">
 			<nav class="navbar navbar-default navbar-fixed-top" ng-controller="headerController">
 				<div class="container-fluid">
 					<div class="navbar-header">
@@ -113,7 +113,7 @@
 						
 						<!-- Log In/Out -->
 						<ul class="nav navbar-nav navbar-right">
-							<li role="presentation"><a ng-href="#/signUp">Sign Up</a></li>
+							<li role="presentation" ng-hide="myClient.player"><a ng-href="#/signUp">Sign Up</a></li>
 							<li role="presentation">
 								<a href='' id="logInOut" ng-click="changeUser()" ng-bind="myClient.player ? 'Log Out' : 'Log In'"></a>
 							</li>
@@ -134,6 +134,6 @@
 				<span ng-bind="clients"></span> <span ng-bind="clients == 1 ? 'ponger' : 'pongers'"></span> currently online
 			</footer>
 		
-		</div><!-- /.container -->
+		</div><!-- /.wrapper -->
 	</body>
 </html>
