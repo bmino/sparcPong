@@ -174,6 +174,8 @@ router.post('/resolve', function(req, res, next) {
 		console.log(challengeId + ' is not a valid challenge id.');
 		return next(new Error('This is not a valid challenge.'));
 	}
+	if (!challengerScore || !challengeeScore)
+		return next(new Error('You must give valid scores for both players.'));
 	if (challengerScore == challengeeScore)
 		return next(new Error('The final score cannot be equal.'));
 	

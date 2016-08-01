@@ -30,7 +30,7 @@ angular.module('directives')
 		if (typeof arr === 'string') {
 			arr = [arr];
 		}
-		
+		console.log(arr);
 		for (var i=0; i<arr.length; i++) {
 			if (needle == arr[i])
 				return true;
