@@ -12,40 +12,29 @@ var Player = mongoose.model('Player');
 router.post('/', function(req, res, next) {
 	var playerName = req.body.name.trim();
 	
-	if (!playerName)
-		return next(new Error('A name is required to create a player.'));
-	
-	// Verify player name is new
-	Player.count({name: playerName}, function(err,count) {
-		if (err) {
-			return next(err);
-		} else if (count != 0) {
-			return next(new Error('Player name already exists.'));
-		} else {
-			console.log('Creating new player.');
-			getLowestRank(function(err, lowestRank) {
-				if (err)
-					return next(err);
+	validName(playerName, function(err) {
+		if (err) return next(err);
+		
+		console.log('Creating new player.');
+		getLowestRank(function(err, lowestRank) {
+			if (err) return next(err);
+			
+			// Create new player
+			var player = new Player();
+			player.name = playerName;
+			player.rank = lowestRank + 1;
+			player.phone = req.body.phone;
+			player.email = req.body.email;
+			
+			// Saves player to DB
+			player.save(function(err, saved) {
+				if (err) return next(err);
 				
-				// Create new player
-				var player = new Player();
-				player.name = playerName;
-				player.rank = lowestRank + 1;
-				player.phone = req.body.phone;
-				player.email = req.body.email;
-				
-				// Saves player to DB
-				player.save(function(err, saved) {
-					if (err) {
-						return next(err);
-					} else {
-						console.log('Successfully created a new player.');
-						res.json({message: 'Player created!'});
-					}
-				});
-			});			
-		}
-	});
+				console.log('Successfully created a new player.');
+				res.json({message: 'Player created!'});
+			});
+		});
+	});	
 });
 
 /* POST changes player name
@@ -58,40 +47,30 @@ router.post('/change/name', function(req, res, next) {
 	if (!playerId)
 		return next(new Error('You must provide a valid player id.'));
 	
-	Player.count({name: newName}, function(err,count) {
-		if (err) {
-			return next(err);
-		} else if (count != 0) {
-			return next(new Error('Player name already exists.'));
-		} else {
-			// Valid name
-			console.log('Changing player name.');
-			Player.findById(playerId, function(err, player) {
-				if (err)
-					return next(err);
-				if (!player)
-					return next(new Error('Could not find your current account.'));
-				var oldName = player.name;
-				player.name = newName;
-				player.save(function(err) {
-					if (err)
-						return next(err);
-					res.json({message: 'Successfully changed your username from '+ oldName +' to '+ newName +'!'});
-				});
+	validName(newName, function(err) {
+		if (err) return next(err);
+	
+		console.log('Changing player name.');
+		Player.findById(playerId, function(err, player) {
+			if (err) return next(err);
+			if (!player)
+				return next(new Error('Could not find your current account.'));
+			var oldName = player.name;
+			player.name = newName;
+			player.save(function(err) {
+				if (err) return next(err);
+				res.json({message: 'Successfully changed your username from '+ oldName +' to '+ newName +'!'});
 			});
-		}
+		});
 	});
 });
 
 /* GET player listing */
 router.get('/', function(req, res, next) {
 	Player.find({}, function(err, players) {
-		if (err) {
-			return next(err);
-		} else {
-			res.json({message: players});
-		}
-	})
+		if (err) return next(err);
+		res.json({message: players});
+	});
 });
 
 /* GET player by id */
@@ -110,7 +89,7 @@ router.get('/fetch/:playerId', function(req, res, next) {
 		} else {
 			res.json({message: players});
 		}
-	})
+	});
 });
 
 /* DELETE player */
@@ -120,7 +99,7 @@ router.delete('/', function(req, res) {
 	if (!playerId)
 		return next(new Error('You must specify a player id.'));
 	
-	console.log('Deleting player with id [' + playerId + ']');
+	//console.log('Deleting player with id [' + playerId + ']');
 	console.log('Deleting players is not enabled.');
 	res.json({message: 'This feature is not yet implemented.'});
 	
@@ -138,14 +117,60 @@ router.delete('/', function(req, res) {
 
 function getLowestRank(callback) {
 	Player.find().sort({'rank': -1}).limit(1).exec(function(err, lowestRankPlayer) {
-		if (err)
-			callback(err, null);
+		if (err) callback(err, null);
 		var lowestRank = 0;
 		if (lowestRankPlayer && lowestRankPlayer.length > 0) {
 			lowestRank = lowestRankPlayer[0].rank;
 		}
 		console.log('Found lowest rank of ' + lowestRank);
 		callback(err, lowestRank);
+	});
+}
+
+var NAME_LENGTH = 15;
+function validName(name, callback) {
+	console.log('Verifying player name of '+ name);
+	var len = name.length;
+	// Can only be 15 characters long
+	if (len > NAME_LENGTH || len <= 0) {
+		callback(new Error('Name length must be between 1 and '+ NAME_LENGTH +' characters.'));
+		return;
+	}
+	
+	// No special characters
+	if (!/^[A-Za-z0-9_ ]*$/.test(name)) {
+		callback(new Error('Name can only include letters, numbers, underscores, and spaces.'));
+		return;
+	}
+	
+	// Concurrent spaces
+	if (/\s{2,}/.test(name)) {
+		callback(new Error('You cannot have concurrent spaces.'));
+		return;
+	}
+	
+	// Concurrent underscores
+	if (/_{2,}/.test(name)) {
+		callback(new Error('You cannot have concurrent underscores.'));
+		return;
+	}
+	
+	nameExists(name, function(err) {
+		callback(err);
+	});
+}
+
+function nameExists(name, callback) {
+	console.log('Checking if player name, '+ name +', exists.');
+	var searchName = name.trim();
+	Player.count({name: searchName}, function(err, count) {
+		if (err) {
+			callback(err);
+		} else if (count != 0) {
+			callback(new Error('Player name already exists.'));
+		} else {
+			callback(null);
+		}
 	});
 }
 
