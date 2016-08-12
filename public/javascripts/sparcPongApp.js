@@ -18,13 +18,9 @@ angular.module('sparcPongApp', [
 			templateUrl: '/partials/profile.html',
 			controller: 'profileController'
 		})
-		.when('/edit/player/:playerId', {
-			templateUrl: '/partials/edit/editPlayer.html',
-			controller: 'editPlayerController'
-		})
-		.when('/signUp', {
-			templateUrl: '/partials/signUp.html',
-			controller: 'signUpController'
+		.when('/account/settings', {
+			templateUrl: '/partials/account/settings.html',
+			controller: 'settingsController'
 		})
 		.when('/account/changeName', {
 			templateUrl: '/partials/account/changeName.html',
@@ -37,6 +33,10 @@ angular.module('sparcPongApp', [
 		.when('/info/rules', {
 			templateUrl: '/partials/info/rules.html',
 			controller: 'infoRulesController'
+		})
+		.when('/signUp', {
+			templateUrl: '/partials/signUp.html',
+			controller: 'signUpController'
 		})
 		.otherwise({
 			redirectTo: '/'
