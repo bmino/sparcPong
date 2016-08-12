@@ -138,7 +138,7 @@ function validName(name, callback) {
 	console.log('Verifying player name of '+ name);
 	var len = name.trim().length;
 	// Can only be 15 characters long
-	if (len > NAME_LENGTH || len < NAME_LENGTH_MIN) {
+	if (len > NAME_LENGTH_MAX || len < NAME_LENGTH_MIN) {
 		callback(new Error('Name length must be between '+ NAME_LENGTH_MIN +' and '+ NAME_LENGTH_MAX +' characters.'));
 		return;
 	}
