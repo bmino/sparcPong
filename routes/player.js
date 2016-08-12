@@ -3,7 +3,8 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
 
-/* POST new player
+/* 
+ * POST new player
  *
  * @param: name
  * @param: phone
@@ -37,7 +38,8 @@ router.post('/', function(req, res, next) {
 	});	
 });
 
-/* POST changes player name
+/* 
+ * POST changes player name
  *
  * @param: newName
  */
@@ -117,7 +119,10 @@ router.delete('/', function(req, res) {
 
 function getLowestRank(callback) {
 	Player.find().sort({'rank': -1}).limit(1).exec(function(err, lowestRankPlayer) {
-		if (err) callback(err, null);
+		if (err) {
+			callback(err, null);
+			return;
+		}
 		var lowestRank = 0;
 		if (lowestRankPlayer && lowestRankPlayer.length > 0) {
 			lowestRank = lowestRankPlayer[0].rank;
@@ -127,13 +132,14 @@ function getLowestRank(callback) {
 	});
 }
 
-var NAME_LENGTH = 15;
+var NAME_LENGTH_MIN = 2;
+var NAME_LENGTH_MAX = 15;
 function validName(name, callback) {
 	console.log('Verifying player name of '+ name);
-	var len = name.length;
+	var len = name.trim().length;
 	// Can only be 15 characters long
-	if (len > NAME_LENGTH || len <= 0) {
-		callback(new Error('Name length must be between 1 and '+ NAME_LENGTH +' characters.'));
+	if (len > NAME_LENGTH || len < NAME_LENGTH_MIN) {
+		callback(new Error('Name length must be between '+ NAME_LENGTH_MIN +' and '+ NAME_LENGTH_MAX +' characters.'));
 		return;
 	}
 	

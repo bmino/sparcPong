@@ -22,30 +22,26 @@ router.post('/', function(req, res, next) {
 		return next(new Error('Players cannot challenge themselves.'));
 	
 	challengeExists(challengerId, challengeeId, function(err, exists) {
-		if (err)
-			return next(err);
+		if (err) return next(err);
 		if (exists)
 			return next(new Error('A challenge already exists between these players.'));
 		
 		// Verifies challenger is allowed to issue a challenge
 		allowedToChallenge(challengerId, function(err, allowed, message) {
-			if (err)
-				return next(err);
+			if (err) return next(err);
 			if (!allowed) {
 				return next(new Error(message));
 			} else {
 				// Not allowed to issue challenges on weekends
-				var today = new Date();
-				if (today.getDay() == 0 || today.getDay() == 6)
+				var todayDay = new Date().getDay();
+				if (todayDay == 0 || todayDay == 6)
 					return next(new Error('You can only issue challenges on business days.'));
 				
 				// Grabs player info on both challenge participants
 				Player.findById(challengerId, function(err, challenger) {
-					if (err)
-						return next(err);
+					if (err) return next(err);
 					Player.findById(challengeeId, function(err, challengee) {
-						if (err)
-							return next(err);
+						if (err) return next(err);
 						
 						if (challenger.rank < challengee.rank)
 							return next(new Error('You cannot challenger a player below your rank.'));
@@ -53,9 +49,7 @@ router.post('/', function(req, res, next) {
 							return next(new Error('You cannot challenge a player beyond 1 tier.'));
 						
 						challenge.save(function(err) {
-							if (err) {
-								return next(err);
-							}
+							if (err) return next(err);
 							res.json({message: 'Challenge issued!'});
 						});
 					});
@@ -79,10 +73,7 @@ router.get('/resolved/:playerId', function(req, res, next) {
 					.populate('challenger')
 					.populate('challengee')
 					.exec(function(err, challenges) {
-		if (err) {
-			return next(err);
-		}
-		//console.log('Found ' + challenges.length + ' resolved challenges ' + ' for playerId [' + playerId + ']');
+		if (err) return next(err);
 		res.json({message: challenges});
 	});
 });
@@ -98,10 +89,7 @@ router.get('/outgoing/:playerId', function(req, res, next) {
 					.populate('challenger')
 					.populate('challengee')
 					.exec(function(err, challenges) {
-		if (err) {
-			return next(err);
-		}
-		//console.log('Found ' + challenges.length + ' outgoing challenges ' + ' for playerId [' + playerId + ']');
+		if (err) return next(err);
 		res.json({message: challenges});
 	});
 });
@@ -116,10 +104,7 @@ router.get('/incoming/:playerId', function(req, res, next) {
 					.populate('challenger')
 					.populate('challengee')
 					.exec(function(err, challenges) {
-		if (err) {
-			return next(err);
-		}
-		//console.log('Found ' + challenges.length + ' incoming challenges ' + ' for playerId [' + playerId + ']');
+		if (err) return next(err);
 		res.json({message: challenges});
 	});
 });
@@ -137,17 +122,14 @@ router.delete('/revoke', function(req, res, next) {
 	
 	// Checks for forfeit
 	Challenge.find({challenger: challengerId, challengee: challengeeId, winner: null}).populate('challengee').exec(function(err, challenges) {
-		if (err)
-			return next(err);
+		if (err) return next(err);
 		if (!challenges || challenges.length == 0)
 			return next(new Error('Could not find the challenge.'));
 		if (hasForfeit(challenges[0].createdAt))
 			return next(new Error('This challenge has expired. '+challenges[0].challengee.name+' must forfeit.'));
 		
 		Challenge.remove({challenger: challengerId, challengee: challengeeId, winner: null}, function(err, challenges) {
-			if (err) {
-				return next(err);
-			}
+			if (err) return next(err);
 			
 			if (challenges.result && challenges.result.n) {
 				console.log('Revoking ' + challenges.result.n + ' challenge(s).');
@@ -180,8 +162,7 @@ router.post('/resolve', function(req, res, next) {
 		return next(new Error('The final score cannot be equal.'));
 	
 	Challenge.findById(challengeId).populate('challenger').populate('challengee').exec(function(err, challenge) {
-		if (err)
-			return next(err);
+		if (err) return next(err);
 		
 		if (!challenge || challenge.length == 0) {
 			return next(new Error('Could not find the challenge for ['+challengeId+'].'));
@@ -200,15 +181,13 @@ router.post('/resolve', function(req, res, next) {
 		challenge.save();
 		
 		updateLastGames(challenge, function(err) {
-			if (err)
-				return next(err);
+			if (err) return next(err);
 			// Adjusts Rankings
 			if (loser.rank < winner.rank) {
 				console.log('Swapping rankings between ' + winner.name + ' and ' + loser.name);
 				// Winner should move up ranking
 				swapRanks(winner._id, loser._id, function(err) {
-					if (err)
-						return next(err);
+					if (err) return next(err);
 					console.log('Swapping rankings completed successfully.');
 					res.json({message: 'Successfully resolved challenge.'});
 				});
@@ -230,10 +209,7 @@ router.post('/forfeit', function(req, res, next) {
 	if (!challengeId)
 		return next(new Error('This is not a valid challenge id.'));
 	Challenge.findById(challengeId).populate('challenger').populate('challengee').exec(function(err, challenge) {
-		if (err)
-			return next(err);
-		//if (!hasForfeit(challenge.createdAt))
-		//	return next(new Error('This challenge has not expired.'));
+		if (err) return next(err);
 	
 		console.log('Forfeiting challenge id ['+challengeId+']');
 		
@@ -244,8 +220,7 @@ router.post('/forfeit', function(req, res, next) {
 		challenge.save();
 		
 		updateLastGames(challenge, function(err) {
-			if (err)
-				return next(err);
+			if (err) return next(err);
 			if (loser.rank < winner.rank) {
 				console.log('Swapping rankings between ' + winner.name + ' and ' + loser.name);
 				swapRanks(winner._id, loser._id, function(err) {
@@ -345,13 +320,15 @@ function isBusinessDay(date) {
 var ALLOWED_CHALLENGES = 1;
 function allowedToChallenge(playerId, callback) {
 	countChallenges(playerId, function(err, incoming, outgoing) {
-		if (err)
+		if (err) {
 			callback(err);
-		if (incoming > 1)
+		} else if (incoming > 1) {
 			callback(err, false, 'Players must resolve incoming challenges before issuing new ones.');
-		if (outgoing >= ALLOWED_CHALLENGES)
+		} else if (outgoing >= ALLOWED_CHALLENGES) {
 			callback(err, false, 'Players cannot issue more than '+ALLOWED_CHALLENGES+' outgoing challenges.');
-		callback(err, true);
+		} else {
+			callback(err, true);
+		}
 	});
 }
 
@@ -367,13 +344,16 @@ function countChallenges(playerId, callback) {
 	Challenge.find({challenger: playerId, winner: null}, function(err, challenges) {
 		if (err) {
 			callback(err);
+			return;
 		}
 		var outgoing = 0;
 		if (challenges)
 			outgoing = challenges.length;
 		Challenge.find({challengee: playerId, winner: null}, function(err, challenges) {
-			if (err)
+			if (err) {
 				callback(err);
+				return;
+			}
 			var incoming = 0;
 			if (challenges)
 				incoming = challenges.length;
@@ -392,12 +372,16 @@ function countChallenges(playerId, callback) {
  */
 function swapRanks(playerId1, playerId2, callback) {
 	setRank(playerId1, TEMP_RANK, function(err, oldRank, newRank) {
-		if (err)
+		if (err) {
 			callback(err);
+			return;
+		}
 		var player1_oldRank = oldRank;
 		setRank(playerId2, player1_oldRank, function(err, oldRank, newRank) {
-			if (err)
+			if (err) {
 				callback(err);
+				return;
+			}
 			var player2_oldRank = oldRank;
 			setRank(playerId1, player2_oldRank, function(err, oldRank, newRank) {
 				callback(err);
@@ -420,8 +404,10 @@ function swapRanks(playerId1, playerId2, callback) {
 var TEMP_RANK = -1;
 function setRank(playerId, newRank, callback) {
 	Player.findById(playerId, function(err, player) {
-		if (err)
+		if (err) {
 			callback(err, null, null);
+			return;
+		}
 		var oldRank = player.rank;
 		player.rank = newRank;
 		player.save(function(err) {
@@ -458,15 +444,19 @@ function updateLastGames(challenge, callback) {
 	
 	// Update challenger
 	Player.findById(challengerId, function(err, player) {
-		if (err)
+		if (err) {
 			callback(err);
+			return;
+		}
 		player.lastGame = gameTime;
 		player.save();
 		
 		// Update challengee
 		Player.findById(challengeeId, function(err, player) {
-			if (err)
+			if (err) {
 				callback(err);
+				return;
+			}
 			player.lastGame = gameTime;
 			player.save();
 			

@@ -33,8 +33,7 @@
 }
 
 
-.list-group-item {
-	/* Override Bootstrap Default */
-	padding-left: 8px;
-	padding-right: 8px;
+.partial-board .li .glyphicon-fullscreen {
+	cursor: pointer;
+	line-height: inherit;
 }
