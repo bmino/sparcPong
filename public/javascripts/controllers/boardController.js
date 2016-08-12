@@ -42,10 +42,7 @@ angular.module('controllers')
 				headerText: 'Challenge',
 				bodyText: 'You must log in first.'
 			};
-			modalService.showAlertModal({}, modalOptions).then(function(result) {
-				// Defined @ globals/functions.js
-				flash($("#logInOut"), 2);
-			});
+			modalService.showAlertModal({}, modalOptions);
 		} else {
 			var myId = player._id;
 			challengeService.createChallenge(myId, challengeeId).then( goodChallenge, badChallenge );

@@ -10,16 +10,13 @@
 		<!-- Socket Integration -->
 		<script src='/socket.io/socket.io.js'></script>
 		
-		<!-- Global Functions -->
-		<script src='/javascripts/globals/functions.js'></script>
-		
 		<!-- Angular: Essential Libraries -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-route.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.js"></script>
 		<script src='/bower/angular-bootstrap/ui-bootstrap.min.js'></script>
-		<script src='/bower/angular-bootstrap/ui-bootstrap-tpls.js'></script>		
+		<script src='/bower/angular-bootstrap/ui-bootstrap-tpls.js'></script>
 		
 		<!-- Angular: Filters -->
 		<script src='/javascripts/filters/_filters.js'></script>
@@ -96,6 +93,7 @@
 								<a class="dropdown-toggle" data-toggle="dropdown" role="button">Account <span class="caret"></span></a>
 								<ul class="dropdown-menu">
 									<li role="presentation">
+										<a ng-href="#/account/settings">Settings</a>
 										<a ng-href="#/account/changeName">Change Name</a>
 									</li>
 								</ul>
