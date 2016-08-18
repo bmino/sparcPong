@@ -17,7 +17,7 @@ angular.module('controllers')
 			if (!player) {
 				console.log('Could not fetch profile');
 			} else {
-				console.log('Found profile');
+				//console.log('Found profile');
 				$rootScope.pageTitle = player.name;
 				$scope.profile = player;
 			}
@@ -77,15 +77,12 @@ angular.module('controllers')
 			challenge: challenge
 		};
 		modalService.showScoreModal({}, modalOptions).then(function(result) {
-			if (!result)
-				return;
-			console.log('Resolving challenge');
+			if (!result) return;
 			var challengerScore = result.challenge.challengerScore;
 			var challengeeScore = result.challenge.challengeeScore;
 			
 			challengeService.resolveChallenge(challenge._id, challengerScore, challengeeScore).then(
 				function(success) {
-					console.log(success);
 					socket.emit('challenge:resolved', challenge);
 					var modalOptions = {
 						headerText: 'Resolve Challenge',
@@ -123,12 +120,9 @@ angular.module('controllers')
             bodyText: 'Are you sure you wish to revoke this challenge?'
         };
         modalService.showModal({}, modalOptions).then(function (okay) {
-			if (!okay)
-				return;
-			console.log('Revoking challenge');
+			if (!okay) return;
 			challengeService.revokeChallenge(challenge.challenger._id, challenge.challengee._id).then(
 				function(success) {
-					console.log(success);
 					socket.emit('challenge:revoked', challenge);
 					var modalOptions = {
 						headerText: 'Revoke Challenge',
@@ -165,12 +159,9 @@ angular.module('controllers')
             bodyText: 'Are you sure you wish to forfeit to '+ challenge.challenger.name +'?'
         };
         modalService.showModal({}, modalOptions).then(function (okay) {
-			if (!okay)
-				return;
-			console.log('Forfeiting challenge');
+			if (!okay) return;
 			challengeService.forfeitChallenge(challenge._id).then(
 				function(success) {
-					console.log(success);
 					socket.emit('challenge:forfeited', challenge);
 					var modalOptions = {
 						headerText: 'Forfeit Challenge',

@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('headerController', ['$scope', '$rootScope', 'socket', 'modalService', 'playerService', function($scope, $rootScope, socket, modalService, playerService) {
+.controller('headerController', ['$scope', '$rootScope', '$location', 'socket', 'modalService', 'playerService', function($scope, $rootScope, $location, socket, modalService, playerService) {
 
 	$scope.player;
 	$scope.clients;
@@ -25,6 +25,7 @@ angular.module('controllers')
 		if ($rootScope.myClient.player) {
 			// Log Out
 			$rootScope.myClient = {};
+			$location.path("/");
 			modalOptions = {
 				headerText: 'Log Out',
 				bodyText: 'Successfully logged out'
@@ -40,12 +41,9 @@ angular.module('controllers')
 				players: $scope.players
 			};
 			modalService.showLogInModal({}, modalOptions).then(function(player) {
-				if (!player)
-					return;
+				if (!player) return;
 				
 				$rootScope.myClient.player = player;
-				console.log('Logged in as:');
-				console.log($rootScope.myClient.player);
 				
 				modalOptions = {
 					headerText: 'Log In',

@@ -49,7 +49,6 @@ angular.module('controllers')
 		}
 	};
 	function goodChallenge(success) {
-		console.log(success);
 		socket.emit('challenge:issued');
 		var modalOptions = {
             headerText: 'Challenge',
