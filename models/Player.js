@@ -6,7 +6,8 @@ var playerSchema = new Schema({
 	rank: { type: Number, default: 0 },
 	lastGame: { type: Date, default: null },
 	phone: Number,
-	email: String
+	email: String,
+	challengeAlert: { type: Boolean, default: false }
 	
 });
 

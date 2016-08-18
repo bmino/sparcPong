@@ -67,6 +67,69 @@ router.post('/change/name', function(req, res, next) {
 	});
 });
 
+
+/* 
+ * POST changes player email
+ *
+ * @param: newEmail
+ */
+router.post('/change/email', function(req, res, next) {
+	var playerId = req.body.playerId;
+	var newEmail = req.body.newEmail.trim();
+	if (!playerId)
+		return next(new Error('You must provide a valid player id.'));
+	
+	validEmail(newEmail, function(err) {
+		if (err) return next(err);
+	
+		console.log('Changing player email.');
+		Player.findById(playerId, function(err, player) {
+			if (err) return next(err);
+			if (!player)
+				return next(new Error('Could not find your current account.'));
+			var oldEmail = player.email;
+			player.email = newEmail;
+			player.save(function(err) {
+				if (err) return next(err);
+				res.json({message: 'Successfully changed your email from '+ oldEmail +' to '+ newEmail +'!'});
+			});
+		});
+	});
+});
+
+/* Get player alerts */
+router.get('/alerts/:playerId', function(req, res, next) {
+	var playerId = req.params.playerId;
+	if (!playerId)
+		return next(new Error('You must provide a valid player id.'));
+	Player.findById(playerId, function(err, player) {
+		if (err) return next(err);
+		if (!player) return next(new Error('Could not find the player.'));
+		var alerts = {};
+		alerts.challenge = player.challengeAlert || false;
+		res.json({message: alerts});
+	});
+});
+
+/* POST player alerts */
+router.post('/alerts', function(req, res, next) {
+	var playerId = req.body.playerId;
+	var alerts = req.body.alerts;
+	if (!playerId)
+		return next(new Error('You must provide a valid player id.'));
+	if (!alerts)
+		return next(new Error('Uh oh, the alert preferences got lost along the way.'));
+	
+	Player.findById(playerId, function(err, player) {
+		if (err) return next(err);
+		player.challengeAlert = alerts.challenge;
+		player.save(function(err) {
+			if (err) return next(err);
+			res.json({message: 'Alerts updated successfully!'});
+		});
+	});
+});
+
 /* GET player listing */
 router.get('/', function(req, res, next) {
 	Player.find({}, function(err, players) {
@@ -166,6 +229,17 @@ function validName(name, callback) {
 	});
 }
 
+function validEmail(email, callback) {
+	console.log('Verifying email of '+ email);
+	var len = email.trim().length;
+	
+	// TODO: common sense email verification logic (@ symbol, period...)
+	
+	emailExists(email, function(err) {
+		callback(err);
+	});
+}
+
 function nameExists(name, callback) {
 	console.log('Checking if player name, '+ name +', exists.');
 	var searchName = name.trim();
@@ -174,6 +248,20 @@ function nameExists(name, callback) {
 			callback(err);
 		} else if (count != 0) {
 			callback(new Error('Player name already exists.'));
+		} else {
+			callback(null);
+		}
+	});
+}
+
+function emailExists(email, callback) {
+	console.log('Checking if email, '+ email +', exists.');
+	var searchEmail = email.trim();
+	Player.count({email: searchEmail}, function(err, count) {
+		if (err) {
+			callback(err);
+		} else if (count != 0) {
+			callback(new Error('Email already exists.'));
 		} else {
 			callback(null);
 		}

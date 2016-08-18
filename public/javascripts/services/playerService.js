@@ -30,6 +30,38 @@ angular.module('services')
 		return request.then( handleSuccess, handleError );
 	};
 	
+	this.changeEmail = function(playerId, newEmail) {
+		var request = $http({
+			method: "post",
+			url: "api/player/change/email/",
+			data: {
+				playerId: playerId,
+				newEmail: newEmail
+			}
+		});
+		return request.then( handleSuccess, handleError );
+	};
+	
+	this.getAlerts = function(playerId) {
+		var request = $http({
+			method: "get",
+			url: "api/player/alerts/"+playerId
+		});
+		return request.then( handleSuccess, handleError );
+	};
+	
+	this.updateAlerts = function(playerId, alerts) {
+		var request = $http({
+			method: "post",
+			url: "api/player/alerts/",
+			data: {
+				playerId: playerId,
+				alerts: alerts
+			}
+		});
+		return request.then( handleSuccess, handleError );
+	};
+	
 	
 	this.getPlayer = function(playerId) {
 		var request = $http({

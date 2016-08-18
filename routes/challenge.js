@@ -4,6 +4,15 @@ var mongoose = require('mongoose');
 var Challenge = mongoose.model('Challenge');
 var Player = mongoose.model('Player');
 
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+
+
+router.get('/email', function(req, res, next) {
+	sendEmail('Subject', 'Test message', 'brandonmino@bellsouth.net');
+});
+
+
 /* POST new challenge
  *
  * @param: challengerId
@@ -21,40 +30,36 @@ router.post('/', function(req, res, next) {
 	if (challengerId == challengeeId)
 		return next(new Error('Players cannot challenge themselves.'));
 	
-	challengeExists(challengerId, challengeeId, function(err, exists) {
-		if (err) return next(err);
-		if (exists)
-			return next(new Error('A challenge already exists between these players.'));
-		
-		// Verifies challenger is allowed to issue a challenge
-		allowedToChallenge(challengerId, function(err, allowed, message) {
-			if (err) return next(err);
-			if (!allowed) {
-				return next(new Error(message));
-			} else {
-				// Not allowed to issue challenges on weekends
-				var todayDay = new Date().getDay();
-				if (todayDay == 0 || todayDay == 6)
-					return next(new Error('You can only issue challenges on business days.'));
+	// Not allowed to issue challenges on weekends
+	var todayDay = new Date().getDay();
+	if (todayDay == 0 || todayDay == 6)
+		return next(new Error('You can only issue challenges on business days.'));
 				
-				// Grabs player info on both challenge participants
-				Player.findById(challengerId, function(err, challenger) {
+	challengeExists(challengerId, challengeeId, function(err) {
+		if (err) return next(err);
+		
+		// Grabs player info on both challenge participants
+		Player.findById(challengerId, function(err, challenger) {
+			if (err) return next(err);
+			Player.findById(challengeeId, function(err, challengee) {
+				if (err) return next(err);
+				
+				// Verifies the challenge can be issued and received
+				allowedToChallenge(challenger, challengee, function(err) {
 					if (err) return next(err);
-					Player.findById(challengeeId, function(err, challengee) {
+					
+					if (challenger.rank < challengee.rank)
+						return next(new Error('You cannot challenger a player below your rank.'));
+					else if (Math.abs(getTier(challenger.rank) - getTier(challengee.rank)) > 1)
+						return next(new Error('You cannot challenge a player beyond 1 tier.'));
+					
+					challenge.save(function(err) {
 						if (err) return next(err);
-						
-						if (challenger.rank < challengee.rank)
-							return next(new Error('You cannot challenger a player below your rank.'));
-						else if (Math.abs(getTier(challenger.rank) - getTier(challengee.rank)) > 1)
-							return next(new Error('You cannot challenge a player beyond 1 tier.'));
-						
-						challenge.save(function(err) {
-							if (err) return next(err);
-							res.json({message: 'Challenge issued!'});
-						});
+						email_newChallenge(challenger, challengee);
+						res.json({message: 'Challenge issued!'});
 					});
 				});
-			}
+			});
 		});
 	});	
 });
@@ -253,10 +258,11 @@ function challengeExists(playerId1, playerId2, callback) {
 					]}, function(err, challenges) {
 		
 		if (err) {
-			callback(err, false);
+			callback(err);
+		} else if (challenges.length > 0){
+			callback(new Error('A challenge already exists between these players.'));
 		} else {
-			var c = (challenges.length > 0) ? true : false
-			return callback(null, c);
+			callback(null);
 		}
 	});
 }
@@ -270,10 +276,7 @@ var ALLOWED_CHALLENGE_DAYS = 3;
 function hasForfeit(dateIssued) {
 	var expires = addBusinessDays(dateIssued, ALLOWED_CHALLENGE_DAYS);
 	// Challenge expired before today
-	if (expires < new Date())
-		return true;
-	else
-		return false;
+	return expires < new Date();
 }
 
 /*
@@ -317,18 +320,36 @@ function isBusinessDay(date) {
  * @return: boolean - true if allowed, and false if not allowed
  * @return: String - error message if not allowed
  */
-var ALLOWED_CHALLENGES = 1;
-function allowedToChallenge(playerId, callback) {
-	countChallenges(playerId, function(err, incoming, outgoing) {
+var ALLOWED_OUTGOING = 1;
+var ALLOWED_INCOMING = 1;
+function allowedToChallenge(challenger, challengee, callback) {
+	// Checks challenger
+	countChallenges(challenger._id, function(err, incoming, outgoing) {
 		if (err) {
 			callback(err);
-		} else if (incoming > 1) {
-			callback(err, false, 'Players must resolve incoming challenges before issuing new ones.');
-		} else if (outgoing >= ALLOWED_CHALLENGES) {
-			callback(err, false, 'Players cannot issue more than '+ALLOWED_CHALLENGES+' outgoing challenges.');
-		} else {
-			callback(err, true);
+			return;
+		} else if (incoming >= ALLOWED_INCOMING) {
+			callback(new Error(challenger.name +' cannot have more than '+ALLOWED_INCOMING+' incoming challenge.'));
+			return;
+		} else if (outgoing >= ALLOWED_OUTGOING) {
+			callback(new Error(challenger.name +' cannot have more than '+ALLOWED_OUTGOING+' outgoing challenge.'));
+			return;
 		}
+		// Checks challengee
+		countChallenges(challengee._id, function(err, incoming, outgoing) {
+			if (err) {
+				callback(err);
+				return;
+			} else if (incoming >= ALLOWED_INCOMING) {
+				callback(new Error(challengee.name +' cannot have more than '+ALLOWED_INCOMING+' incoming challenge.'));
+				return;
+			} else if (outgoing >= ALLOWED_OUTGOING) {
+				callback(new Error(challengee.name +' cannot have more than '+ALLOWED_OUTGOING+' outgoing challenge.'));
+				return;
+			} else {
+				callback(null);
+			}
+		});
 	});
 }
 
@@ -346,9 +367,7 @@ function countChallenges(playerId, callback) {
 			callback(err);
 			return;
 		}
-		var outgoing = 0;
-		if (challenges)
-			outgoing = challenges.length;
+		var outgoing = challenges ? challenges.length : 0;
 		Challenge.find({challengee: playerId, winner: null}, function(err, challenges) {
 			if (err) {
 				callback(err);
@@ -512,6 +531,41 @@ function getRanks(tier, currentTier, lastRank, ranks) {
 	lastRank = ranks[ranks.length-1];
 	
 	return getRanks(tier, ++currentTier, lastRank, ranks);
+}
+
+function email_newChallenge(challenger, challengee) {
+	if (challengee.email && challengee.challengeAlert) {
+		console.log('Sending email to '+ challengee.email);
+		sendEmail('New Challenge', 'You have been challenged by '+ challenger.name +'. Log in to the <a href="http://sparc-pong.herokuapp.com">Sparc Pong Ladder</a> to deal with that scrub!', challengee.email);
+	}
+}
+
+function sendEmail(subject, message, address) {
+	var transporter = nodemailer.createTransport({
+		service: "gmail",
+		auth: {
+			user: 'sparc.pong@gmail.com',
+			pass: 'googlerules'
+		},
+		
+		tls: { rejectUnauthorized: false }
+	});
+	
+	var mailOptions = {
+		from: '"Sparc Pong Ladder" <sparc.pong@gmail.com>', // sender address
+		to: address, // list of receivers
+		subject: subject,
+		//text: 'Hello world 🐴', // plaintext body
+		html: '<p>'+message+'</p>' // html body
+	};
+
+	transporter.sendMail(mailOptions, function(error, info) {
+		transporter.close();
+		if(error) {
+			return console.log(error);
+		}
+		console.log('Message sent: ' + info.response);
+	});
 }
 
 

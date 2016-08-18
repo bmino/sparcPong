@@ -46,7 +46,8 @@
 		<script src='/javascripts/controllers/signUpController.js'></script>
 		<script src='/javascripts/controllers/profileController.js'></script>
 		<script src='/javascripts/controllers/account/changeNameController.js'></script>
-		<script src='/javascripts/controllers/account/settingsController.js'></script>
+		<script src='/javascripts/controllers/account/changeEmailController.js'></script>
+		<script src='/javascripts/controllers/account/changeAlertsController.js'></script>
 		<script src='/javascripts/controllers/info/infoChallengesController.js'></script>
 		<script src='/javascripts/controllers/info/infoRulesController.js'></script>
 		
@@ -94,8 +95,9 @@
 								<a class="dropdown-toggle" data-toggle="dropdown" role="button">Account <span class="caret"></span></a>
 								<ul class="dropdown-menu">
 									<li role="presentation">
-										<a ng-href="#/account/settings">Settings</a>
 										<a ng-href="#/account/changeName">Change Name</a>
+										<a ng-href="#/account/changeEmail">Change Email</a>
+										<a ng-href="#/account/changeAlerts">Setup Alerts</a>
 									</li>
 								</ul>
 							</li>
@@ -130,7 +132,8 @@
 			<div ng-view></div>
 			
 			<footer>
-				<span ng-bind="clients"></span> <span ng-bind="clients == 1 ? 'ponger' : 'pongers'"></span> currently online
+				<span ng-bind="clients"></span> <span ng-bind="clients == 1 ? 'ponger' : 'pongers'"></span> currently online<br>
+				<span>Version 1.2.0</span>
 			</footer>
 		
 		</div><!-- /.wrapper -->
