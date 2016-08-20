@@ -42,14 +42,8 @@ angular.module('controllers')
 			};
 			modalService.showLogInModal({}, modalOptions).then(function(player) {
 				if (!player) return;
-				
 				$rootScope.myClient.player = player;
-				
-				modalOptions = {
-					headerText: 'Log In',
-					bodyText: 'Successfully logged in as '+$rootScope.myClient.player.name
-				};
-				modalService.showAlertModal({}, modalOptions);
+				$location.path("/");
 			});
 		}
 	};
@@ -62,19 +56,19 @@ angular.module('controllers')
 	});
 	
 	socket.on('player:new', function(player) {
-		console.log('New user detected.');
+		console.log(new Date().toLocaleTimeString() +' - New user detected.');
 		populateUserList();
 	});
 	socket.on('player:nameChange', function(player) {
-		console.log('Name change detected.');
+		console.log(new Date().toLocaleTimeString() +' - Name change detected.');
 		populateUserList();
 	});
 	socket.on('client:enter', function(clients) {
-		console.log('Detected client entering.');
+		console.log(new Date().toLocaleTimeString() +' - Detected client entering.');
 		$rootScope.clients = clients;
 	});
 	socket.on('client:leave', function(clients) {
-		console.log('Detected client leaving.');
+		console.log(new Date().toLocaleTimeString() +' - Detected client leaving.');
 		$rootScope.clients = clients;
 	});
 	

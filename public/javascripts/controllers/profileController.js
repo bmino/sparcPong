@@ -12,12 +12,10 @@ angular.module('controllers')
 	
 	function init() {
 		$scope.profileId = $routeParams.playerId;
-		console.log('Fetching profile for ' + $scope.profileId);
 		playerService.getPlayer($scope.profileId).then(function(player) {
 			if (!player) {
 				console.log('Could not fetch profile');
 			} else {
-				//console.log('Found profile');
 				$rootScope.pageTitle = player.name;
 				$scope.profile = player;
 			}
@@ -27,7 +25,6 @@ angular.module('controllers')
 	
 	function fetchChallenges() {
 		var playerId = $scope.profileId;
-		console.log('Fetching challenges for ' + playerId);
 		challengeService.getChallengesIncoming(playerId).then( incomingChallenges );
 		challengeService.getChallengesOutgoing(playerId).then( outgoingChallenges );
 		challengeService.getChallengesResolved(playerId).then( resolvedChallenges );
