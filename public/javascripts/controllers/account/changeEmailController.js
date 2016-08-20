@@ -1,15 +1,26 @@
 angular.module('controllers')
 .controller('changeEmailController', ['$scope', '$rootScope', 'modalService', 'playerService', function($scope, $rootScope, modalService, playerService) {
 	
+	$scope.email = '';
+	
 	init();
 	
 	function init() {
 		$rootScope.pageTitle = 'Change Email';
+		getEmail();
+	}
+	
+	function getEmail() {
+		var playerId = $rootScope.myClient.player._id;
+		playerService.getPlayer(playerId).then(function(player) {
+			if (!player) console.log('Uh oh, this player could not be found.');
+			else $scope.email = player.email;
+		});
 	}
 	
 	$scope.validateEmail = function() {
 		var playerId = $rootScope.myClient.player._id;
-		playerService.changeEmail(playerId, $scope.newEmail).then(
+		playerService.changeEmail(playerId, $scope.email).then(
 			// Success
 			function(success) {
 				modalOptions = {

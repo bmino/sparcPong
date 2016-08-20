@@ -1,12 +1,11 @@
 angular.module('controllers')
 .controller('changeNameController', ['$scope', '$rootScope', 'modalService', 'playerService', function($scope, $rootScope, modalService, playerService) {
 	
-	$scope.newName = '';
-	
 	init();
 	
 	function init() {
 		$rootScope.pageTitle = 'Change Username';
+		$scope.newName = $rootScope.myClient.player.name || '';
 	}
 	
 	$scope.validateName = function() {
