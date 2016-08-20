@@ -45,7 +45,7 @@ angular.module('services')
 	this.getAlerts = function(playerId) {
 		var request = $http({
 			method: "get",
-			url: "api/player/alerts/"+playerId
+			url: "api/playerAlerts/"+playerId
 		});
 		return request.then( handleSuccess, handleError );
 	};
@@ -53,7 +53,7 @@ angular.module('services')
 	this.updateAlerts = function(playerId, alerts) {
 		var request = $http({
 			method: "post",
-			url: "api/player/alerts/",
+			url: "api/playerAlerts/",
 			data: {
 				playerId: playerId,
 				alerts: alerts

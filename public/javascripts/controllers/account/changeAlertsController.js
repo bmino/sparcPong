@@ -2,7 +2,11 @@ angular.module('controllers')
 .controller('changeAlertsController', ['$scope', '$rootScope', 'modalService', 'playerService', function($scope, $rootScope, modalService, playerService) {
 	
 	$scope.alerts = {
-		challenge: false
+		challenged: false,
+		revoked: false,
+		resolved: false,
+		forfeited: false
+		
 	};
 	
 	init();
@@ -15,12 +19,11 @@ angular.module('controllers')
 	function getAlerts() {
 		var playerId = $rootScope.myClient.player._id;
 		playerService.getAlerts(playerId).then(function(alerts) {
-			console.log(alerts);
-			$scope.alerts.challenge = alerts.challenge;
+			$scope.alerts = alerts;
 		});
 	}
 	
-	$scope.updateAlerts = function(playerId) {
+	$scope.updateAlerts = function() {
 		var playerId = $rootScope.myClient.player._id;
 		playerService.updateAlerts(playerId, $scope.alerts).then(
 			// Success

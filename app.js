@@ -7,20 +7,23 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
+require('dotenv').config({path: 'config/local.env'});
 
 // Mongo
 var mongoose = require('mongoose');
 
 require('./models/Player');
 require('./models/Challenge');
+require('./models/Alert');
 
-var db_uri = process.env.MONGODB_URI || 'mongodb://localhost/pongers';
+var db_uri = process.env.MONGODB_URI;
 mongoose.connect(db_uri);
 
 
 var routes = require('./routes/basic');
 var player = require('./routes/player');
 var challenge = require('./routes/challenge');
+var playerAlerts = require('./routes/alert');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -38,6 +41,7 @@ app.use('/bower', express.static(path.join(__dirname, 'bower_components')));
 app.use('/', routes);
 app.use('/api/player', player);
 app.use('/api/challenge', challenge);
+app.use('/api/playerAlerts', playerAlerts);
 
 
 // catch 404 and forward to error handler

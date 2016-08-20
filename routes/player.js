@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
+var Alert = mongoose.model('Alert');
 
 /* 
  * POST new player
@@ -20,19 +21,27 @@ router.post('/', function(req, res, next) {
 		getLowestRank(function(err, lowestRank) {
 			if (err) return next(err);
 			
-			// Create new player
-			var player = new Player();
-			player.name = playerName;
-			player.rank = lowestRank + 1;
-			player.phone = req.body.phone;
-			player.email = req.body.email;
-			
-			// Saves player to DB
-			player.save(function(err, saved) {
+			// Creates player alerts
+			console.log('Creating player alert settings.');
+			var newAlert = new Alert();
+			newAlert.save(function(err) {
 				if (err) return next(err);
 				
-				console.log('Successfully created a new player.');
-				res.json({message: 'Player created!'});
+				// Create new player
+				var player = new Player();
+				player.name = playerName;
+				player.alerts = newAlert._id;
+				player.rank = lowestRank + 1;
+				player.phone = req.body.phone;
+				player.email = req.body.email;
+				
+				// Saves player to DB
+				player.save(function(err, saved) {
+					if (err) return next(err);
+					
+					console.log('Successfully created a new player.');
+					res.json({message: 'Player created!'});
+				});
 			});
 		});
 	});	
@@ -93,39 +102,6 @@ router.post('/change/email', function(req, res, next) {
 				if (err) return next(err);
 				res.json({message: 'Successfully changed your email from '+ oldEmail +' to '+ newEmail +'!'});
 			});
-		});
-	});
-});
-
-/* Get player alerts */
-router.get('/alerts/:playerId', function(req, res, next) {
-	var playerId = req.params.playerId;
-	if (!playerId)
-		return next(new Error('You must provide a valid player id.'));
-	Player.findById(playerId, function(err, player) {
-		if (err) return next(err);
-		if (!player) return next(new Error('Could not find the player.'));
-		var alerts = {};
-		alerts.challenge = player.challengeAlert || false;
-		res.json({message: alerts});
-	});
-});
-
-/* POST player alerts */
-router.post('/alerts', function(req, res, next) {
-	var playerId = req.body.playerId;
-	var alerts = req.body.alerts;
-	if (!playerId)
-		return next(new Error('You must provide a valid player id.'));
-	if (!alerts)
-		return next(new Error('Uh oh, the alert preferences got lost along the way.'));
-	
-	Player.findById(playerId, function(err, player) {
-		if (err) return next(err);
-		player.challengeAlert = alerts.challenge;
-		player.save(function(err) {
-			if (err) return next(err);
-			res.json({message: 'Alerts updated successfully!'});
 		});
 	});
 });

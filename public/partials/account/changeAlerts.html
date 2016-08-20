@@ -1,8 +1,17 @@
 <div class="account-changeAlerts">
 	<form class="form-horizontal" ng-submit="updateAlerts()" autocomplete="off">
 		<div class="form-group">
-			<label class="control-label col-md-2" for="challengeAlert">Challenge Alert</label>
-			<div class="col-md-10"><input class="checkbox" id="challengeAlert" type="checkbox" ng-model="alerts.challenge" /></div>
+			<label class="control-label col-md-2" for="challengedAlert">Challenged Alert</label>
+			<div class="col-md-10"><input class="checkbox" id="challengedAlert" type="checkbox" ng-model="alerts.challenged" /></div>
+			
+			<label class="control-label col-md-2" for="revokedAlert">Revoked Alert</label>
+			<div class="col-md-10"><input class="checkbox" id="revokedAlert" type="checkbox" ng-model="alerts.revoked" /></div>
+			
+			<label class="control-label col-md-2" for="resolvedAlert">Resolved Alert</label>
+			<div class="col-md-10"><input class="checkbox disabled" id="resolvedAlert" type="checkbox" ng-model="alerts.resolved" /></div>
+			
+			<label class="control-label col-md-2" for="forfeitedAlert">Forfeited Alert</label>
+			<div class="col-md-10"><input class="checkbox" id="forfeitedAlert" type="checkbox" ng-model="alerts.forfeited" /></div>
 			<!-- More Alerts Here -->
 		</div>
 		<div class="form-group">
