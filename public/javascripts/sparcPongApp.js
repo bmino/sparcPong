@@ -38,6 +38,10 @@ angular.module('sparcPongApp', [
 			templateUrl: '/partials/info/rules.html',
 			controller: 'infoRulesController'
 		})
+		.when('/info/alerts', {
+			templateUrl: '/partials/info/alerts.html',
+			controller: 'infoAlertsController'
+		})
 		.when('/signUp', {
 			templateUrl: '/partials/signUp.html',
 			controller: 'signUpController'
