@@ -20,8 +20,19 @@ angular.module('controllers')
 	
 	function populatePlayers() {
 		playerService.getPlayers().then( function(players) {
+			sanitizeNames(players);
 			$scope.players = players;
 		});
+	}
+	
+	/* Should be covered by back end check, but just in case */
+	function sanitizeNames(players) {
+		for (var i=0; i<players.length; i++) {
+			players[i]['name'].replace(/&/g, '&amp;')
+							  .replace(/>/g, '&gt;')
+							  .replace(/</g, '&lt;')
+							  .replace(/"/g, '&quot;');
+		}
 	}
 	
 	$scope.dangerLevel = function(gameTime) {

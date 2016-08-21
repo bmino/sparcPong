@@ -13,34 +13,41 @@ var Alert = mongoose.model('Alert');
  */
 router.post('/', function(req, res, next) {
 	var playerName = req.body.name.trim();
+	var playerPhone = req.body.phone.trim();
+	var playerEmail = req.body.email.trim();
 	
 	validName(playerName, function(err) {
 		if (err) return next(err);
 		
-		console.log('Creating new player.');
-		getLowestRank(function(err, lowestRank) {
+		validEmail(playerEmail, function(err) {
 			if (err) return next(err);
 			
-			// Creates player alerts
-			console.log('Creating player alert settings.');
-			var newAlert = new Alert();
-			newAlert.save(function(err) {
+			getLowestRank(function(err, lowestRank) {
 				if (err) return next(err);
 				
-				// Create new player
-				var player = new Player();
-				player.name = playerName;
-				player.alerts = newAlert._id;
-				player.rank = lowestRank + 1;
-				player.phone = req.body.phone;
-				player.email = req.body.email;
+				console.log('Creating new player.');
 				
-				// Saves player to DB
-				player.save(function(err, saved) {
+				// Creates player alerts
+				console.log('Creating player alert settings.');
+				var newAlert = new Alert();
+				newAlert.save(function(err) {
 					if (err) return next(err);
 					
-					console.log('Successfully created a new player.');
-					res.json({message: 'Player created!'});
+					// Create new player
+					var player = new Player();
+					player.name = playerName;
+					player.alerts = newAlert._id;
+					player.rank = lowestRank + 1;
+					player.phone = playerPhone;
+					player.email = playerEmail;
+					
+					// Saves player to DB
+					player.save(function(err, saved) {
+						if (err) return next(err);
+						
+						console.log('Successfully created a new player.');
+						res.json({message: 'Player created!'});
+					});
 				});
 			});
 		});
@@ -87,6 +94,10 @@ router.post('/change/email', function(req, res, next) {
 	var newEmail = req.body.newEmail.trim();
 	if (!playerId)
 		return next(new Error('You must provide a valid player id.'));
+	if (!newEmail || newEmail.length == 0)
+		return next(new Error('You must provide a valid email address.'));
+	if (newEmail.length > 50)
+		return next(new Error('Your email length cannot exceed 50 characters.'));
 	
 	validEmail(newEmail, function(err) {
 		if (err) return next(err);
@@ -100,7 +111,7 @@ router.post('/change/email', function(req, res, next) {
 			player.email = newEmail;
 			player.save(function(err) {
 				if (err) return next(err);
-				res.json({message: 'Successfully changed your email from '+ oldEmail +' to '+ newEmail +'!'});
+				res.json({message: 'Successfully changed your email to '+ newEmail +'!'});
 			});
 		});
 	});
@@ -132,29 +143,6 @@ router.get('/fetch/:playerId', function(req, res, next) {
 		}
 	});
 });
-
-/* DELETE player */
-router.delete('/', function(req, res) {
-	var playerId = req.body.playerId;
-	
-	if (!playerId)
-		return next(new Error('You must specify a player id.'));
-	
-	//console.log('Deleting player with id [' + playerId + ']');
-	console.log('Deleting players is not enabled.');
-	res.json({message: 'This feature is not yet implemented.'});
-	
-	/*
-	Player.remove({_id: playerId}, function(err, player) {
-		if (err) {
-			return next(err);
-		} else {
-			res.json({message: 'Successfully deleted player.'});
-		}
-	});
-	*/
-});
-
 
 function getLowestRank(callback) {
 	Player.find().sort({'rank': -1}).limit(1).exec(function(err, lowestRankPlayer) {

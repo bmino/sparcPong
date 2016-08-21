@@ -37,10 +37,10 @@ router.post('/', function(req, res, next) {
 		if (err) return next(err);
 		if (!player || !player.alerts) return (new Error("Could not find the player."));
 		
-		player.alerts.challenged = newAlerts.challenged;
-		player.alerts.revoked = newAlerts.revoked;
-		player.alerts.resolved = newAlerts.resolved;
-		player.alerts.forfeited = newAlerts.forfeited;
+		player.alerts.challenged = newAlerts.challenged == true;
+		player.alerts.revoked = newAlerts.revoked == true;
+		player.alerts.resolved = newAlerts.resolved == true;
+		player.alerts.forfeited = newAlerts.forfeited == true;
 		
 		player.alerts.save(function(err) {
 			if (err) return next(err);
