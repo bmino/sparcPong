@@ -78,19 +78,7 @@ angular.module('services')
 		});
 		return request.then( handleSuccess, handleError );
 	};
-	
-	this.deletePlayer = function(playerId) {
-		var request = $http({
-			method: "delete",
-			url: "api/player/",
-			data: {
-				playerId: playerId
-			}
-		});
-		return request.then( handleSuccess, handleError );
-	};
-	
-	
+		
 	
 	
 	

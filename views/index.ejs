@@ -10,12 +10,12 @@
 		<!-- Socket Integration -->
 		<script src='/socket.io/socket.io.js'></script>
 		
+		<!-- JQuery -->
+		<script src="/bower/jquery/jquery.min.js"></script>
+		
 		<!-- Angular: Essential Libraries -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-route.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.js"></script>
-		<script src='/bower/angular-bootstrap/ui-bootstrap.min.js'></script>
+		<script src="/bower/angular/angular.min.js"></script>
+		<script src="/bower/angular-route/angular-route.min.js"></script>
 		<script src='/bower/angular-bootstrap/ui-bootstrap-tpls.js'></script>
 		
 		<!-- Angular: Filters -->
@@ -48,24 +48,25 @@
 		<script src='/javascripts/controllers/account/changeNameController.js'></script>
 		<script src='/javascripts/controllers/account/changeEmailController.js'></script>
 		<script src='/javascripts/controllers/account/changeAlertsController.js'></script>
+		<script src='/javascripts/controllers/info/infoAlertsController.js'></script>
 		<script src='/javascripts/controllers/info/infoChallengesController.js'></script>
 		<script src='/javascripts/controllers/info/infoRulesController.js'></script>
 		
 		<!-- Angular: Main App -->
 		<script src='/javascripts/sparcPongApp.js'></script>
 		
+		
 		<!-- Bootstrap: Essential JS -->
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<script src='/bower/bootstrap/dist/js/bootstrap.min.js'></script>
 		
 		<!-- Bootstrap CSS -->
-		<link rel='stylesheet' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+		<link rel='stylesheet' href='/bower/bootstrap/dist/css/bootstrap.min.css'>
 		
 		
 		<!-- CSS Styling -->
 		<link rel='stylesheet' href='/stylesheets/style.css' />
 		<link rel='stylesheet' href='/stylesheets/modals.css' />
 		<link rel='stylesheet' href='/stylesheets/partials/board.css' />
-		<link rel='stylesheet' href='/stylesheets/partials/profile.css' />
 		
 	</head>
 	<body ng-app="sparcPongApp">
@@ -106,6 +107,7 @@
 							<li role="presentation" class="dropdown">
 								<a class="dropdown-toggle" data-toggle="dropdown" role="button">Info <span class="caret"></span></a>
 								<ul class="dropdown-menu">
+									<li role="presentation"><a ng-href="#/info/alerts">Alerts</a></li>
 									<li role="presentation"><a ng-href="#/info/challenges">Challenges</a></li>
 									<li role="presentation"><a ng-href="#/info/rules">Game Rules</a></li>
 								</ul>
@@ -133,7 +135,7 @@
 			
 			<footer>
 				<span ng-bind="clients"></span> <span ng-bind="clients == 1 ? 'ponger' : 'pongers'"></span> currently online<br>
-				<span>Version 1.2.1</span>
+				<span>Version 1.2.2</span>
 			</footer>
 		
 		</div><!-- /.wrapper -->

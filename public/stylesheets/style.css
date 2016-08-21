@@ -18,10 +18,11 @@ a {
 
 a:hover {
 	text-decoration: none;
+	color: orange;
 }
 
 footer {
-	margin-top: 40px;
+	margin-top: 45px;
 	margin-left: auto;
 	margin-right: auto;
 	text-align: center;
