@@ -42,9 +42,9 @@ router.post('/', function(req, res, next) {
 					player.email = playerEmail;
 					
 					// Saves player to DB
-					player.save(function(err, saved) {
+					player.save(function(err) {
 						if (err) return next(err);
-						
+						req.app.io.sockets.emit('player:new', playerName);
 						console.log('Successfully created a new player.');
 						res.json({message: 'Player created!'});
 					});
@@ -77,6 +77,7 @@ router.post('/change/name', function(req, res, next) {
 			player.name = newName;
 			player.save(function(err) {
 				if (err) return next(err);
+				req.app.io.sockets.emit('player:change:name', newName);
 				res.json({message: 'Successfully changed your username from '+ oldName +' to '+ newName +'!'});
 			});
 		});
@@ -111,6 +112,7 @@ router.post('/change/email', function(req, res, next) {
 			player.email = newEmail;
 			player.save(function(err) {
 				if (err) return next(err);
+				req.app.io.sockets.emit('player:change:email', newEmail);
 				res.json({message: 'Successfully changed your email to '+ newEmail +'!'});
 			});
 		});

@@ -55,12 +55,11 @@ angular.module('controllers')
 		}
 	});
 	
-	socket.on('player:new', function(player) {
+	socket.on('player:new', function(name) {
 		console.log(new Date().toLocaleTimeString() +' - New user detected.');
 		populateUserList();
 	});
-	socket.on('player:nameChange', function(player) {
-		console.log(new Date().toLocaleTimeString() +' - Name change detected.');
+	socket.on('player:change:name', function(name) {
 		populateUserList();
 	});
 	socket.on('client:enter', function(clients) {

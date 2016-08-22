@@ -51,6 +51,7 @@ router.post('/', function(req, res, next) {
 					challenge.save(function(err) {
 						if (err) return next(err);
 						email_newChallenge(challenger, challengee);
+						req.app.io.sockets.emit('challenge:issued');
 						res.json({message: 'Challenge issued!'});
 					});
 				});
@@ -138,6 +139,7 @@ router.delete('/revoke', function(req, res, next) {
 			if (challenges.result && challenges.result.n) {
 				console.log('Revoking ' + challenges.result.n + ' challenge(s).');
 				email_revokedChallenge(challenger, challengee)
+				req.app.io.sockets.emit('challenge:revoked');
 				res.json({message: 'Successfully revoked challenge.'});
 			} else {
 				return next(new Error('Could not find the challenge.'));
@@ -187,19 +189,11 @@ router.post('/resolve', function(req, res, next) {
 		
 		updateLastGames(challenge, function(err) {
 			if (err) return next(err);
-			// Adjusts Rankings
-			if (loser.rank < winner.rank) {
-				console.log('Swapping rankings between ' + winner.name + ' and ' + loser.name);
-				// Winner should move up ranking
-				swapRanks(winner._id, loser._id, function(err) {
-					if (err) return next(err);
-					console.log('Swapping rankings completed successfully.');
-					res.json({message: 'Successfully resolved challenge.'});
-				});
-			} else {
-				console.log('Swapping rankings is not required.');
+			swapRanks(winner, loser, function(err, swapped) {
+				if (err) return next(err);
+				req.app.io.sockets.emit('challenge:resolved');
 				res.json({message: 'Successfully resolved challenge.'});
-			}
+			});
 		});
 	});
 });
@@ -226,17 +220,12 @@ router.post('/forfeit', function(req, res, next) {
 		
 		updateLastGames(challenge, function(err) {
 			if (err) return next(err);
-			if (loser.rank < winner.rank) {
-				console.log('Swapping rankings between ' + winner.name + ' and ' + loser.name);
-				swapRanks(winner._id, loser._id, function(err) {
-					if (err) return next(err);
-					email_forfeitedChallenge(challenge.challenger, challenge.challengee);
-					res.json({message: 'Challenge successfully forfeited.'});
-				});
-			} else {
-				console.log('Swapping rankings is not required.');
+			swapRanks(winner, loser, function(err, swapped) {
+				if (err) return next(err);
+				email_forfeitedChallenge(challenge.challenger, challenge.challengee);
+				req.app.io.sockets.emit('challenge:forfeited');
 				res.json({message: 'Challenge successfully forfeited.'});
-			}
+			});
 		});
 	});
 });
@@ -384,26 +373,35 @@ function countChallenges(playerId, callback) {
 /*
  * Swaps the rankings for two given players.
  *
- * @param: playerId1
- * @param: playerId2
+ * @param: winner
+ * @param: loser
  *
  * @return: err
  */
-function swapRanks(playerId1, playerId2, callback) {
-	setRank(playerId1, TEMP_RANK, function(err, oldRank, newRank) {
+function swapRanks(winner, loser, callback) {
+	var swapped = false;
+	if (winner.rank < loser.rank) {
+		console.log('Swapping rankings is not required.');
+		callback(null, swapped);
+		return;
+	}
+	swapped = true;
+	console.log('Swapping rankings between ' + winner.name + ' and ' + loser.name);
+	setRank(winner, TEMP_RANK, function(err, oldRank, newRank) {
 		if (err) {
-			callback(err);
+			callback(err, swapped);
 			return;
 		}
 		var player1_oldRank = oldRank;
-		setRank(playerId2, player1_oldRank, function(err, oldRank, newRank) {
+		setRank(loser, player1_oldRank, function(err, oldRank, newRank) {
 			if (err) {
-				callback(err);
+				callback(err, swapped);
 				return;
 			}
 			var player2_oldRank = oldRank;
-			setRank(playerId1, player2_oldRank, function(err, oldRank, newRank) {
-				callback(err);
+			setRank(winner, player2_oldRank, function(err, oldRank, newRank) {
+				console.log('Swapping rankings completed successfully.');
+				callback(err, swapped);
 			});
 		});
 	});

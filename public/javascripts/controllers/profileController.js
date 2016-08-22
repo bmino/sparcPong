@@ -80,7 +80,6 @@ angular.module('controllers')
 			
 			challengeService.resolveChallenge(challenge._id, challengerScore, challengeeScore).then(
 				function(success) {
-					socket.emit('challenge:resolved', challenge);
 					var modalOptions = {
 						headerText: 'Resolve Challenge',
 						bodyText: success
@@ -120,7 +119,6 @@ angular.module('controllers')
 			if (!okay) return;
 			challengeService.revokeChallenge(challenge.challenger._id, challenge.challengee._id).then(
 				function(success) {
-					socket.emit('challenge:revoked', challenge);
 					var modalOptions = {
 						headerText: 'Revoke Challenge',
 						bodyText: success
@@ -159,7 +157,6 @@ angular.module('controllers')
 			if (!okay) return;
 			challengeService.forfeitChallenge(challenge._id).then(
 				function(success) {
-					socket.emit('challenge:forfeited', challenge);
 					var modalOptions = {
 						headerText: 'Forfeit Challenge',
 						bodyText: success
@@ -182,19 +179,19 @@ angular.module('controllers')
 		return !challenge.challengerScore && !challenge.challengeeScore;
 	};
 	
-	socket.on('player:nameChange', function(player) {
+	socket.on('player:change:name', function(name) {
 		fetchChallenges();
 	});
-	socket.on('challenge:issued', function(challenge) {
+	socket.on('challenge:issued', function() {
 		fetchChallenges();
 	});
-	socket.on('challenge:resolved', function(challenge) {
+	socket.on('challenge:resolved', function() {
 		fetchChallenges();
 	});
-	socket.on('challenge:revoked', function(challenge) {
+	socket.on('challenge:revoked', function() {
 		fetchChallenges();
 	});
-	socket.on('challenge:forfeited', function(challenge) {
+	socket.on('challenge:forfeited', function() {
 		fetchChallenges();
 	});
 	

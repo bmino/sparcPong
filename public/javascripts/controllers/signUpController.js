@@ -17,7 +17,6 @@ angular.module('controllers')
 		playerService.createPlayer($scope.player.name, $scope.player.phone, $scope.player.email).then(
 			function (success) {
 				// Successfully created a new player.
-				socket.emit('player:new', $scope.player);
 				var modalOptions = {
 					headerText: 'New Player',
 					bodyText: success
@@ -34,7 +33,5 @@ angular.module('controllers')
 				modalService.showAlertModal({}, modalOptions);
 			}
 		);
-	}
-	
-	
+	}	
 }]);

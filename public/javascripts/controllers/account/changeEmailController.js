@@ -39,8 +39,4 @@ angular.module('controllers')
 			}
 		);
 	}
-	
-	
-	
-	
 }]);

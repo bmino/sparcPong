@@ -60,7 +60,6 @@ angular.module('controllers')
 		}
 	};
 	function goodChallenge(success) {
-		socket.emit('challenge:issued');
 		var modalOptions = {
             headerText: 'Challenge',
             bodyText: success
@@ -76,16 +75,16 @@ angular.module('controllers')
         modalService.showAlertModal({}, modalOptions);
 	}
 	
-	socket.on('player:new', function(player) {
+	socket.on('player:new', function(name) {
 		populatePlayers();
 	});
-	socket.on('player:nameChange', function(player) {
+	socket.on('player:change:name', function(name) {
 		populatePlayers();
 	});
-	socket.on('challenge:resolved', function(challenge) {
+	socket.on('challenge:resolved', function() {
 		populatePlayers();
 	});
-	socket.on('challenge:forfeited', function(challenge) {
+	socket.on('challenge:forfeited', function() {
 		populatePlayers();
 	});
 }]);
