@@ -1,9 +1,12 @@
 angular.module('services')
-.service('timeService', ['$filter', function($filter) {
-	var ALLOWED_CHALLENGE_DAYS = 3;
+.service('timeService', ['$filter', '$q', function($filter, $q) {
 	
 	this.getAllowedChallengeDays = function() {
-		return ALLOWED_CHALLENGE_DAYS;
+		var deferral = $q.defer();
+		$.get('/api/envBridge/ALLOWED_CHALLENGE_DAYS').then(function(data) {
+			deferral.resolve(data.days);
+		});
+		return deferral.promise;
 	}
 	
 	this.parseDate = function (date) {

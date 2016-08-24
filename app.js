@@ -25,6 +25,7 @@ var routes = require('./routes/basic');
 var player = require('./routes/player');
 var challenge = require('./routes/challenge');
 var playerAlerts = require('./routes/alert');
+var envBridge = require('./routes/envBridge');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -43,6 +44,7 @@ app.use('/', routes);
 app.use('/api/player', player);
 app.use('/api/challenge', challenge);
 app.use('/api/playerAlerts', playerAlerts);
+app.use('/api/envBridge', envBridge);
 
 
 // catch 404 and forward to error handler

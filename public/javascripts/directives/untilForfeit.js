@@ -7,9 +7,14 @@ angular.module('directives')
 		},
 		link: function(scope, elem, attrs) {
 			
-			var ALLOWED_CHALLENGE_DAYS = timeService.getAllowedChallengeDays();
-			var oDate = timeService.parseDate(scope.date);
-			var expireDate = timeService.addBusinessDays(oDate, ALLOWED_CHALLENGE_DAYS);
+			var oDate;
+			var expireDate;
+			
+			timeService.getAllowedChallengeDays().then(function(days) {
+				oDate = timeService.parseDate(scope.date);
+				expireDate = timeService.addBusinessDays(oDate, days);
+				updateLater();
+			});
 			
 			function updateTime() {
 				var remaining = timeService.timeBetween(new Date(), expireDate);
@@ -22,8 +27,6 @@ angular.module('directives')
 					updateLater();
 				}, 1000);
 			}
-			
-			updateLater();			
 		}
 	}
 }]);
