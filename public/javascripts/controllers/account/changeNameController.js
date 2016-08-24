@@ -4,7 +4,6 @@ angular.module('controllers')
 	init();
 	
 	function init() {
-		$rootScope.pageTitle = 'Change Username';
 		$scope.newName = $rootScope.myClient.player.name || '';
 	}
 	

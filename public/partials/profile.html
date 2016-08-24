@@ -1,3 +1,6 @@
+<div class="page-header">
+	<h1 ng-bind="profile.name"></h1>
+</div>
 <div class="profile">
 	<div class="challenges">
 		<div class="panel panel-default">
@@ -30,7 +33,7 @@
 	<div class="history">
 		<div class="panel panel-default">
 			<div class="panel-heading" data-toggle="collapse" data-target="#resolvedChallenges">
-				<h3 class="panel-title">{{challenges.resolved.length == 0 ? 'No' : challenges.resolved.length}} Ranked Matches</h3>
+				<h3 class="panel-title">{{challenges.resolved.length == 0 ? 'No' : challenges.resolved.length}} {{challenges.resolved.length == 1 ? 'Ranked Match' : 'Ranked Matches'}}</h3>
 			</div>
 			<ul class="list-group in" id="resolvedChallenges">
 				<li class="list-group-item challenge-resolved" ng-repeat="challenge in challenges.resolved">

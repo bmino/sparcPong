@@ -21,7 +21,6 @@
 		<!-- Angular: Filters -->
 		<script src='/javascripts/filters/_filters.js'></script>
 		<script src='/javascripts/filters/tier.js'></script>
-		<script src='/javascripts/filters/challenge.js'></script>
 		<script src='/javascripts/filters/mongoDate.js'></script>
 		
 		<!-- Angular: Services -->
@@ -48,9 +47,6 @@
 		<script src='/javascripts/controllers/account/changeNameController.js'></script>
 		<script src='/javascripts/controllers/account/changeEmailController.js'></script>
 		<script src='/javascripts/controllers/account/changeAlertsController.js'></script>
-		<script src='/javascripts/controllers/info/infoAlertsController.js'></script>
-		<script src='/javascripts/controllers/info/infoChallengesController.js'></script>
-		<script src='/javascripts/controllers/info/infoRulesController.js'></script>
 		
 		<!-- Angular: Main App -->
 		<script src='/javascripts/sparcPongApp.js'></script>
@@ -67,6 +63,7 @@
 		<link rel='stylesheet' href='/stylesheets/style.css' />
 		<link rel='stylesheet' href='/stylesheets/modals.css' />
 		<link rel='stylesheet' href='/stylesheets/partials/board.css' />
+		<link rel='stylesheet' href='/stylesheets/partials/changeAlerts.css' />
 		
 	</head>
 	<body ng-app="sparcPongApp">
@@ -126,16 +123,12 @@
 				</div><!-- /.container-fluid -->
 			</nav>
 			
-			<div class="page-header">
-				<h1 ng-bind="pageTitle"></h1>
-			</div>
-			
 			<!-- Injected with Partials -->
 			<div ng-view></div>
 			
 			<footer>
 				<span ng-bind="clients"></span> <span ng-bind="clients == 1 ? 'ponger' : 'pongers'"></span> currently online<br>
-				<span>Version 1.2.3</span>
+				<span>Version 1.2.6</span>
 			</footer>
 		
 		</div><!-- /.wrapper -->

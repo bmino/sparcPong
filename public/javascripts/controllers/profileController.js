@@ -16,7 +16,6 @@ angular.module('controllers')
 			if (!player) {
 				console.log('Could not fetch profile');
 			} else {
-				$rootScope.pageTitle = player.name;
 				$scope.profile = player;
 			}
 		});

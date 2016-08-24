@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('signUpController', ['$scope', '$rootScope', 'socket', 'modalService', 'playerService', function($scope, $rootScope, socket, modalService, playerService) {
+.controller('signUpController', ['$scope', 'socket', 'modalService', 'playerService', function($scope, socket, modalService, playerService) {
 
 	$scope.player = {
 		name: '',
@@ -9,9 +9,7 @@ angular.module('controllers')
 	
 	init();
 	
-	function init() {
-		$rootScope.pageTitle = 'New Player';
-	}
+	function init() {}
 	
 	$scope.createPlayer = function() {
 		playerService.createPlayer($scope.player.name, $scope.player.phone, $scope.player.email).then(
