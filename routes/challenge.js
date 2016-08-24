@@ -51,7 +51,10 @@ router.post('/', function(req, res, next) {
 					challenge.save(function(err) {
 						if (err) return next(err);
 						email_newChallenge(challenger, challengee);
-						req.app.io.sockets.emit('challenge:issued');
+						req.app.io.sockets.emit('challenge:issued', { challenger: { name: challenger.name,
+																					rank: challenger.rank },
+																	  challengee: { name: challengee.name,
+																					rank: challengee.rank }});
 						res.json({message: 'Challenge issued!'});
 					});
 				});
@@ -71,8 +74,7 @@ router.get('/resolved/:playerId', function(req, res, next) {
 						{$or: [{'challenger': playerId}, {'challengee': playerId}]}, 
 						{'winner': {$ne: null}}
 					]})
-					.populate('challenger')
-					.populate('challengee')
+					.populate('challenger challengee')
 					.exec(function(err, challenges) {
 		if (err) return next(err);
 		res.json({message: challenges});
@@ -87,8 +89,7 @@ router.get('/resolved/:playerId', function(req, res, next) {
 router.get('/outgoing/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;
 	Challenge.find({challenger: playerId, winner: null})
-					.populate('challenger')
-					.populate('challengee')
+					.populate('challenger challengee')
 					.exec(function(err, challenges) {
 		if (err) return next(err);
 		res.json({message: challenges});
@@ -102,8 +103,7 @@ router.get('/outgoing/:playerId', function(req, res, next) {
 router.get('/incoming/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;
 	Challenge.find({challengee: playerId, winner: null})
-					.populate('challenger')
-					.populate('challengee')
+					.populate('challenger challengee')
 					.exec(function(err, challenges) {
 		if (err) return next(err);
 		res.json({message: challenges});
@@ -137,9 +137,8 @@ router.delete('/revoke', function(req, res, next) {
 			if (err) return next(err);
 			
 			if (challenges.result && challenges.result.n) {
-				console.log('Revoking ' + challenges.result.n + ' challenge(s).');
-				email_revokedChallenge(challenger, challengee)
-				req.app.io.sockets.emit('challenge:revoked');
+				email_revokedChallenge(challenger, challengee);
+				req.app.io.sockets.emit('challenge:revoked', { challenger: {name: challenger.name}, challengee: {name: challengee.name} });
 				res.json({message: 'Successfully revoked challenge.'});
 			} else {
 				return next(new Error('Could not find the challenge.'));
@@ -163,12 +162,12 @@ router.post('/resolve', function(req, res, next) {
 		console.log(challengeId + ' is not a valid challenge id.');
 		return next(new Error('This is not a valid challenge.'));
 	}
-	if (!challengerScore || !challengeeScore)
+	if (challengerScore == null || challengeeScore == null)
 		return next(new Error('You must give valid scores for both players.'));
 	if (challengerScore == challengeeScore)
 		return next(new Error('The final score cannot be equal.'));
 	
-	Challenge.findById(challengeId).populate('challenger').populate('challengee').exec(function(err, challenge) {
+	Challenge.findById(challengeId).populate('challenger challengee').exec(function(err, challenge) {
 		if (err) return next(err);
 		
 		if (!challenge || challenge.length == 0) {
@@ -191,7 +190,7 @@ router.post('/resolve', function(req, res, next) {
 			if (err) return next(err);
 			swapRanks(winner, loser, function(err, swapped) {
 				if (err) return next(err);
-				req.app.io.sockets.emit('challenge:resolved');
+				req.app.io.sockets.emit('challenge:resolved', { challenger: {name: challenge.challenger.name}, challengee: {name: challenge.challengee.name} });
 				res.json({message: 'Successfully resolved challenge.'});
 			});
 		});
@@ -207,7 +206,7 @@ router.post('/forfeit', function(req, res, next) {
 	var challengeId = req.body.challengeId;
 	if (!challengeId)
 		return next(new Error('This is not a valid challenge id.'));
-	Challenge.findById(challengeId).populate('challenger').populate('challenger challengee').exec(function(err, challenge) {
+	Challenge.findById(challengeId).populate('challenger challengee').exec(function(err, challenge) {
 		if (err) return next(err);
 	
 		console.log('Forfeiting challenge id ['+challengeId+']');
@@ -223,7 +222,7 @@ router.post('/forfeit', function(req, res, next) {
 			swapRanks(winner, loser, function(err, swapped) {
 				if (err) return next(err);
 				email_forfeitedChallenge(challenge.challenger, challenge.challengee);
-				req.app.io.sockets.emit('challenge:forfeited');
+				req.app.io.sockets.emit('challenge:forfeited', { challenger: {name: challenge.challenger.name}, challengee: {name: challenge.challengee.name} });
 				res.json({message: 'Challenge successfully forfeited.'});
 			});
 		});
@@ -261,7 +260,7 @@ function challengeExists(playerId1, playerId2, callback) {
  *
  * @param: dateIssued - date the challenge was issued
  */
-var ALLOWED_CHALLENGE_DAYS = process.env.ALLOWED_CHALLENGE_DAYS || 3;
+var ALLOWED_CHALLENGE_DAYS = process.env.ALLOWED_CHALLENGE_DAYS;
 function hasForfeit(dateIssued) {
 	var expires = addBusinessDays(dateIssued, ALLOWED_CHALLENGE_DAYS);
 	// Challenge expired before today
@@ -309,8 +308,8 @@ function isBusinessDay(date) {
  * @return: boolean - true if allowed, and false if not allowed
  * @return: String - error message if not allowed
  */
-var ALLOWED_OUTGOING = process.env.ALLOWED_OUTGOING || 1;
-var ALLOWED_INCOMING = process.env.ALLOWED_INCOMING || 1;
+var ALLOWED_OUTGOING = process.env.ALLOWED_OUTGOING;
+var ALLOWED_INCOMING = process.env.ALLOWED_INCOMING;
 function allowedToChallenge(challenger, challengee, callback) {
 	// Checks challenger
 	countChallenges(challenger._id, function(err, incoming, outgoing) {

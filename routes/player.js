@@ -12,9 +12,9 @@ var Alert = mongoose.model('Alert');
  * @param: email
  */
 router.post('/', function(req, res, next) {
-	var playerName = req.body.name.trim();
-	var playerPhone = req.body.phone.trim();
-	var playerEmail = req.body.email.trim();
+	var playerName = req.body.name ? req.body.name.trim() : null;
+	var playerPhone = req.body.phone ? req.body.phone.trim() : null;
+	var playerEmail = req.body.email.replace(/\s+/g, '');
 	
 	validName(playerName, function(err) {
 		if (err) return next(err);
@@ -61,7 +61,7 @@ router.post('/', function(req, res, next) {
  */
 router.post('/change/name', function(req, res, next) {
 	var playerId = req.body.playerId;
-	var newName = req.body.newName.trim();
+	var newName = req.body.newName ? req.body.newName.trim() : null;
 	if (!playerId)
 		return next(new Error('You must provide a valid player id.'));
 	
@@ -77,7 +77,7 @@ router.post('/change/name', function(req, res, next) {
 			player.name = newName;
 			player.save(function(err) {
 				if (err) return next(err);
-				req.app.io.sockets.emit('player:change:name', newName);
+				req.app.io.sockets.emit('player:change:name', {oldName: oldName, newName: newName});
 				res.json({message: 'Successfully changed your username from '+ oldName +' to '+ newName +'!'});
 			});
 		});
@@ -92,11 +92,11 @@ router.post('/change/name', function(req, res, next) {
  */
 router.post('/change/email', function(req, res, next) {
 	var playerId = req.body.playerId;
-	var newEmail = req.body.newEmail.trim();
+	var newEmail = req.body.newEmail.replace(/\s+/g, '');
 	if (!playerId)
 		return next(new Error('You must provide a valid player id.'));
 	if (!newEmail || newEmail.length == 0)
-		return next(new Error('You must provide a valid email address.'));
+		return next(new Error('You must provide an email address.'));
 	if (newEmail.length > 50)
 		return next(new Error('Your email length cannot exceed 50 characters.'));
 	
@@ -112,7 +112,7 @@ router.post('/change/email', function(req, res, next) {
 			player.email = newEmail;
 			player.save(function(err) {
 				if (err) return next(err);
-				req.app.io.sockets.emit('player:change:email', newEmail);
+				req.app.io.sockets.emit('player:change:email', {oldEmail: oldEmail, newEmail: newEmail});
 				res.json({message: 'Successfully changed your email to '+ newEmail +'!'});
 			});
 		});
@@ -161,13 +161,18 @@ function getLowestRank(callback) {
 	});
 }
 
-var NAME_LENGTH_MIN = 2;
-var NAME_LENGTH_MAX = 15;
+var NAME_LENGTH_MIN = process.env.NAME_LENGTH_MIN || 2;
+var NAME_LENGTH_MAX = process.env.NAME_LENGTH_MAX || 15;
 function validName(name, callback) {
 	console.log('Verifying player name of '+ name);
-	var len = name.trim().length;
+	
+	if (!name || name == '') {
+		callback(new Error('You must give a name.'));
+		return;
+	}
+	
 	// Can only be 15 characters long
-	if (len > NAME_LENGTH_MAX || len < NAME_LENGTH_MIN) {
+	if (name.length > NAME_LENGTH_MAX || name.length < NAME_LENGTH_MIN) {
 		callback(new Error('Name length must be between '+ NAME_LENGTH_MIN +' and '+ NAME_LENGTH_MAX +' characters.'));
 		return;
 	}
@@ -197,9 +202,26 @@ function validName(name, callback) {
 
 function validEmail(email, callback) {
 	console.log('Verifying email of '+ email);
-	var len = email.trim().length;
 	
-	// TODO: common sense email verification logic (@ symbol, period...)
+	var count = 0;
+	var i = 0;
+	for (i in email) {
+		if (email[i] == '@') count++;
+	}
+	if (count != 1) {
+		callback(new Error('Email must contain one @ symbol.'));
+		return;
+	}
+	
+	count = 0;
+	i = 0;
+	for (i in email) {
+		if (email[i] == '.') count++;
+	}
+	if (count == 0) {
+		callback(new Error('Email must contain at least one period.'));
+		return;
+	}
 	
 	emailExists(email, function(err) {
 		callback(err);
@@ -208,8 +230,7 @@ function validEmail(email, callback) {
 
 function nameExists(name, callback) {
 	console.log('Checking if player name, '+ name +', exists.');
-	var searchName = name.trim();
-	Player.count({name: searchName}, function(err, count) {
+	Player.count({name: name}, function(err, count) {
 		if (err) {
 			callback(err);
 		} else if (count != 0) {
@@ -222,8 +243,7 @@ function nameExists(name, callback) {
 
 function emailExists(email, callback) {
 	console.log('Checking if email, '+ email +', exists.');
-	var searchEmail = email.trim();
-	Player.count({email: searchEmail}, function(err, count) {
+	Player.count({email: email}, function(err, count) {
 		if (err) {
 			callback(err);
 		} else if (count != 0) {
