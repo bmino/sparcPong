@@ -1,0 +1,11 @@
+.account-changeAlerts form div.alert-buttons {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+.account-changeAlerts form div.alert-buttons button {
+	margin: 5px;
+	width: 150px;
+}

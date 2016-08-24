@@ -2,37 +2,47 @@ angular.module('controllers')
 .controller('changeAlertsController', ['$scope', '$rootScope', 'modalService', 'playerService', function($scope, $rootScope, modalService, playerService) {
 	
 	$scope.alerts = {
-		challenged: false,
-		revoked: false,
-		resolved: false,
-		forfeited: false
-		
+		challenged: { name: 'Challenged Alert', status: false },
+		revoked: { name: 'Revoked Alert', status: false },
+		resolved: { name: 'Resolved Alert', status: false },
+		forfeited: { name: 'Forfeited Alert', status: false }
 	};
 	
 	init();
 	
 	function init() {
-		$rootScope.pageTitle = 'Change Alerts';
 		getAlerts();
 	}
 	
 	function getAlerts() {
 		var playerId = $rootScope.myClient.player._id;
 		playerService.getAlerts(playerId).then(function(alerts) {
-			$scope.alerts = alerts;
+			for (var key in alerts) {
+				$scope.alerts[key]['status'] = alerts[key];
+			}
 		});
 	}
 	
-	$scope.updateAlerts = function() {
+	function minifiedAlerts() {
+		var minified = {};
+		for (var key in $scope.alerts) {
+			minified[key] = $scope.alerts[key]['status'];
+		}
+		return minified;
+	}
+	
+	$scope.toggle = function(key) {
+		$scope.alerts[key]['status'] = !$scope.alerts[key]['status'];
+		updateAlerts();
+	}
+	
+	function updateAlerts() {
 		var playerId = $rootScope.myClient.player._id;
-		playerService.updateAlerts(playerId, $scope.alerts).then(
+		playerService.updateAlerts(playerId, minifiedAlerts()).then(
 			// Success
 			function(success) {
-				modalOptions = {
-					headerText: 'Change Alerts',
-					bodyText: success
-				};
-				modalService.showAlertModal({}, modalOptions);
+				// Do nothing
+				console.log(success);
 			},
 			// Error
 			function(error) {

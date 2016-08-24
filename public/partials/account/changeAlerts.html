@@ -1,22 +1,11 @@
+<div class="page-header">
+	<h1>Change Alerts</h1>
+</div>
 <div class="account-changeAlerts">
 	<form class="form-horizontal" ng-submit="updateAlerts()" autocomplete="off">
 		<div class="form-group">
-			<label class="control-label col-md-2" for="challengedAlert">Challenged Alert</label>
-			<div class="col-md-10"><input class="checkbox" id="challengedAlert" type="checkbox" ng-model="alerts.challenged" /></div>
-			
-			<label class="control-label col-md-2" for="revokedAlert">Revoked Alert</label>
-			<div class="col-md-10"><input class="checkbox" id="revokedAlert" type="checkbox" ng-model="alerts.revoked" /></div>
-			
-			<label class="control-label col-md-2" for="resolvedAlert">Resolved Alert</label>
-			<div class="col-md-10"><input class="checkbox disabled" id="resolvedAlert" type="checkbox" ng-model="alerts.resolved" /></div>
-			
-			<label class="control-label col-md-2" for="forfeitedAlert">Forfeited Alert</label>
-			<div class="col-md-10"><input class="checkbox" id="forfeitedAlert" type="checkbox" ng-model="alerts.forfeited" /></div>
-			<!-- More Alerts Here -->
-		</div>
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10">
-				<button type="submit" class="btn btn-default">Update</button>
+			<div class="alert-buttons">
+				<button type="button" class="btn btn-default" ng-repeat="(key, alert) in alerts" ng-bind="alert.name" ng-click="toggle(key)" ng-class="{'btn-success' : alert.status}"></button>
 			</div>
 		</div>
 	</form>
