@@ -12,6 +12,7 @@ angular.module('controllers')
 	
 	function init() {
 		$scope.profileId = $routeParams.playerId;
+		fetchChallenges();
 		playerService.getPlayer($scope.profileId).then(function(player) {
 			if (!player) {
 				console.log('Could not fetch profile');
@@ -19,7 +20,6 @@ angular.module('controllers')
 				$scope.profile = player;
 			}
 		});
-		fetchChallenges();
 	}
 	
 	function fetchChallenges() {
