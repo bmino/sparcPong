@@ -43,7 +43,7 @@
 					<a ng-href="#/profile/{{challenge.challengee._id}}"><span ng-bind="challenge.challengee.name" ></span></a>
 					<span>({{challenge.challengeeScore || 'forfeit'}})</span>
 					<br />
-					<span ng-bind="challenge.createdAt | mongoDate" ng-show="challenge.winner"></span>
+					<span ng-bind="challenge.updatedAt | mongoDate" ng-show="challenge.winner"></span>
 				</li>
 			</ul>
 		</div>
