@@ -8,7 +8,7 @@
 				<h3 class="panel-title">{{challenges.incoming.length == 0 ? 'No' : challenges.incoming.length}} Incoming Challenges</h3>
 			</div>
 			<ul class="list-group in" id="incomingChallenges">
-				<li class="list-group-item challenge-incoming" ng-repeat="challenge in challenges.incoming">
+				<li class="list-group-item challenge-incoming" ng-repeat="challenge in challenges.incoming | orderBy : '-updatedAt'">
 					<a ng-href="#/profile/{{challenge.challenger._id}}" ng-bind="challenge.challenger.name"></a>
 					<until-forfeit date="challenge.createdAt"></until-forfeit>
 					<span logged-in="[challenge.challenger._id, challenge.challengee._id]" class="glyphicon glyphicon-fullscreen pull-right" ng-click="expandChallenge(challenge)"></span>
@@ -21,7 +21,7 @@
 				<h3 class="panel-title">{{challenges.outgoing.length == 0 ? 'No' : challenges.outgoing.length}} Outgoing Challenges</h3>
 			</div>
 			<ul class="list-group in" id="outgoingChallenges">
-				<li class="list-group-item challenge-outgoing" ng-repeat="challenge in challenges.outgoing">
+				<li class="list-group-item challenge-outgoing" ng-repeat="challenge in challenges.outgoing | orderBy : '-updatedAt'">
 					<a ng-href="#/profile/{{challenge.challengee._id}}" ng-bind="challenge.challengee.name"></a>
 					<until-forfeit date="challenge.createdAt"></until-forfeit>
 					<span logged-in="[challenge.challenger._id, challenge.challengee._id]" class="glyphicon glyphicon-fullscreen pull-right" ng-click="expandChallenge(challenge)"></span>
@@ -36,7 +36,7 @@
 				<h3 class="panel-title">{{challenges.resolved.length == 0 ? 'No' : challenges.resolved.length}} {{challenges.resolved.length == 1 ? 'Ranked Match' : 'Ranked Matches'}}</h3>
 			</div>
 			<ul class="list-group in" id="resolvedChallenges">
-				<li class="list-group-item challenge-resolved" ng-repeat="challenge in challenges.resolved">
+				<li class="list-group-item challenge-resolved" ng-repeat="challenge in challenges.resolved | orderBy : '-updatedAt'">
 					<a ng-href="#/profile/{{challenge.challenger._id}}"><span ng-bind="challenge.challenger.name"></span></a>
 					<span>({{challenge.challengerScore || '-'}})</span>
 					<span> vs </span>
