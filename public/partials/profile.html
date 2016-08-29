@@ -38,10 +38,10 @@
 			<ul class="list-group in" id="resolvedChallenges">
 				<li class="list-group-item challenge-resolved" ng-repeat="challenge in challenges.resolved | orderBy : '-updatedAt'">
 					<a ng-href="#/profile/{{challenge.challenger._id}}"><span ng-bind="challenge.challenger.name"></span></a>
-					<span>({{challenge.challengerScore || '-'}})</span>
+					<span>({{challenge.challengerScore != null ? challenge.challengerScore : '-'}})</span>
 					<span> vs </span>
 					<a ng-href="#/profile/{{challenge.challengee._id}}"><span ng-bind="challenge.challengee.name" ></span></a>
-					<span>({{challenge.challengeeScore || 'forfeit'}})</span>
+					<span>({{challenge.challengeeScore != null ? challenge.challengeeScore : 'forfeit'}})</span>
 					<br />
 					<span ng-bind="challenge.updatedAt | mongoDate" ng-show="challenge.winner"></span>
 				</li>
