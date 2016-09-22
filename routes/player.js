@@ -12,9 +12,15 @@ var Alert = mongoose.model('Alert');
  * @param: email
  */
 router.post('/', function(req, res, next) {
+	if ((req.body.name && typeof req.body.name != 'string') ||
+		(req.body.phone && typeof req.body.phone != 'number') ||
+		(req.body.email && typeof req.body.email != 'string'))
+		return next(new Error('Invalid data type of Player parameters.'));
+	
 	var playerName = req.body.name ? req.body.name.trim() : null;
-	var playerPhone = req.body.phone ? req.body.phone.trim() : null;
-	var playerEmail = req.body.email.replace(/\s+/g, '');
+	var playerPhone = req.body.phone;
+	var playerEmail = req.body.email ? req.body.email.replace(/\s+/g, '') : "";
+	
 	
 	validName(playerName, function(err) {
 		if (err) return next(err);
@@ -202,6 +208,11 @@ function validName(name, callback) {
 
 function validEmail(email, callback) {
 	console.log('Verifying email of '+ email);
+	
+	if (email.length == 0) {
+		callback(null);
+		return;
+	}
 	
 	var count = 0;
 	var i = 0;
