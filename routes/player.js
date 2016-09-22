@@ -98,7 +98,7 @@ router.post('/change/name', function(req, res, next) {
  */
 router.post('/change/email', function(req, res, next) {
 	var playerId = req.body.playerId;
-	var newEmail = req.body.newEmail.replace(/\s+/g, '');
+	var newEmail = req.body.newEmail ? req.body.newEmail.replace(/\s+/g, '') : null;
 	if (!playerId)
 		return next(new Error('You must provide a valid player id.'));
 	if (!newEmail || newEmail.length == 0)
