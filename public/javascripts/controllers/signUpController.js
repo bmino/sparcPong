@@ -31,5 +31,5 @@ angular.module('controllers')
 				modalService.showAlertModal({}, modalOptions);
 			}
 		);
-	}	
+	}
 }]);

@@ -39,4 +39,27 @@ angular.module('controllers')
 			}
 		);
 	}
+	
+	$scope.removeEmail = function() {
+		var playerId = $rootScope.myClient.player._id;
+		playerService.removeEmail(playerId).then(
+			// Success
+			function(success) {
+				getEmail();
+				modalOptions = {
+					headerText: 'Remove Email',
+					bodyText: success
+				};
+				modalService.showAlertModal({}, modalOptions);
+			},
+			// Error
+			function(error) {
+				modalOptions = {
+					headerText: 'Remove Email',
+					bodyText: error
+				};
+				modalService.showAlertModal({}, modalOptions);
+			}
+		);
+	}
 }]);

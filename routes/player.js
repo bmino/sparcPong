@@ -94,6 +94,7 @@ router.post('/change/name', function(req, res, next) {
 /* 
  * POST changes player email
  *
+ * @param: playerId
  * @param: newEmail
  */
 router.post('/change/email', function(req, res, next) {
@@ -124,6 +125,33 @@ router.post('/change/email', function(req, res, next) {
 		});
 	});
 });
+
+/* 
+ * POST removes player email
+ *
+ * @param: playerId
+ */
+router.post('/change/email/remove', function(req, res, next) {
+	var playerId = req.body.playerId;
+	if (!playerId)
+		return next(new Error('You must provide a valid player id.'));
+	
+	console.log('Removing player email.');
+	Player.findById(playerId, function(err, player) {
+		if (err) return next(err);
+		if (!player)
+			return next(new Error('Could not find your current account.'));
+		var oldEmail = player.email;
+		var newEmail = "";
+		player.email = newEmail;
+		player.save(function(err) {
+			if (err) return next(err);
+			req.app.io.sockets.emit('player:change:email', {oldEmail: oldEmail, newEmail: newEmail});
+			res.json({message: 'Successfully removed your email!'});
+		});
+	});
+});
+
 
 /* GET player listing */
 router.get('/', function(req, res, next) {

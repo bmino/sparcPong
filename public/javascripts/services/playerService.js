@@ -42,6 +42,17 @@ angular.module('services')
 		return request.then( handleSuccess, handleError );
 	};
 	
+	this.removeEmail = function(playerId) {
+		var request = $http({
+			method: "post",
+			url: "api/player/change/email/remove",
+			data: {
+				playerId: playerId
+			}
+		});
+		return request.then( handleSuccess, handleError );
+	};
+	
 	this.getAlerts = function(playerId) {
 		var request = $http({
 			method: "get",
