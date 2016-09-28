@@ -12,79 +12,88 @@ var Alert = mongoose.model('Alert');
  * @param: email
  */
 router.post('/', function(req, res, next) {
-	if ((req.body.name && typeof req.body.name != 'string') ||
+	if ((req.body.username && typeof req.body.username != 'string') ||
+		(req.body.firstName && typeof req.body.firstName != 'string') ||
+		(req.body.lastName && typeof req.body.lastName != 'string') ||
 		(req.body.phone && typeof req.body.phone != 'number') ||
 		(req.body.email && typeof req.body.email != 'string'))
 		return next(new Error('Invalid data type of Player parameters.'));
 	
-	var playerName = req.body.name ? req.body.name.trim() : null;
+	var playerUsername = req.body.username ? req.body.username.trim() : null;
+	var playerFirstName = req.body.firstName ? req.body.firstName.trim() : null;
+	var playerLastName = req.body.lastName ? req.body.lastName.trim() : null;
 	var playerPhone = req.body.phone;
 	var playerEmail = req.body.email ? req.body.email.replace(/\s+/g, '') : "";
 	
-	
-	validName(playerName, function(err) {
+	validRealName(playerFirstName, playerLastName, function(err) {
 		if (err) return next(err);
 		
-		validEmail(playerEmail, function(err) {
+		validUsername(playerUsername, function(err) {
 			if (err) return next(err);
 			
-			getLowestRank(function(err, lowestRank) {
+			validEmail(playerEmail, function(err) {
 				if (err) return next(err);
 				
-				console.log('Creating new player.');
-				
-				// Creates player alerts
-				console.log('Creating player alert settings.');
-				var newAlert = new Alert();
-				newAlert.save(function(err) {
+				getLowestRank(function(err, lowestRank) {
 					if (err) return next(err);
 					
-					// Create new player
-					var player = new Player();
-					player.name = playerName;
-					player.alerts = newAlert._id;
-					player.rank = lowestRank + 1;
-					player.phone = playerPhone;
-					player.email = playerEmail;
+					console.log('Creating new player.');
 					
-					// Saves player to DB
-					player.save(function(err) {
+					// Creates player alerts
+					console.log('Creating player alert settings.');
+					var newAlert = new Alert();
+					newAlert.save(function(err) {
 						if (err) return next(err);
-						req.app.io.sockets.emit('player:new', playerName);
-						console.log('Successfully created a new player.');
-						res.json({message: 'Player created!'});
+						
+						// Create new player
+						var player = new Player();
+						player.username = playerUsername;
+						player.firstName = playerFirstName;
+						player.lastName = playerLastName;
+						player.alerts = newAlert._id;
+						player.rank = lowestRank + 1;
+						player.phone = playerPhone;
+						player.email = playerEmail;
+						
+						// Saves player to DB
+						player.save(function(err) {
+							if (err) return next(err);
+							req.app.io.sockets.emit('player:new', playerUsername);
+							console.log('Successfully created a new player.');
+							res.json({message: 'Player created!'});
+						});
 					});
 				});
 			});
 		});
-	});	
+	});
 });
 
 /* 
- * POST changes player name
+ * POST changes player username
  *
  * @param: newName
  */
-router.post('/change/name', function(req, res, next) {
+router.post('/change/username', function(req, res, next) {
 	var playerId = req.body.playerId;
-	var newName = req.body.newName ? req.body.newName.trim() : null;
+	var newUsername = req.body.newUsername ? req.body.newUsername.trim() : null;
 	if (!playerId)
 		return next(new Error('You must provide a valid player id.'));
 	
-	validName(newName, function(err) {
+	validUsername(newUsername, function(err) {
 		if (err) return next(err);
 	
-		console.log('Changing player name.');
+		console.log('Changing player username.');
 		Player.findById(playerId, function(err, player) {
 			if (err) return next(err);
 			if (!player)
 				return next(new Error('Could not find your current account.'));
-			var oldName = player.name;
-			player.name = newName;
+			var oldUsername = player.username;
+			player.username = newUsername;
 			player.save(function(err) {
 				if (err) return next(err);
-				req.app.io.sockets.emit('player:change:name', {oldName: oldName, newName: newName});
-				res.json({message: 'Successfully changed your username from '+ oldName +' to '+ newName +'!'});
+				req.app.io.sockets.emit('player:change:username', {oldUsername: oldUsername, newUsername: newUsername});
+				res.json({message: 'Successfully changed your username from '+ oldUsername +' to '+ newName +'!'});
 			});
 		});
 	});
@@ -195,43 +204,78 @@ function getLowestRank(callback) {
 	});
 }
 
-var NAME_LENGTH_MIN = process.env.NAME_LENGTH_MIN || 2;
-var NAME_LENGTH_MAX = process.env.NAME_LENGTH_MAX || 15;
-function validName(name, callback) {
-	console.log('Verifying player name of '+ name);
+var USERNAME_LENGTH_MIN = process.env.USERNAME_LENGTH_MIN || 2;
+var USERNAME_LENGTH_MAX = process.env.USERNAME_LENGTH_MAX || 15;
+function validUsername(username, callback) {
+	console.log('Verifying username of '+ username);
 	
-	if (!name || name == '') {
-		callback(new Error('You must give a name.'));
+	if (!username || username == '') {
+		callback(new Error('You must give a username.'));
 		return;
 	}
 	
 	// Can only be 15 characters long
-	if (name.length > NAME_LENGTH_MAX || name.length < NAME_LENGTH_MIN) {
-		callback(new Error('Name length must be between '+ NAME_LENGTH_MIN +' and '+ NAME_LENGTH_MAX +' characters.'));
+	if (username.length > USERNAME_LENGTH_MAX || username.length < USERNAME_LENGTH_MIN) {
+		callback(new Error('Username length must be between '+ USERNAME_LENGTH_MIN +' and '+ USERNAME_LENGTH_MAX +' characters.'));
 		return;
 	}
 	
 	// No special characters
-	if (!/^[A-Za-z0-9_ ]*$/.test(name)) {
-		callback(new Error('Name can only include letters, numbers, underscores, and spaces.'));
+	if (!/^[A-Za-z0-9_ ]*$/.test(username)) {
+		callback(new Error('Username can only include letters, numbers, underscores, and spaces.'));
 		return;
 	}
 	
 	// Concurrent spaces
-	if (/\s{2,}/.test(name)) {
+	if (/\s{2,}/.test(username)) {
 		callback(new Error('You cannot have concurrent spaces.'));
 		return;
 	}
 	
 	// Concurrent underscores
-	if (/_{2,}/.test(name)) {
+	if (/_{2,}/.test(username)) {
 		callback(new Error('You cannot have concurrent underscores.'));
 		return;
 	}
 	
-	nameExists(name, function(err) {
+	usernameExists(username, function(err) {
 		callback(err);
 	});
+}
+
+function validRealName(first, last, callback) {
+	console.log('Verifying real name of '+ first +' '+ last);
+	
+	if (!first || first == '' || !last || last == '') {
+		callback(new Error('You must give a first and last name.'));
+		return;
+	}
+	
+	// Can only be 15 characters long
+	if (first.length > 15 || first.length < 1 || last.length > 15 || last.length < 1) {
+		callback(new Error('First and last name must be between '+ 1 +' and '+ 15 +' characters.'));
+		return;
+	}
+	
+	// No special characters
+	if (!/^[A-Za-z0-9_ ]*$/.test(first) || !/^[A-Za-z0-9_ ]*$/.test(last)) {
+		callback(new Error('First and last name can only include letters, numbers, underscores, and spaces.'));
+		return;
+	}
+	
+	// Concurrent spaces
+	if (/\s{2,}/.test(first) || /\s{2,}/.test(last)) {
+		callback(new Error('First and last name cannot have concurrent spaces.'));
+		return;
+	}
+	
+	// Concurrent underscores
+	if (/_{2,}/.test(first) || /_{2,}/.test(last)) {
+		callback(new Error('First and last name cannot have concurrent underscores.'));
+		return;
+	}
+	
+	callback(null);
 }
 
 function validEmail(email, callback) {
@@ -267,13 +311,13 @@ function validEmail(email, callback) {
 	});
 }
 
-function nameExists(name, callback) {
-	console.log('Checking if player name, '+ name +', exists.');
-	Player.count({name: name}, function(err, count) {
+function usernameExists(username, callback) {
+	console.log('Checking if username, '+ username +', exists.');
+	Player.count({username: username}, function(err, count) {
 		if (err) {
 			callback(err);
 		} else if (count != 0) {
-			callback(new Error('Player name already exists.'));
+			callback(new Error('Username already exists.'));
 		} else {
 			callback(null);
 		}

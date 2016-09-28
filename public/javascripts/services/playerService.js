@@ -5,12 +5,14 @@ angular.module('services')
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
 	
 	
-	this.createPlayer = function(name, phone, email) {
+	this.createPlayer = function(username, firstName, lastName, phone, email) {
 		var request = $http({
 			method: "post",
 			url: "api/player/",
 			data: {
-				name: name,
+				username: username,
+				firstName: firstName,
+				lastName: lastName,
 				phone: phone,
 				email: email
 			}
@@ -18,13 +20,13 @@ angular.module('services')
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.changeName = function(playerId, newName) {
+	this.changeUsername = function(playerId, newUsername) {
 		var request = $http({
 			method: "post",
-			url: "api/player/change/name/",
+			url: "api/player/change/username/",
 			data: {
 				playerId: playerId,
-				newName: newName
+				newUsername: newUsername
 			}
 		});
 		return request.then( handleSuccess, handleError );

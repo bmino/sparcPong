@@ -62,8 +62,8 @@ angular.module('controllers')
 		if ($rootScope.myClient.player._id != challenge.challengee._id && $rootScope.myClient.player._id != challenge.challenger._id) {
 			var modalOptions = {
 				headerText: 'Resolve Challenge',
-				bodyText: 'You are logged in as '+ $rootScope.myClient.player.name +'. '+
-						  'Only '+ challenge.challenger.name +' or '+ challenge.challengee.name +' can resolve this challenge.'
+				bodyText: 'You are logged in as '+ $rootScope.myClient.player.username +'. '+
+						  'Only '+ challenge.challenger.username +' or '+ challenge.challengee.username +' can resolve this challenge.'
 			};
 			modalService.showAlertModal({}, modalOptions);
 			return;
@@ -101,8 +101,8 @@ angular.module('controllers')
 		if (challenge.challenger._id != $rootScope.myClient.player._id) {
 			var modalOptions = {
 				headerText: 'Revoke Challenge',
-				bodyText: 'You are logged in as '+ $rootScope.myClient.player.name +'. '+
-						  'Only '+ challenge.challenger.name +' can revoke this challenge.'
+				bodyText: 'You are logged in as '+ $rootScope.myClient.player.username +'. '+
+						  'Only '+ challenge.challenger.username +' can revoke this challenge.'
 			};
 			modalService.showAlertModal({}, modalOptions);
 			return;
@@ -139,8 +139,8 @@ angular.module('controllers')
 		if (challenge.challengee._id != $rootScope.myClient.player._id) {
 			var modalOptions = {
 				headerText: 'Forfeit Challenge',
-				bodyText: 'You are logged in as '+ $rootScope.myClient.player.name +'. '+
-						  'Only '+ challenge.challengee.name +' can forfeit this challenge.'
+				bodyText: 'You are logged in as '+ $rootScope.myClient.player.username +'. '+
+						  'Only '+ challenge.challengee.username +' can forfeit this challenge.'
 			};
 			modalService.showAlertModal({}, modalOptions);
 			return;
@@ -150,7 +150,7 @@ angular.module('controllers')
             closeButtonText: 'Cancel',
             actionButtonText: 'Forfeit Challenge',
             headerText: 'Forfeit',
-            bodyText: 'Are you sure you wish to forfeit to '+ challenge.challenger.name +'?'
+            bodyText: 'Are you sure you wish to forfeit to '+ challenge.challenger.username +'?'
         };
         modalService.showModal({}, modalOptions).then(function (okay) {
 			if (!okay) return;
@@ -178,7 +178,7 @@ angular.module('controllers')
 		return !challenge.challengerScore && !challenge.challengeeScore;
 	};
 	
-	socket.on('player:change:name', function(name) {
+	socket.on('player:change:username', function(username) {
 		fetchChallenges();
 	});
 	socket.on('challenge:issued', function() {

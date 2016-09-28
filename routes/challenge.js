@@ -51,9 +51,9 @@ router.post('/', function(req, res, next) {
 					challenge.save(function(err) {
 						if (err) return next(err);
 						email_newChallenge(challenger, challengee);
-						req.app.io.sockets.emit('challenge:issued', { challenger: { name: challenger.name,
+						req.app.io.sockets.emit('challenge:issued', { challenger: { username: challenger.username,
 																					rank: challenger.rank },
-																	  challengee: { name: challengee.name,
+																	  challengee: { username: challengee.username,
 																					rank: challengee.rank }});
 						res.json({message: 'Challenge issued!'});
 					});
@@ -131,14 +131,14 @@ router.delete('/revoke', function(req, res, next) {
 		var challengee = challenges[0].challengee;
 		
 		if (hasForfeit(challenges[0].createdAt))
-			return next(new Error('This challenge has expired. '+challengee.name+' must forfeit.'));
+			return next(new Error('This challenge has expired. '+challengee.username+' must forfeit.'));
 		
 		Challenge.remove({challenger: challengerId, challengee: challengeeId, winner: null}, function(err, challenges) {
 			if (err) return next(err);
 			
 			if (challenges.result && challenges.result.n) {
 				email_revokedChallenge(challenger, challengee);
-				req.app.io.sockets.emit('challenge:revoked', { challenger: {name: challenger.name}, challengee: {name: challengee.name} });
+				req.app.io.sockets.emit('challenge:revoked', { challenger: {username: challenger.username}, challengee: {username: challengee.username} });
 				res.json({message: 'Successfully revoked challenge.'});
 			} else {
 				return next(new Error('Could not find the challenge.'));
@@ -173,7 +173,7 @@ router.post('/resolve', function(req, res, next) {
 		if (!challenge || challenge.length == 0) {
 			return next(new Error('Could not find the challenge for ['+challengeId+'].'));
 		} else if (hasForfeit(challenge.createdAt)) {
-			return next(new Error('This challenge has expired. '+challenge.challengee.name+' must forfeit.'));
+			return next(new Error('This challenge has expired. '+challenge.challengee.username+' must forfeit.'));
 		} else {
 			console.log('Resolving challenge id ['+challengeId+']');
 		}
@@ -190,7 +190,7 @@ router.post('/resolve', function(req, res, next) {
 			if (err) return next(err);
 			swapRanks(winner, loser, function(err, swapped) {
 				if (err) return next(err);
-				req.app.io.sockets.emit('challenge:resolved', { challenger: {name: challenge.challenger.name}, challengee: {name: challenge.challengee.name} });
+				req.app.io.sockets.emit('challenge:resolved', { challenger: {username: challenge.challenger.username}, challengee: {username: challenge.challengee.username} });
 				res.json({message: 'Successfully resolved challenge.'});
 			});
 		});
@@ -222,7 +222,7 @@ router.post('/forfeit', function(req, res, next) {
 			swapRanks(winner, loser, function(err, swapped) {
 				if (err) return next(err);
 				email_forfeitedChallenge(challenge.challenger, challenge.challengee);
-				req.app.io.sockets.emit('challenge:forfeited', { challenger: {name: challenge.challenger.name}, challengee: {name: challenge.challengee.name} });
+				req.app.io.sockets.emit('challenge:forfeited', { challenger: {username: challenge.challenger.username}, challengee: {username: challenge.challengee.username} });
 				res.json({message: 'Challenge successfully forfeited.'});
 			});
 		});
@@ -317,10 +317,10 @@ function allowedToChallenge(challenger, challengee, callback) {
 			callback(err);
 			return;
 		} else if (incoming >= ALLOWED_INCOMING) {
-			callback(new Error(challenger.name +' cannot have more than '+ALLOWED_INCOMING+' incoming challenge.'));
+			callback(new Error(challenger.username +' cannot have more than '+ALLOWED_INCOMING+' incoming challenge.'));
 			return;
 		} else if (outgoing >= ALLOWED_OUTGOING) {
-			callback(new Error(challenger.name +' cannot have more than '+ALLOWED_OUTGOING+' outgoing challenge.'));
+			callback(new Error(challenger.username +' cannot have more than '+ALLOWED_OUTGOING+' outgoing challenge.'));
 			return;
 		}
 		// Checks challengee
@@ -329,10 +329,10 @@ function allowedToChallenge(challenger, challengee, callback) {
 				callback(err);
 				return;
 			} else if (incoming >= ALLOWED_INCOMING) {
-				callback(new Error(challengee.name +' cannot have more than '+ALLOWED_INCOMING+' incoming challenge.'));
+				callback(new Error(challengee.username +' cannot have more than '+ALLOWED_INCOMING+' incoming challenge.'));
 				return;
 			} else if (outgoing >= ALLOWED_OUTGOING) {
-				callback(new Error(challengee.name +' cannot have more than '+ALLOWED_OUTGOING+' outgoing challenge.'));
+				callback(new Error(challengee.username +' cannot have more than '+ALLOWED_OUTGOING+' outgoing challenge.'));
 				return;
 			} else {
 				callback(null);
@@ -385,7 +385,7 @@ function swapRanks(winner, loser, callback) {
 		return;
 	}
 	swapped = true;
-	console.log('Swapping rankings between ' + winner.name + ' and ' + loser.name);
+	console.log('Swapping rankings between ' + winner.username + ' and ' + loser.username);
 	setRank(winner, TEMP_RANK, function(err, oldRank, newRank) {
 		if (err) {
 			callback(err, swapped);
@@ -531,7 +531,7 @@ function email_newChallenge(challenger, challengee) {
 		}
 		if (challengee.email && challengee.alerts.challenged) {
 			console.log('Sending email to '+ challengee.email);
-			sendEmail('New Challenge', 'You have been challenged by '+ challenger.name +'. Log in at http://sparc-pong.herokuapp.com to deal with that scrub!', challengee.email);
+			sendEmail('New Challenge', 'You have been challenged by '+ challenger.username +'. Log in at http://sparc-pong.herokuapp.com to deal with that scrub!', challengee.email);
 		}
 	});
 }
@@ -544,7 +544,7 @@ function email_revokedChallenge(challenger, challengee) {
 		}
 		if (challengee.email && challengee.alerts.revoked) {
 			console.log('Sending email to '+ challengee.email);
-			sendEmail('Revoked Challenge', challenger.name +' got scared and revoked a challenge against you.', challengee.email);
+			sendEmail('Revoked Challenge', challenger.username +' got scared and revoked a challenge against you.', challengee.email);
 		}
 	});
 }
@@ -557,7 +557,7 @@ function email_forfeitedChallenge(challenger, challengee) {
 		}
 		if (challenger.email && challenger.alerts.forfeited) {
 			console.log('Sending email to '+ challenger.email);
-			sendEmail('Forfeited Challenge', 'That lil weasel, '+ challengee.name +', forfeited your challenge. You win by default!', challenger.email);
+			sendEmail('Forfeited Challenge', 'That lil weasel, '+ challengee.username +', forfeited your challenge. You win by default!', challenger.email);
 		}
 	});
 }

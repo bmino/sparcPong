@@ -15,7 +15,7 @@ angular.module('controllers')
 		playerService.getPlayers().then(function (players) {
 			// Alphabetize and return
 			$scope.players = players.sort(function(a,b) {
-				return a.name.localeCompare(b.name);
+				return a.username.localeCompare(b.username);
 			});
 		});
 	}
@@ -55,11 +55,11 @@ angular.module('controllers')
 		}
 	});
 	
-	socket.on('player:new', function(name) {
+	socket.on('player:new', function(username) {
 		console.log(new Date().toLocaleTimeString() +' - New user detected.');
 		populateUserList();
 	});
-	socket.on('player:change:name', function(name) {
+	socket.on('player:change:username', function(username) {
 		populateUserList();
 	});
 	socket.on('client:enter', function(clients) {

@@ -2,7 +2,9 @@ angular.module('controllers')
 .controller('signUpController', ['$scope', 'socket', 'modalService', 'playerService', function($scope, socket, modalService, playerService) {
 
 	$scope.player = {
-		name: '',
+		username: '',
+		firstName: '',
+		lastName: '',
 		phone: null,
 		email: ''
 	};
@@ -12,7 +14,7 @@ angular.module('controllers')
 	function init() {}
 	
 	$scope.createPlayer = function() {
-		playerService.createPlayer($scope.player.name, $scope.player.phone, $scope.player.email).then(
+		playerService.createPlayer($scope.player.username, $scope.player.firstName, $scope.player.lastName, $scope.player.phone, $scope.player.email).then(
 			function (success) {
 				// Successfully created a new player.
 				var modalOptions = {

@@ -22,9 +22,9 @@ angular.module('sparcPongApp', [
 			templateUrl: '/partials/account/changeAlerts.html',
 			controller: 'changeAlertsController'
 		})
-		.when('/account/changeName', {
-			templateUrl: '/partials/account/changeName.html',
-			controller: 'changeNameController'
+		.when('/account/changeUsername', {
+			templateUrl: '/partials/account/changeUsername.html',
+			controller: 'changeUsernameController'
 		})
 		.when('/account/changeEmail', {
 			templateUrl: '/partials/account/changeEmail.html',
