@@ -289,6 +289,37 @@ function addBusinessDays(date, days) {
 	}
 	return d;
 }
+/*
+ * Adds regular days to a date.
+ *
+ * @param: date - the starting date
+ * @param: days - number of days to add
+ */
+function addDays(date, days) {
+	// Bad Inputs
+	if (!days || days == 0)
+		return date;
+	
+	var d = new Date(date.getTime());
+	d.setDate(d.getDate()+days);
+	return d;
+}
+/*
+ * Adds hours to a date.
+ *
+ * @param: date - the starting date
+ * @param: hours - number of hours to add
+ */
+function addHours(date, hours) {
+	// Bad Inputs
+	if (!hours || hours == 0)
+		return date;
+	
+	var d = new Date(date.getTime());
+	d.setHours(d.getHours()+hours);
+	return d;
+}
+
 
 /*
  * Determines if the given date is a business day.
@@ -335,7 +366,30 @@ function allowedToChallenge(challenger, challengee, callback) {
 				callback(new Error(challengee.username +' cannot have more than '+ALLOWED_OUTGOING+' outgoing challenge.'));
 				return;
 			} else {
-				callback(null);
+				// Checks for no "challenge-back" delay
+				console.log('Checking for recently resolved challenges.');
+				getResolvedChallenges(challenger, challengee, function(err, challenges) {
+					if (err) {
+						callback(err);
+						return;
+					}
+					// Get most recent challenge
+					challenges.sort(function(a, b) {
+						if (a.updatedAt > b.updatedAt) return -1;
+						else return 1;
+					});
+					if (challenges && challenges[0]) {
+						var CHALLENGE_BACK_DELAY_HOURS = process.env.CHALLENGE_BACK_DELAY_HOURS || 12;
+						var reissueTime = addHours(challenges[0].updatedAt, CHALLENGE_BACK_DELAY_HOURS);
+						var canReissue = reissueTime < new Date();
+						if (!canReissue) {
+							callback(new Error('You must wait at least '+ CHALLENGE_BACK_DELAY_HOURS +' hours before re-challenging the same player.'));
+							return;
+						}
+					}
+					// Did not find any challenge history
+					callback(null);
+				});
 			}
 		});
 	});
@@ -366,6 +420,20 @@ function countChallenges(playerId, callback) {
 				incoming = challenges.length;
 			callback(err, incoming, outgoing);
 		});
+	});
+}
+
+function getResolvedChallenges(challenger, challengee, callback) {
+	Challenge.find({$or: [ 
+			{$and: [{challenger: challenger._id}, {challengee: challengee._id}, {winner: {$ne: null}}]}, 
+			{$and: [{challenger: challengee._id}, {challengee: challenger._id}, {winner: {$ne: null}}]}
+		]}, function(err, challenges) {
+			if (err) {
+				callback(err);
+				return;
+			} else {
+				callback(null, challenges);
+			}
 	});
 }
 
