@@ -190,7 +190,7 @@ router.post('/resolve', function(req, res, next) {
 			if (err) return next(err);
 			swapRanks(winner, loser, function(err, swapped) {
 				if (err) return next(err);
-				req.app.io.sockets.emit('challenge:resolved', { challenger: {username: challenge.challenger.username}, challengee: {username: challenge.challengee.username} });
+				req.app.io.sockets.emit('challenge:resolved', { winner: {username: winner.username}, loser: {username: loser.username} });
 				res.json({message: 'Successfully resolved challenge.'});
 			});
 		});
