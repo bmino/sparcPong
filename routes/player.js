@@ -93,7 +93,7 @@ router.post('/change/username', function(req, res, next) {
 			player.save(function(err) {
 				if (err) return next(err);
 				req.app.io.sockets.emit('player:change:username', {oldUsername: oldUsername, newUsername: newUsername});
-				res.json({message: 'Successfully changed your username from '+ oldUsername +' to '+ newName +'!'});
+				res.json({message: 'Successfully changed your username from '+ oldUsername +' to '+ newUsername +'!'});
 			});
 		});
 	});
