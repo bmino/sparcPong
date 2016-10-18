@@ -5,7 +5,20 @@ var Challenge = mongoose.model('Challenge');
 var Player = mongoose.model('Player');
 
 var nodemailer = require('nodemailer');
-var smtpTransport = require('nodemailer-smtp-transport');
+var xoauth2 = require('xoauth2');
+
+var transporter = nodemailer.createTransport("SMTP", {
+    service: 'gmail',
+    auth: {
+        XOAuth2: {
+			user: process.env.EMAIL_ADDRESS,
+			clientId: process.env.AUTH_CLIENT_ID,
+			clientSecret: process.env.AUTH_CLIENT_SECRET,
+			refreshToken: process.env.AUTH_CLIENT_REFRESH,
+		}
+    }
+});
+
 
 
 /* POST new challenge
@@ -658,29 +671,19 @@ function email_forfeitedChallenge(challenger, challengee) {
 function sendEmail(subject, message, address) {
 	console.log('Trying to send email to '+ address);
 	
-	var transporter = nodemailer.createTransport({
-		service: "gmail",
-		auth: {
-			user: process.env.EMAIL_ADDRESS,
-			pass: process.env.EMAIL_PASS
-		},
-		tls: { rejectUnauthorized: false }
-	});
-	
 	var mailOptions = {
-		from: '"Sparc Pong Ladder" <sparc.pong@gmail.com>',
 		to: address,
+		from: process.env.EMAIL_TITLE +' <'+ process.env.EMAIL_ADDRESS +'>',
 		subject: subject,
-		text: message // plaintext body
-		//html: '<p>'+message+'</p>' // html body
+		text: message
 	};
 
-	transporter.sendMail(mailOptions, function(error, info) {
-		transporter.close();
-		if(error) {
-			return console.log(error);
+	transporter.sendMail(mailOptions, function(error, response) {
+		if (error) {
+			console.log(error);
+		} else {
+			console.log('Message sent: ' + response);
 		}
-		console.log('Message sent: ' + info.response);
 	});
 }
 
