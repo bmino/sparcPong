@@ -2,14 +2,13 @@ angular.module('directives')
 .directive('loggedIn', ['$rootScope', function($rootScope) {	
 	return {
 		link: function(scope, elem, attrs) {
-			$rootScope.$watch('myClient.player', function(player) {
-				if (player) {
+			$rootScope.$watch('myClient.playerId', function(playerId) {
+				if (playerId) {
 					var checkIds = scope.$eval(attrs.loggedIn);
-					var searchId = player._id;
 					// Someone is logged in
 					if (checkIds) {
 						// Requested a certain user
-						if (inArray(searchId, checkIds))
+						if (inArray(playerId, checkIds))
 							elem.show();
 						else
 							elem.hide();

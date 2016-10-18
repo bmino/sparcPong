@@ -59,11 +59,10 @@ angular.module('controllers')
 	};
 	
 	function resolveChallenge(challenge) {
-		if ($rootScope.myClient.player._id != challenge.challengee._id && $rootScope.myClient.player._id != challenge.challenger._id) {
+		if ($rootScope.myClient.playerId != challenge.challengee._id && $rootScope.myClient.playerId != challenge.challenger._id) {
 			var modalOptions = {
 				headerText: 'Resolve Challenge',
-				bodyText: 'You are logged in as '+ $rootScope.myClient.player.username +'. '+
-						  'Only '+ challenge.challenger.username +' or '+ challenge.challengee.username +' can resolve this challenge.'
+				bodyText: 'Only '+ challenge.challenger.username +' or '+ challenge.challengee.username +' can resolve this challenge.'
 			};
 			modalService.showAlertModal({}, modalOptions);
 			return;
@@ -98,11 +97,10 @@ angular.module('controllers')
 	};
 	
 	function revokeChallenge(challenge) {
-		if (challenge.challenger._id != $rootScope.myClient.player._id) {
+		if (challenge.challenger._id != $rootScope.myClient.playerId) {
 			var modalOptions = {
 				headerText: 'Revoke Challenge',
-				bodyText: 'You are logged in as '+ $rootScope.myClient.player.username +'. '+
-						  'Only '+ challenge.challenger.username +' can revoke this challenge.'
+				bodyText: 'Only '+ challenge.challenger.username +' can revoke this challenge.'
 			};
 			modalService.showAlertModal({}, modalOptions);
 			return;
@@ -136,11 +134,10 @@ angular.module('controllers')
 		});
 	};
 	function forfeitChallenge(challenge) {
-		if (challenge.challengee._id != $rootScope.myClient.player._id) {
+		if (challenge.challengee._id != $rootScope.myClient.playerId) {
 			var modalOptions = {
 				headerText: 'Forfeit Challenge',
-				bodyText: 'You are logged in as '+ $rootScope.myClient.player.username +'. '+
-						  'Only '+ challenge.challengee.username +' can forfeit this challenge.'
+				bodyText: 'Only '+ challenge.challengee.username +' can forfeit this challenge.'
 			};
 			modalService.showAlertModal({}, modalOptions);
 			return;

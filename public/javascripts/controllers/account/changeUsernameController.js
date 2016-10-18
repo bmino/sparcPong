@@ -1,14 +1,22 @@
 angular.module('controllers')
 .controller('changeUsernameController', ['$scope', '$rootScope', 'modalService', 'playerService', function($scope, $rootScope, modalService, playerService) {
 	
+	$scope.newUsername = '';
 	init();
 	
 	function init() {
-		$scope.newUsername = $rootScope.myClient.player.username || '';
+		var playerId = $rootScope.myClient.playerId;
+		if (playerId) {
+			playerService.getPlayer(playerId).then(function (player) {
+				if (player) {
+					$scope.newUsername = player.username;
+				}
+			});
+		}
 	}
 	
 	$scope.validateUsername = function() {
-		var playerId = $rootScope.myClient.player._id;
+		var playerId = $rootScope.myClient.playerId;
 		playerService.changeUsername(playerId, $scope.newUsername).then(
 			// Success
 			function(success) {

@@ -11,7 +11,7 @@ angular.module('controllers')
 	}
 	
 	function getEmail() {
-		var playerId = $rootScope.myClient.player._id;
+		var playerId = $rootScope.myClient.playerId;
 		playerService.getPlayer(playerId).then(function(player) {
 			if (!player) console.log('Uh oh, this player could not be found.');
 			else $scope.email = player.email;
@@ -19,7 +19,7 @@ angular.module('controllers')
 	}
 	
 	$scope.validateEmail = function() {
-		var playerId = $rootScope.myClient.player._id;
+		var playerId = $rootScope.myClient.playerId;
 		playerService.changeEmail(playerId, $scope.email).then(
 			// Success
 			function(success) {
@@ -41,7 +41,7 @@ angular.module('controllers')
 	}
 	
 	$scope.removeEmail = function() {
-		var playerId = $rootScope.myClient.player._id;
+		var playerId = $rootScope.myClient.playerId;
 		playerService.removeEmail(playerId).then(
 			// Success
 			function(success) {

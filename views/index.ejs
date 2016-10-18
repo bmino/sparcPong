@@ -16,6 +16,7 @@
 		<!-- Angular: Essential Libraries -->
 		<script src="/bower/angular/angular.min.js"></script>
 		<script src="/bower/angular-route/angular-route.min.js"></script>
+		<script src="/bower/angular-cookies/angular-cookies.min.js"></script>
 		<script src='/bower/angular-bootstrap/ui-bootstrap-tpls.js'></script>
 		
 		<!-- Angular: Filters -->
@@ -86,7 +87,7 @@
 						<ul class="nav navbar-nav">
 							<li role="presentation"><a href="#/board">Board</a></li>
 							<li role="presentation" logged-in>
-								<a ng-href="#/profile/{{myClient.player._id}}">Profile</a>
+								<a ng-href="#/profile/{{myClient.playerId}}">Profile</a>
 							</li>
 							<!-- Account Links -->
 							<li role="presentation" class="dropdown" logged-in>
@@ -115,9 +116,9 @@
 						
 						<!-- Log In/Out -->
 						<ul class="nav navbar-nav navbar-right">
-							<li role="presentation" ng-hide="myClient.player"><a ng-href="#/signUp">Sign Up</a></li>
+							<li role="presentation" ng-hide="myClient.playerId"><a ng-href="#/signUp">Sign Up</a></li>
 							<li role="presentation">
-								<a id="logInOut" ng-click="changeUser()" ng-bind="myClient.player ? 'Log Out' : 'Log In'"></a>
+								<a id="logInOut" ng-click="changeUser()" ng-bind="myClient.playerId ? 'Log Out' : 'Log In'"></a>
 							</li>
 						</ul>
 						
@@ -130,7 +131,7 @@
 			
 			<footer>
 				<span ng-bind="clients"></span> <span ng-bind="clients == 1 ? 'ponger' : 'pongers'"></span> currently online<br>
-				<span>Version 1.4.0</span>
+				<span>Version 1.4.1</span>
 			</footer>
 		
 		</div><!-- /.wrapper -->

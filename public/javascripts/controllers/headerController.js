@@ -1,13 +1,21 @@
 angular.module('controllers')
-.controller('headerController', ['$scope', '$rootScope', '$location', 'socket', 'modalService', 'playerService', function($scope, $rootScope, $location, socket, modalService, playerService) {
+.controller('headerController', ['$scope', '$rootScope', '$location', '$cookies', 'socket', 'modalService', 'playerService', function($scope, $rootScope, $location, $cookies, socket, modalService, playerService) {
 
 	$scope.player;
 	$scope.clients;
 	
+	var COOKIE_USER_KEY = 'sparcPongUser';
+	
 	init();
 	
 	function init() {
+		// Look for previous user cookie
+		var prevUserId = $cookies.getObject(COOKIE_USER_KEY);
 		$rootScope.myClient = {};
+		if (prevUserId) {
+			$rootScope.myClient.playerId = prevUserId;
+		}
+		
 		populateUserList();
 	}
 	
@@ -22,8 +30,9 @@ angular.module('controllers')
 	
 	$scope.changeUser = function() {
 		var modalOptions;
-		if ($rootScope.myClient.player) {
+		if ($rootScope.myClient.playerId) {
 			// Log Out
+			$cookies.remove(COOKIE_USER_KEY);
 			$rootScope.myClient = {};
 			$location.path("/");
 			modalOptions = {
@@ -42,11 +51,24 @@ angular.module('controllers')
 			};
 			modalService.showLogInModal({}, modalOptions).then(function(player) {
 				if (!player) return;
-				$rootScope.myClient.player = player;
+				addUserCookie(player._id);
+				$rootScope.myClient.playerId = player._id;
 				$location.path("/");
 			});
 		}
 	};
+	
+	function addUserCookie(playerId) {
+		var now = new Date();
+		var year = now.getFullYear();
+		var expires = new Date();
+		expires.setFullYear(year + 1);
+	
+		var options = {
+			expires: expires
+		};
+		$cookies.putObject(COOKIE_USER_KEY, playerId, options);
+	}
 	
 	/* Collapses the nav bar after a link is activated. */
 	$('.navbar-collapse').on('click', function(e) {

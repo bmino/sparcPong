@@ -10,7 +10,6 @@
     "angular-route": "^1.5.7",
     "body-parser": "~1.15.1",
     "bower": "^1.7.9",
-    "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
     "dotenv": "^2.0.0",
     "ejs": "~2.4.1",

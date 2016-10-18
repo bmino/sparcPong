@@ -45,8 +45,8 @@ angular.module('controllers')
 	};
 	
 	$scope.challenge = function(challengeeId) {
-		var player = $rootScope.myClient.player;
-		if (!player) {
+		var playerId = $rootScope.myClient.playerId;
+		if (!playerId) {
 			var modalOptions = {
 				actionButtonText: 'OK',
 				headerText: 'Challenge',
@@ -54,8 +54,7 @@ angular.module('controllers')
 			};
 			modalService.showAlertModal({}, modalOptions);
 		} else {
-			var myId = player._id;
-			challengeService.createChallenge(myId, challengeeId).then( goodChallenge, badChallenge );
+			challengeService.createChallenge(playerId, challengeeId).then( goodChallenge, badChallenge );
 		}
 	};
 	function goodChallenge(success) {

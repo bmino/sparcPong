@@ -15,7 +15,7 @@ angular.module('controllers')
 	}
 	
 	function getAlerts() {
-		var playerId = $rootScope.myClient.player._id;
+		var playerId = $rootScope.myClient.playerId;
 		playerService.getAlerts(playerId).then(function(alerts) {
 			for (var key in alerts) {
 				$scope.alerts[key]['status'] = alerts[key];
@@ -37,7 +37,7 @@ angular.module('controllers')
 	}
 	
 	function updateAlerts() {
-		var playerId = $rootScope.myClient.player._id;
+		var playerId = $rootScope.myClient.playerId;
 		playerService.updateAlerts(playerId, minifiedAlerts()).then(
 			// Success
 			function(success) {
