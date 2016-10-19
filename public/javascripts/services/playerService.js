@@ -91,6 +91,14 @@ angular.module('services')
 		});
 		return request.then( handleSuccess, handleError );
 	};
+	
+	this.getRecord = function(playerId) {
+		var request = $http({
+			method: "get",
+			url: "api/player/record/"+playerId
+		});
+		return request.then( handleSuccess, handleError );
+	};
 		
 	
 	

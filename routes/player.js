@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
+var Challenge = mongoose.model('Challenge');
 var Alert = mongoose.model('Alert');
 
 /* 
@@ -186,6 +187,32 @@ router.get('/fetch/:playerId', function(req, res, next) {
 		} else {
 			res.json({message: players});
 		}
+	});
+});
+
+
+/* GET the wins and losses for a player
+ *
+ * @param: playerId
+ */
+router.get('/record/:playerId', function(req, res, next) {
+	var playerId = req.params.playerId;
+	if (!playerId) return next(new Error('You must specify a player id.'));
+	Challenge.find({ $and: [
+						{$or: [{'challengee': playerId}, {'challenger': playerId}] },
+						{'winner': {$ne: null}}
+					]}, function(err, challenges) {
+		if (err) return next(err);
+		var wins = 0;
+		var losses = 0;
+		challenges.forEach(function(challenge) {
+			if (challenge.winner == playerId) {
+				wins++;
+			} else {
+				losses++;
+			}
+		});
+		res.json({message: {wins: wins, losses: losses}});
 	});
 });
 

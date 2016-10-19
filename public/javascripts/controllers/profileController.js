@@ -12,7 +12,6 @@ angular.module('controllers')
 	
 	function init() {
 		$scope.profileId = $routeParams.playerId;
-		fetchChallenges();
 		playerService.getPlayer($scope.profileId).then(function(player) {
 			if (!player) {
 				console.log('Could not fetch profile');
@@ -20,6 +19,8 @@ angular.module('controllers')
 				$scope.profile = player;
 			}
 		});
+		fetchChallenges();
+		getRecord();
 	}
 	
 	function fetchChallenges() {
@@ -36,6 +37,15 @@ angular.module('controllers')
 	}
 	function resolvedChallenges(challenges) {
 		$scope.challenges.resolved = challenges;
+	}
+	
+	function getRecord() {
+		playerService.getRecord($scope.profileId).then(function(data) {
+			if (data) {
+				$scope.wins = data.wins;
+				$scope.losses = data.losses;
+			}
+		});
 	}
 	
 	$scope.expandChallenge = function(challenge) {
@@ -183,12 +193,14 @@ angular.module('controllers')
 	});
 	socket.on('challenge:resolved', function() {
 		fetchChallenges();
+		getRecord();
 	});
 	socket.on('challenge:revoked', function() {
 		fetchChallenges();
 	});
 	socket.on('challenge:forfeited', function() {
 		fetchChallenges();
+		getRecord();
 	});
 	
 }]);
