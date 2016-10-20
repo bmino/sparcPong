@@ -35,14 +35,14 @@ angular.module('sparcPongApp', [
 			templateUrl: '/partials/account/changeEmail.html',
 			controller: 'changeEmailController'
 		})
-		.when('/info/challenges', {
-			templateUrl: '/partials/info/challenges.html'
+		.when('/help/challenges', {
+			templateUrl: '/partials/help/challenges.html'
 		})
-		.when('/info/rules', {
-			templateUrl: '/partials/info/rules.html'
+		.when('/help/rules', {
+			templateUrl: '/partials/help/rules.html'
 		})
-		.when('/info/alerts', {
-			templateUrl: '/partials/info/alerts.html'
+		.when('/help/alerts', {
+			templateUrl: '/partials/help/alerts.html'
 		})
 		.when('/signUp', {
 			templateUrl: '/partials/signUp.html',
