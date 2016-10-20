@@ -19,6 +19,10 @@ angular.module('sparcPongApp', [
 			templateUrl: '/partials/profile.html',
 			controller: 'profileController'
 		})
+		.when('/news', {
+			templateUrl: '/partials/news.html',
+			controller: 'newsController'
+		})
 		.when('/account/changeAlerts', {
 			templateUrl: '/partials/account/changeAlerts.html',
 			controller: 'changeAlertsController'
