@@ -17,21 +17,6 @@
 	border-radius: 2px;
 }
 
-.partial-board li div.challengeButton {
-	display: inline;
-	float: right;
-	cursor: pointer;
-	color: white;
-	font-size: 15px;
-	background-color: grey;
-	border-radius: 3px;
-	padding: 2px 8px;
-	margin: 0;
-}
-.partial-board li div.challengeButton:hover {
-	background-color: orange;
-}
-
 
 .partial-board .li .glyphicon-fullscreen {
 	cursor: pointer;

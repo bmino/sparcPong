@@ -22,6 +22,21 @@ a:hover {
 	color: orange;
 }
 
+
+li div.initiateButton {
+	float: right;
+	cursor: pointer;
+	color: white;
+	font-size: 15px;
+	background-color: grey;
+	border-radius: 3px;
+	line-height: 100%;
+	padding: 4px 9px;
+}
+li div.initiateButton:hover {
+	background-color: orange;
+}
+
 footer {
 	margin-top: 45px;
 	margin-left: auto;

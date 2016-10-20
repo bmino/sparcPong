@@ -49,23 +49,32 @@ angular.module('controllers')
 	}
 	
 	$scope.expandChallenge = function(challenge) {
-		var modalOptions = {
-			challenge: challenge
-		};
-		modalService.showChallengeOptions({}, modalOptions).then(function(result) {
-			if (!result) return;
-			switch (result) {
-				case 'resolve':
-					resolveChallenge(challenge);
-					break;
-				case 'revoke':
-					revokeChallenge(challenge);
-					break;
-				case 'forfeit':
-					forfeitChallenge(challenge);
-					break;
-			}
-		});
+		if (!$rootScope.myClient.playerId) {
+			var modalOptions = {
+				actionButtonText: 'OK',
+				headerText: 'Report Challenge',
+				bodyText: 'You must log in first.'
+			};
+			modalService.showAlertModal({}, modalOptions);
+		} else {
+			var modalOptions = {
+				challenge: challenge
+			};
+			modalService.showChallengeOptions({}, modalOptions).then(function(result) {
+				if (!result) return;
+				switch (result) {
+					case 'resolve':
+						resolveChallenge(challenge);
+						break;
+					case 'revoke':
+						revokeChallenge(challenge);
+						break;
+					case 'forfeit':
+						forfeitChallenge(challenge);
+						break;
+				}
+			});
+		}		
 	};
 	
 	function resolveChallenge(challenge) {
