@@ -175,17 +175,16 @@ router.get('/', function(req, res, next) {
 router.get('/fetch/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;
 	
-	if (!playerId)
-		return next(new Error('You must specify a player id.'));
+	if (!playerId) return next(new Error('You must specify a player id.'));
 	
-	Player.findById(playerId, function(err, players) {
+	Player.findById(playerId, function(err, player) {
 		if (err) {
 			return next(err);
-		} else if (!players) {
+		} else if (!player) {
 			console.log('Could not find player with id: ' + playerId);
 			return next(new Error('No player was found for that id.'));
 		} else {
-			res.json({message: players});
+			res.json({message: player});
 		}
 	});
 });

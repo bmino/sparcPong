@@ -7,7 +7,7 @@
 	margin-right: 8px;
 }
 
-.partial-board li .name {
+.partial-board li .username {
 	display: inline-block;
 	word-wrap: normal;
 }
