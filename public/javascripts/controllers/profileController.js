@@ -92,8 +92,8 @@ angular.module('controllers')
 		};
 		modalService.showScoreModal({}, modalOptions).then(function(result) {
 			if (!result) return;
-			var challengerScore = result.challenge.challengerScore;
-			var challengeeScore = result.challenge.challengeeScore;
+			var challengerScore = Math.abs(result.challenge.challengerScore);
+			var challengeeScore = Math.abs(result.challenge.challengeeScore);
 			
 			challengeService.resolveChallenge(challenge._id, challengerScore, challengeeScore).then(
 				function(success) {
