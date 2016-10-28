@@ -77,12 +77,21 @@ router.post('/', function(req, res, next) {
 });
 
 
-/* GET all resolved challenges involving a player
+/* GET all challenges involving a player
  * 
  * @param: playerId
+ * @return: message.resolved
+ * @return: message.outgoing
+ * @return: message.incoming
  */
-router.get('/resolved/:playerId', function(req, res, next) {
+router.get('/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;
+	if (!playerId) {
+		console.log(challengeId + ' is not a valid player id.');
+		return next(new Error('This is not a valid player.'));
+	}
+	
+	// Resolved
 	Challenge.find({ $and: [
 						{$or: [{'challenger': playerId}, {'challengee': playerId}]}, 
 						{'winner': {$ne: null}}
@@ -90,38 +99,28 @@ router.get('/resolved/:playerId', function(req, res, next) {
 					.populate('challenger challengee')
 					.exec(function(err, challenges) {
 		if (err) return next(err);
-		res.json({message: challenges});
+		var resolved = challenges;
+		
+		// Outgoing
+		Challenge.find({challenger: playerId, winner: null})
+						.populate('challenger challengee')
+						.exec(function(err, challenges) {
+			if (err) return next(err);
+			var outgoing = challenges;
+			
+			// Incoming
+			Challenge.find({challengee: playerId, winner: null})
+							.populate('challenger challengee')
+							.exec(function(err, challenges) {
+				if (err) return next(err);
+				var incoming = challenges;
+				
+				res.json({message: {resolved: resolved, outgoing: outgoing, incoming: incoming}});
+			});
+		});
 	});
 });
 
-
-/* GET unresolved challenges issued by player
- * 
- * @param: playerId
- */
-router.get('/outgoing/:playerId', function(req, res, next) {
-	var playerId = req.params.playerId;
-	Challenge.find({challenger: playerId, winner: null})
-					.populate('challenger challengee')
-					.exec(function(err, challenges) {
-		if (err) return next(err);
-		res.json({message: challenges});
-	});
-});
-
-/* GET unresolved challenges pending to a player
- * 
- * @param: playerId
- */
-router.get('/incoming/:playerId', function(req, res, next) {
-	var playerId = req.params.playerId;
-	Challenge.find({challengee: playerId, winner: null})
-					.populate('challenger challengee')
-					.exec(function(err, challenges) {
-		if (err) return next(err);
-		res.json({message: challenges});
-	});
-});
 
 /* DELETE wrongly issued challenge by challengerId
  *

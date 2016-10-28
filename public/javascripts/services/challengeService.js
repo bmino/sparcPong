@@ -16,26 +16,10 @@ angular.module('services')
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.getChallengesResolved = function(playerId) {
+	this.getChallenges = function(playerId) {
 		var request = $http({
 			method: "get",
-			url: "api/challenge/resolved/"+playerId
-		});
-		return request.then( handleSuccess, handleError );
-	};
-	
-	this.getChallengesOutgoing = function(playerId) {
-		var request = $http({
-			method: "get",
-			url: "api/challenge/outgoing/"+playerId
-		});
-		return request.then( handleSuccess, handleError );
-	};
-	
-	this.getChallengesIncoming = function(playerId) {
-		var request = $http({
-			method: "get",
-			url: "api/challenge/incoming/"+playerId
+			url: "api/challenge/"+playerId
 		});
 		return request.then( handleSuccess, handleError );
 	};

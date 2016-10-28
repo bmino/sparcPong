@@ -1,50 +1,61 @@
 angular.module('controllers')
 .controller('profileController', ['$scope', '$rootScope', '$routeParams', 'socket', 'modalService', 'playerService', 'challengeService', function($scope, $rootScope, $routeParams, socket, modalService, playerService, challengeService) {
 	
-	$scope.profileId;
+	var profileId;
 	$scope.challenges = {
 		incoming: [],
 		outgoing: [],
 		resolved: []
 	};
 	
+	var loadingProfile = true
+	var loadingChallenges = true;
+	var loadingRecord = true;
+	
 	init();
 	
 	function init() {
-		$scope.profileId = $routeParams.playerId;
-		playerService.getPlayer($scope.profileId).then(function(player) {
-			if (!player) {
-				console.log('Could not fetch profile');
-			} else {
-				$scope.profile = player;
-			}
-		});
+		profileId = $routeParams.playerId;
+		if (!profileId) console.log('No profile id detected.');
+		
+		loadPlayer();
 		fetchChallenges();
 		getRecord();
 	}
 	
+	$scope.loading = function() {
+		return loadingProfile || loadingChallenges || loadingRecord;
+	};
+	
+	function loadPlayer() {
+		playerService.getPlayer(profileId).then(function(player) {
+			if (!player) {
+				console.log('Could not fetch profile');
+				loadingProfile = false;
+			} else {
+				$scope.profile = player;
+				loadingProfile = false;
+			}
+		});
+	}
+	
 	function fetchChallenges() {
-		var playerId = $scope.profileId;
-		challengeService.getChallengesIncoming(playerId).then( incomingChallenges );
-		challengeService.getChallengesOutgoing(playerId).then( outgoingChallenges );
-		challengeService.getChallengesResolved(playerId).then( resolvedChallenges );
+		challengeService.getChallenges(profileId).then( sortChallenges );
 	}
-	function incomingChallenges(challenges) {
-		$scope.challenges.incoming = challenges;
-	}
-	function outgoingChallenges(challenges) {
-		$scope.challenges.outgoing = challenges;
-	}
-	function resolvedChallenges(challenges) {
-		$scope.challenges.resolved = challenges;
+	function sortChallenges(challenges) {
+		$scope.challenges.resolved = challenges.resolved;
+		$scope.challenges.outgoing = challenges.outgoing;
+		$scope.challenges.incoming = challenges.incoming;
+		loadingChallenges = false;
 	}
 	
 	function getRecord() {
-		playerService.getRecord($scope.profileId).then(function(data) {
+		playerService.getRecord(profileId).then(function(data) {
 			if (data) {
 				$scope.wins = data.wins;
 				$scope.losses = data.losses;
 			}
+			loadingRecord = false;
 		});
 	}
 	

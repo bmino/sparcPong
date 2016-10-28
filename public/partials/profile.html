@@ -1,9 +1,9 @@
-<div class="page-header">
+<div class="page-header" ng-hide="loading()">
 	<h1 ng-bind="profile.username"></h1>
 	<span class="playerFirstName" ng-bind="profile.firstName"></span>
 	<span class="playerLastName" ng-bind="profile.lastName"></span> (<span ng-bind="wins"></span> - <span ng-bind="losses"></span>)
 </div>
-<div class="profile">
+<div class="profile" ng-hide="loading()">
 	<div class="challenges">
 		<div class="panel panel-default">
 			<div class="panel-heading" data-toggle="collapse" data-target="#incomingChallenges">
