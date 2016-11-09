@@ -8,33 +8,32 @@ angular.module('controllers')
 		resolved: []
 	};
 	
-	var loadingProfile = true
-	var loadingChallenges = true;
-	var loadingRecord = true;
+	$scope.loadingProfile = true
+	$scope.loadingChallenges = true;
+	$scope.loadingRecord = true;
 	
 	init();
 	
 	function init() {
 		profileId = $routeParams.playerId;
-		if (!profileId) console.log('No profile id detected.');
+		if (!profileId) {
+			console.log('No profile id detected.');
+			return;
+		}
 		
 		loadPlayer();
 		fetchChallenges();
 		getRecord();
 	}
 	
-	$scope.loading = function() {
-		return loadingProfile || loadingChallenges || loadingRecord;
-	};
-	
 	function loadPlayer() {
 		playerService.getPlayer(profileId).then(function(player) {
 			if (!player) {
 				console.log('Could not fetch profile');
-				loadingProfile = false;
+				$scope.loadingProfile = false;
 			} else {
 				$scope.profile = player;
-				loadingProfile = false;
+				$scope.loadingProfile = false;
 			}
 		});
 	}
@@ -46,7 +45,7 @@ angular.module('controllers')
 		$scope.challenges.resolved = challenges.resolved;
 		$scope.challenges.outgoing = challenges.outgoing;
 		$scope.challenges.incoming = challenges.incoming;
-		loadingChallenges = false;
+		$scope.loadingChallenges = false;
 	}
 	
 	function getRecord() {
@@ -55,7 +54,7 @@ angular.module('controllers')
 				$scope.wins = data.wins;
 				$scope.losses = data.losses;
 			}
-			loadingRecord = false;
+			$scope.loadingRecord = false;
 		});
 	}
 	

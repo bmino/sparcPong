@@ -641,16 +641,17 @@ function email_resolvedChallenge(winner, loser) {
 		if (loser.email && loser.alerts.resolved) {
 			sendEmail('Resolved Challenge', 'Welp, stuff happens. It looks like '+ winner.username +' really laid the smack on ya. Log in at http://sparc-pong.herokuapp.com and pick an easier opponent.', loser.email);
 		}
-	});
-	// Contacts winner
-	Player.findById(winner._id).populate('alerts').exec(function(err, winner) {
-		if (err) {
-			console.log(err);
-			return;
-		}
-		if (winner.email && winner.alerts.resolved) {
-			sendEmail('Resolved Challenge', 'Congratulations on beating '+ loser.username +'! Log in at http://sparc-pong.herokuapp.com to crush some more feelings.', winner.email);
-		}
+		
+		// Contacts winner
+		Player.findById(winner._id).populate('alerts').exec(function(err, winner) {
+			if (err) {
+				console.log(err);
+				return;
+			}
+			if (winner.email && winner.alerts.resolved) {
+				sendEmail('Resolved Challenge', 'Congratulations on beating '+ loser.username +'! Log in at http://sparc-pong.herokuapp.com to crush some more feelings.', winner.email);
+			}
+		});
 	});
 }
 
@@ -685,7 +686,5 @@ function sendEmail(subject, message, address) {
 		}
 	});
 }
-
-
 
 module.exports = router;
