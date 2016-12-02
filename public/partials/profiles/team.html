@@ -1,0 +1,57 @@
+<div class="page-header">
+	<h1 ng-bind="profile ? profile.username : 'Loading Username...'"></h1>
+	<span class="playerFirstName" ng-bind="profile ? profile.firstName : 'Loading name...'"></span>
+	<span class="playerLastName" ng-bind="profile ? profile.lastName : ''"></span> <span ng-show="profile">(<span ng-bind="wins"></span> - <span ng-bind="losses"></span>)</span>
+</div>
+
+<div ng-show="loadingChallenges">
+	Loading...
+</div>
+<div class="profile" ng-hide="loadingChallenges">
+	<div class="challenges">
+		<div class="panel panel-default">
+			<div class="panel-heading" data-toggle="collapse" data-target="#incomingChallenges">
+				<h3 class="panel-title">{{challenges.incoming.length == 0 ? 'No' : challenges.incoming.length}} Incoming Challenges</h3>
+			</div>
+			<ul class="list-group in" id="incomingChallenges">
+				<li class="list-group-item challenge-incoming" ng-repeat="challenge in challenges.incoming | orderBy : '-updatedAt'">
+					<a ng-href="#/profile/{{challenge.challenger._id}}" ng-bind="challenge.challenger.username"></a>
+					<until-forfeit date="challenge.createdAt"></until-forfeit>
+					<div logged-in="[challenge.challenger._id, challenge.challengee._id]" class="initiateButton" ng-click="expandChallenge(challenge)">Report</div>
+				</li>
+			</ul>
+		</div>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading" data-toggle="collapse" data-target="#outgoingChallenges">
+				<h3 class="panel-title">{{challenges.outgoing.length == 0 ? 'No' : challenges.outgoing.length}} Outgoing Challenges</h3>
+			</div>
+			<ul class="list-group in" id="outgoingChallenges">
+				<li class="list-group-item challenge-outgoing" ng-repeat="challenge in challenges.outgoing | orderBy : '-updatedAt'">
+					<a ng-href="#/profile/{{challenge.challengee._id}}" ng-bind="challenge.challengee.username"></a>
+					<until-forfeit date="challenge.createdAt"></until-forfeit>
+					<div logged-in="[challenge.challenger._id, challenge.challengee._id]" class="initiateButton" ng-click="expandChallenge(challenge)">Report</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+	<div class="history">
+		<div class="panel panel-default">
+			<div class="panel-heading" data-toggle="collapse" data-target="#resolvedChallenges">
+				<h3 class="panel-title">{{challenges.resolved.length == 0 ? 'No' : challenges.resolved.length}} {{challenges.resolved.length == 1 ? 'Ranked Match' : 'Ranked Matches'}}</h3>
+			</div>
+			<ul class="list-group in" id="resolvedChallenges">
+				<li class="list-group-item challenge-resolved" ng-repeat="challenge in challenges.resolved | orderBy : '-updatedAt'">
+					<a ng-href="#/profile/{{challenge.challenger._id}}"><span ng-bind="challenge.challenger.username"></span></a>
+					<span>({{challenge.challengerScore != null ? challenge.challengerScore : '-'}})</span>
+					<span> vs </span>
+					<a ng-href="#/profile/{{challenge.challengee._id}}"><span ng-bind="challenge.challengee.username" ></span></a>
+					<span>({{challenge.challengeeScore != null ? challenge.challengeeScore : 'forfeit'}})</span>
+					<br />
+					<span ng-bind="challenge.updatedAt | mongoDate" ng-show="challenge.winner"></span>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>

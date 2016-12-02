@@ -14,7 +14,9 @@ require('dotenv').config({path: 'config/local.env'});
 var mongoose = require('mongoose');
 
 require('./models/Player');
+require('./models/Team');
 require('./models/Challenge');
+require('./models/TeamChallenge');
 require('./models/Alert');
 
 var db_uri = process.env.MONGODB_URI;
@@ -23,6 +25,7 @@ mongoose.connect(db_uri);
 
 var routes = require('./routes/basic');
 var player = require('./routes/player');
+var team = require('./routes/team');
 var challenge = require('./routes/challenge');
 var playerAlerts = require('./routes/alert');
 var envBridge = require('./routes/envBridge');

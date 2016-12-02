@@ -3,6 +3,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Challenge = mongoose.model('Challenge');
 var Player = mongoose.model('Player');
+var Team = mongoose.model('Team');
 
 var nodemailer = require('nodemailer');
 var xoauth2 = require('xoauth2');
@@ -182,9 +183,7 @@ router.post('/resolve', function(req, res, next) {
 	Challenge.findById(challengeId).populate('challenger challengee').exec(function(err, challenge) {
 		if (err) return next(err);
 		
-		if (!challenge || challenge.length == 0) {
-			return next(new Error('Could not find the challenge for ['+challengeId+'].'));
-		} else if (hasForfeit(challenge.createdAt)) {
+		if (hasForfeit(challenge.createdAt)) {
 			return next(new Error('This challenge has expired. '+challenge.challengee.username+' must forfeit.'));
 		} else {
 			console.log('Resolving challenge id ['+challengeId+']');

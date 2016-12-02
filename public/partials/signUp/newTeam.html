@@ -1,0 +1,19 @@
+<div class="page-header">
+	<h1>New Team</h1>
+</div>
+<div class="newTeam">
+	<form class="form-horizontal" ng-submit="createTeam()" autocomplete="off">
+		<div class="form-group">
+			<label class="control-label col-md-2" for="name">Username</label>
+			<div class="col-md-10"><input class="form-control" id="name" type="string" ng-model="team.username" focus-first required /></div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-md-2" for="phone">Leader</label>
+			<div class="col-md-10"><input class="form-control" id="leader" type="string" ng-model="team.leader" required /></div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-md-2" for="phone">Partner</label>
+			<div class="col-md-10"><input class="form-control" id="partner" type="string" ng-model="team.partner" /></div>
+		</div>
+	</form>
+</div>
