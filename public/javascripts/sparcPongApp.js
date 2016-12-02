@@ -11,17 +11,31 @@ angular.module('sparcPongApp', [
 
 .config(function ($routeProvider) {
 	$routeProvider
-		.when('/', {
-			templateUrl: '/partials/board.html',
-			controller: 'boardController'
+		/* Board Routes */
+		.when('/board/players', {
+			templateUrl: '/partials/boards/player.html',
+			controller: 'playerBoardController'
 		})
-		.when('/profile/:playerId', {
-			templateUrl: '/partials/profile.html',
-			controller: 'profileController'
+		.when('/board/teams', {
+			templateUrl: '/partials/boards/team.html',
+			controller: 'teamBoardController'
 		})
-		.when('/news', {
-			templateUrl: '/partials/news.html',
-			controller: 'newsController'
+		
+		/* Help Routes */
+		.when('/help/challenges', {
+			templateUrl: '/partials/help/challenges.html'
+		})
+		.when('/help/rules', {
+			templateUrl: '/partials/help/rules.html'
+		})
+		.when('/help/alerts', {
+			templateUrl: '/partials/help/alerts.html'
+		})
+		
+		/* Player Routes */
+		.when('/profile/player/:id', {
+			templateUrl: '/partials/profiles/player.html',
+			controller: 'playerProfileController'
 		})
 		.when('/account/changeAlerts', {
 			templateUrl: '/partials/account/changeAlerts.html',
@@ -35,21 +49,25 @@ angular.module('sparcPongApp', [
 			templateUrl: '/partials/account/changeEmail.html',
 			controller: 'changeEmailController'
 		})
-		.when('/help/challenges', {
-			templateUrl: '/partials/help/challenges.html'
+		
+		/* Team Routes */
+		.when('/profile/team/:id', {
+			templateUrl: '/partials/profiles/team.html',
+			controller: 'teamProfileController'
 		})
-		.when('/help/rules', {
-			templateUrl: '/partials/help/rules.html'
-		})
-		.when('/help/alerts', {
-			templateUrl: '/partials/help/alerts.html'
-		})
-		.when('/signUp', {
-			templateUrl: '/partials/signUp.html',
+		
+		/* Sign Up Routes */
+		.when('/signUp/player', {
+			templateUrl: '/partials/signUp/newPlayer.html',
 			controller: 'signUpController'
 		})
+		.when('/signUp/team', {
+			templateUrl: '/partials/signUp/newTeam.html',
+			controller: 'signUpController'
+		})
+		
 		.otherwise({
-			redirectTo: '/'
+			redirectTo: '/board/players'
 		});
 
 });

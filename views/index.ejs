@@ -42,9 +42,9 @@
 		<!-- Angular: Controllers -->
 		<script src='/javascripts/controllers/_controllers.js'></script>
 		<script src='/javascripts/controllers/headerController.js'></script>
-		<script src='/javascripts/controllers/boardController.js'></script>
+		<script src='/javascripts/controllers/boards/playerController.js'></script>
 		<script src='/javascripts/controllers/signUpController.js'></script>
-		<script src='/javascripts/controllers/profileController.js'></script>
+		<script src='/javascripts/controllers/profiles/playerController.js'></script>
 		<script src='/javascripts/controllers/account/changeUsernameController.js'></script>
 		<script src='/javascripts/controllers/account/changeEmailController.js'></script>
 		<script src='/javascripts/controllers/account/changeAlertsController.js'></script>
@@ -85,9 +85,10 @@
 						
 						<!-- Navigation Links -->
 						<ul class="nav navbar-nav">
-							<li role="presentation"><a href="#/board">Board</a></li>
+							<li role="presentation"><a href="#/board/players">Singles</a></li>
+							<li role="presentation"><a href="#/board/teams">Doubles</a></li>
 							<li role="presentation" logged-in>
-								<a ng-href="#/profile/{{myClient.playerId}}">Profile</a>
+								<a ng-href="#/profile/player/{{myClient.playerId}}">Profile</a>
 							</li>
 							<!-- Account Links -->
 							<li role="presentation" class="dropdown" logged-in>
@@ -114,7 +115,7 @@
 						
 						<!-- Log In/Out -->
 						<ul class="nav navbar-nav navbar-right">
-							<li role="presentation" ng-hide="myClient.playerId"><a ng-href="#/signUp">Sign Up</a></li>
+							<li role="presentation" ng-hide="myClient.playerId"><a ng-href="#/signUp/player">Sign Up</a></li>
 							<li role="presentation">
 								<a id="logInOut" ng-click="changeUser()" ng-bind="myClient.playerId ? 'Log Out' : 'Log In'"></a>
 							</li>

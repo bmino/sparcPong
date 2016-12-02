@@ -9,6 +9,12 @@ angular.module('controllers')
 		email: ''
 	};
 	
+	$scope.team = {
+		username: '',
+		leader: null,
+		partner: null
+	};
+	
 	init();
 	
 	function init() {}
@@ -28,6 +34,28 @@ angular.module('controllers')
 				console.log(failure);
 				var modalOptions = {
 					headerText: 'New Player',
+					bodyText: failure
+				};
+				modalService.showAlertModal({}, modalOptions);
+			}
+		);
+	}
+	
+	$scope.createTeam = function() {
+		teamService.createTeam($scope.team.username, $scope.team.leader, $scope.team.partner).then(
+			function(success) {
+				// Successfully created a new team.
+				var modalOptions = {
+					headerText: 'New Team',
+					bodyText: success
+				};
+				modalService.showAlertModal({}, modalOptions);
+			},
+			function (failure) {
+				// Did not create a new team.
+				console.log(failure);
+				var modalOptions = {
+					headerText: 'New Team',
 					bodyText: failure
 				};
 				modalService.showAlertModal({}, modalOptions);

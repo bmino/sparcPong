@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('profileController', ['$scope', '$rootScope', '$routeParams', 'socket', 'modalService', 'playerService', 'challengeService', function($scope, $rootScope, $routeParams, socket, modalService, playerService, challengeService) {
+.controller('playerProfileController', ['$scope', '$rootScope', '$routeParams', 'socket', 'modalService', 'playerService', 'challengeService', function($scope, $rootScope, $routeParams, socket, modalService, playerService, challengeService) {
 	
 	var profileId;
 	$scope.challenges = {
@@ -15,7 +15,7 @@ angular.module('controllers')
 	init();
 	
 	function init() {
-		profileId = $routeParams.playerId;
+		profileId = $routeParams.id;
 		if (!profileId) {
 			console.log('No profile id detected.');
 			return;

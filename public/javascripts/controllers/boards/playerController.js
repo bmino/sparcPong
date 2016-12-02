@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('boardController', ['$scope', '$rootScope', 'socket', 'modalService', 'timeService', 'playerService', 'challengeService', function($scope, $rootScope, socket, modalService, timeService, playerService, challengeService) {
+.controller('playerBoardController', ['$scope', '$rootScope', 'socket', 'modalService', 'timeService', 'playerService', 'challengeService', function($scope, $rootScope, socket, modalService, timeService, playerService, challengeService) {
 	
 	init();
 	
@@ -25,12 +25,12 @@ angular.module('controllers')
 	}
 	
 	/* Should be covered by back end check, but just in case */
-	function sanitizeUsernames(players) {
-		for (var i=0; i<players.length; i++) {
-			players[i]['username'].replace(/&/g, '&amp;')
-								  .replace(/>/g, '&gt;')
-								  .replace(/</g, '&lt;')
-								  .replace(/"/g, '&quot;');
+	function sanitizeUsernames(group) {
+		for (var i=0; i<group.length; i++) {
+			group[i]['username'].replace(/&/g, '&amp;')
+								.replace(/>/g, '&gt;')
+								.replace(/</g, '&lt;')
+								.replace(/"/g, '&quot;');
 		}
 	}
 	
