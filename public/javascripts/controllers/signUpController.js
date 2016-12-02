@@ -23,6 +23,15 @@ angular.module('controllers')
 		playerService.createPlayer($scope.player.username, $scope.player.firstName, $scope.player.lastName, $scope.player.phone, $scope.player.email).then(
 			function (success) {
 				// Successfully created a new player.
+				// Clear inputs
+				$scope.player = {
+					username: '',
+					firstName: '',
+					lastName: '',
+					phone: null,
+					email: ''
+				};
+				
 				var modalOptions = {
 					headerText: 'New Player',
 					bodyText: success
