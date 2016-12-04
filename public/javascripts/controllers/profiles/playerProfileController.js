@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('playerProfileController', ['$scope', '$rootScope', '$routeParams', 'socket', 'modalService', 'playerService', 'challengeService', function($scope, $rootScope, $routeParams, socket, modalService, playerService, challengeService) {
+.controller('playerProfileController', ['$scope', '$rootScope', '$routeParams', 'socket', 'modalService', 'playerService', 'playerChallengeService', function($scope, $rootScope, $routeParams, socket, modalService, playerService, playerChallengeService) {
 	
 	var profileId;
 	$scope.challenges = {
@@ -39,7 +39,7 @@ angular.module('controllers')
 	}
 	
 	function fetchChallenges() {
-		challengeService.getChallenges(profileId).then( sortChallenges );
+		playerChallengeService.getChallenges(profileId).then( sortChallenges );
 	}
 	function sortChallenges(challenges) {
 		$scope.challenges.resolved = challenges.resolved;
@@ -105,7 +105,7 @@ angular.module('controllers')
 			var challengerScore = result.challenge.challengerScore;
 			var challengeeScore = result.challenge.challengeeScore;
 			
-			challengeService.resolveChallenge(challenge._id, challengerScore, challengeeScore).then(
+			playerChallengeService.resolveChallenge(challenge._id, challengerScore, challengeeScore).then(
 				function(success) {
 					var modalOptions = {
 						headerText: 'Resolve Challenge',
@@ -143,7 +143,7 @@ angular.module('controllers')
         };
         modalService.showModal({}, modalOptions).then(function (okay) {
 			if (!okay) return;
-			challengeService.revokeChallenge(challenge.challenger._id, challenge.challengee._id).then(
+			playerChallengeService.revokeChallenge(challenge.challenger._id, challenge.challengee._id).then(
 				function(success) {
 					var modalOptions = {
 						headerText: 'Revoke Challenge',
@@ -180,7 +180,7 @@ angular.module('controllers')
         };
         modalService.showModal({}, modalOptions).then(function (okay) {
 			if (!okay) return;
-			challengeService.forfeitChallenge(challenge._id).then(
+			playerChallengeService.forfeitChallenge(challenge._id).then(
 				function(success) {
 					var modalOptions = {
 						headerText: 'Forfeit Challenge',

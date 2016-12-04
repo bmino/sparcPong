@@ -1,6 +1,8 @@
 angular.module('controllers')
-.controller('signUpController', ['$scope', 'socket', 'modalService', 'playerService', function($scope, socket, modalService, playerService) {
-
+.controller('signUpController', ['$scope', 'socket', 'modalService', 'playerService', 'teamService', function($scope, socket, modalService, playerService, teamService) {
+	
+	$scope.players = [];
+	
 	$scope.player = {
 		username: '',
 		firstName: '',
@@ -17,7 +19,18 @@ angular.module('controllers')
 	
 	init();
 	
-	function init() {}
+	function init() {
+		$scope.loadingPlayers = true;
+		loadPlayers();
+	}
+	
+	function loadPlayers() {
+		$scope.loadingPlayers = true;
+		playerService.getPlayers().then( function(players) {
+			$scope.players = players;
+			$scope.loadingPlayers = false;
+		});
+	}
 	
 	$scope.createPlayer = function() {
 		playerService.createPlayer($scope.player.username, $scope.player.firstName, $scope.player.lastName, $scope.player.phone, $scope.player.email).then(
@@ -51,7 +64,8 @@ angular.module('controllers')
 	}
 	
 	$scope.createTeam = function() {
-		teamService.createTeam($scope.team.username, $scope.team.leader, $scope.team.partner).then(
+		if (!$scope.team.leader || !$scope.team.partner) return;
+		teamService.createTeam($scope.team.username, $scope.team.leader._id, $scope.team.partner._id).then(
 			function(success) {
 				// Successfully created a new team.
 				var modalOptions = {

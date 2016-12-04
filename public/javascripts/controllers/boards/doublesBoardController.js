@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('teamBoardController', ['$scope', '$rootScope', 'socket', 'modalService', 'timeService', 'challengeService', function($scope, $rootScope, socket, modalService, timeService, challengeService) {
+.controller('doublesBoardController', ['$scope', '$rootScope', 'socket', 'modalService', 'timeService', 'teamChallengeService', function($scope, $rootScope, socket, modalService, timeService, teamChallengeService) {
 	
 	init();
 	
@@ -56,7 +56,7 @@ angular.module('controllers')
 			modalService.showAlertModal({}, modalOptions);
 		} else {
 			// TODO: New team challenge
-			challengeService.XXXXXX(playerId, challengeeId).then( goodChallenge, badChallenge );
+			teamChallengeService.XXXXXX(playerId, challengeeId).then( goodChallenge, badChallenge );
 		}
 	};
 	

@@ -27,7 +27,9 @@
 		<!-- Angular: Services -->
 		<script src='/javascripts/services/_services.js'></script>
 		<script src='/javascripts/services/playerService.js'></script>
-		<script src='/javascripts/services/challengeService.js'></script>
+		<script src='/javascripts/services/teamService.js'></script>
+		<script src='/javascripts/services/challenges/playerChallengeService.js'></script>
+		<script src='/javascripts/services/challenges/teamChallengeService.js'></script>
 		<script src='/javascripts/services/socket.js'></script>
 		<script src='/javascripts/services/timeService.js'></script>
 		<script src='/javascripts/services/modalService.js'></script>
@@ -42,11 +44,11 @@
 		<!-- Angular: Controllers -->
 		<script src='/javascripts/controllers/_controllers.js'></script>
 		<script src='/javascripts/controllers/headerController.js'></script>
-		<script src='/javascripts/controllers/boards/playerController.js'></script>
-		<script src='/javascripts/controllers/boards/teamController.js'></script>
+		<script src='/javascripts/controllers/boards/singlesBoardController.js'></script>
+		<script src='/javascripts/controllers/boards/doublesBoardController.js'></script>
 		<script src='/javascripts/controllers/signUpController.js'></script>
-		<script src='/javascripts/controllers/profiles/playerController.js'></script>
-		<script src='/javascripts/controllers/profiles/teamController.js'></script>
+		<script src='/javascripts/controllers/profiles/playerProfileController.js'></script>
+		<script src='/javascripts/controllers/profiles/teamProfileController.js'></script>
 		<script src='/javascripts/controllers/account/changeUsernameController.js'></script>
 		<script src='/javascripts/controllers/account/changeEmailController.js'></script>
 		<script src='/javascripts/controllers/account/changeAlertsController.js'></script>
@@ -87,8 +89,8 @@
 						
 						<!-- Navigation Links -->
 						<ul class="nav navbar-nav">
-							<li role="presentation"><a href="#/board/players">Singles</a></li>
-							<li role="presentation"><a href="#/board/teams">Doubles</a></li>
+							<li role="presentation"><a href="#/board/singles">Singles</a></li>
+							<li role="presentation"><a href="#/board/doubles">Doubles</a></li>
 							<li role="presentation" logged-in>
 								<a ng-href="#/profile/player/{{myClient.playerId}}">Profile</a>
 							</li>

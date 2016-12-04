@@ -41,7 +41,8 @@ router.post('/', function(req, res, next) {
 	
 	// Not allowed to issue challenges on weekends
 	var todayDay = new Date().getDay();
-	if (todayDay == 0 || todayDay == 6)
+	var CHALLENGE_ANYTIME = process.env.CHALLENGE_ANYTIME || false;
+	if (todayDay == 0 || todayDay == 6 && CHALLENGE_ANYTIME)
 		return next(new Error('You can only issue challenges on business days.'));
 	
 	challengeExists(challengerId, challengeeId, function(err) {

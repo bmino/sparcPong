@@ -13,13 +13,17 @@ var TeamChallenge = mongoose.model('TeamChallenge');
  * @param: partnerId
  */
 router.post('/', function(req, res, next) {
-	if (req.body.username && typeof req.body.username != 'string')
-		return next(new Error('Invalid data type of Player parameters.'));
+	var username = req.body.username;
+	var leaderId = req.body.leaderId;
+	var partnerId = req.body.partnerId;
 	
-	if (!req.body.leaderId || !req.body.partnerId)
+	if (!username || typeof username != 'string' || username.length == 0)
+		return next(new Error('Invalid username data type.'));
+	
+	if (!leaderId || !partnerId)
 		return next(new Error('Invalid team members.'));
 	
-	var teamUsername = req.body.username ? req.body.username.trim() : null;
+	var teamUsername = username ? username.trim() : null;
 	
 	validUsername(teamUsername, function(err) {
 		if (err) return next(err);
@@ -29,7 +33,7 @@ router.post('/', function(req, res, next) {
 			Player.findById(partnerId, function(err, partner) {
 				if (err) return next(err);
 				
-				getLowestRank(function(err, lowestRank) {
+				getLowestTeamRank(function(err, lowestRank) {
 					if (err) return next(err);
 					
 					console.log('Creating new team.');
@@ -37,7 +41,11 @@ router.post('/', function(req, res, next) {
 					// Create new team
 					var team = new Team();
 					team.username = teamUsername;
+					team.leader = leader._id;
+					team.partner = partner._id;
 					team.rank = lowestRank + 1;
+					
+					console.log(team);
 					
 					// Saves team to DB
 					team.save(function(err) {
@@ -132,7 +140,7 @@ router.get('/record/:teamId', function(req, res, next) {
 	});
 });
 
-function getLowestRank(callback) {
+function getLowestTeamRank(callback) {
 	Team.find().sort({'rank': -1}).limit(1).exec(function(err, lowestRankTeam) {
 		if (err) {
 			callback(err, null);
@@ -142,7 +150,7 @@ function getLowestRank(callback) {
 		if (lowestRankTeam && lowestRankTeam.length > 0) {
 			lowestRank = lowestRankTeam[0].rank;
 		}
-		console.log('Found lowest rank of ' + lowestRank);
+		console.log('Found lowest team rank of ' + lowestRank);
 		callback(err, lowestRank);
 	});
 }
@@ -187,7 +195,7 @@ function validUsername(username, callback) {
 }
 
 function usernameExists(username, callback) {
-	console.log('Checking if username, '+ username +', exists.');
+	console.log('Checking if team username, '+ username +', exists.');
 	Team.count({username: username}, function(err, count) {
 		if (err) {
 			callback(err);

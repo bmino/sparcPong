@@ -26,7 +26,8 @@ mongoose.connect(db_uri);
 var routes = require('./routes/basic');
 var player = require('./routes/player');
 var team = require('./routes/team');
-var challenge = require('./routes/challenge');
+var playerChallenge = require('./routes/challenges/playerChallenge');
+var teamChallenge = require('./routes/challenges/teamChallenge');
 var playerAlerts = require('./routes/alert');
 var envBridge = require('./routes/envBridge');
 
@@ -45,7 +46,9 @@ app.use('/bower', express.static(path.join(__dirname, 'bower_components')));
 
 app.use('/', routes);
 app.use('/api/player', player);
-app.use('/api/challenge', challenge);
+app.use('/api/team', team);
+app.use('/api/challenge/player', playerChallenge);
+app.use('/api/challenge/team', teamChallenge);
 app.use('/api/playerAlerts', playerAlerts);
 app.use('/api/envBridge', envBridge);
 

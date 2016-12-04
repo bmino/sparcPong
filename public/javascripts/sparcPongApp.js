@@ -12,13 +12,13 @@ angular.module('sparcPongApp', [
 .config(function ($routeProvider) {
 	$routeProvider
 		/* Board Routes */
-		.when('/board/players', {
-			templateUrl: '/partials/boards/player.html',
-			controller: 'playerBoardController'
+		.when('/board/singles', {
+			templateUrl: '/partials/boards/singles.html',
+			controller: 'singlesBoardController'
 		})
-		.when('/board/teams', {
-			templateUrl: '/partials/boards/team.html',
-			controller: 'teamBoardController'
+		.when('/board/doubles', {
+			templateUrl: '/partials/boards/doubles.html',
+			controller: 'doublesBoardController'
 		})
 		
 		/* Help Routes */
@@ -67,7 +67,7 @@ angular.module('sparcPongApp', [
 		})
 		
 		.otherwise({
-			redirectTo: '/board/players'
+			redirectTo: '/board/singles'
 		});
 
 });

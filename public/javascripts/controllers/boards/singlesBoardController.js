@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('playerBoardController', ['$scope', '$rootScope', 'socket', 'modalService', 'timeService', 'playerService', 'challengeService', function($scope, $rootScope, socket, modalService, timeService, playerService, challengeService) {
+.controller('singlesBoardController', ['$scope', '$rootScope', 'socket', 'modalService', 'timeService', 'playerService', 'playerChallengeService', function($scope, $rootScope, socket, modalService, timeService, playerService, playerChallengeService) {
 	
 	init();
 	
@@ -54,7 +54,7 @@ angular.module('controllers')
 			};
 			modalService.showAlertModal({}, modalOptions);
 		} else {
-			challengeService.createChallenge(playerId, challengeeId).then( goodChallenge, badChallenge );
+			playerChallengeService.createChallenge(playerId, challengeeId).then( goodChallenge, badChallenge );
 		}
 	};
 	function goodChallenge(success) {
