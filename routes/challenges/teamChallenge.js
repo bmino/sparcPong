@@ -106,14 +106,24 @@ router.get('/:teamId', function(req, res, next) {
 		
 		// Outgoing
 		TeamChallenge.find({challenger: teamId, winner: null})
-						.populate('challenger challengee')
+						.populate({
+							path: 'challenger challengee',
+							populate: {
+								path: 'leader partner'
+							}
+						})
 						.exec(function(err, challenges) {
 			if (err) return next(err);
 			var outgoing = challenges;
 			
 			// Incoming
 			TeamChallenge.find({challengee: teamId, winner: null})
-							.populate('challenger challengee')
+							.populate({
+								path: 'challenger challengee',
+								populate: {
+									path: 'leader partner'
+								}
+							})
 							.exec(function(err, challenges) {
 				if (err) return next(err);
 				var incoming = challenges;
