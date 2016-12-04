@@ -70,7 +70,7 @@ angular.module('controllers')
 			var modalOptions = {
 				challenge: challenge
 			};
-			modalService.showChallengeOptions({}, modalOptions).then(function(result) {
+			modalService.showTeamChallengeOptions({}, modalOptions).then(function(result) {
 				if (!result) return;
 				switch (result) {
 					case 'resolve':

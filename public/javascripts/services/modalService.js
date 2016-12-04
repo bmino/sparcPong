@@ -15,8 +15,14 @@ angular.module('services')
 		bodyText: 'Perform this action?'
 	};
 	
-	this.showChallengeOptions = function(customModalDefaults, customModalOptions) {
-		customModalDefaults.templateUrl = '/partials/modals/challengeOptions.html';
+	
+	this.showPlayerChallengeOptions = function(customModalDefaults, customModalOptions) {
+		customModalDefaults.templateUrl = '/partials/modals/challengeOptions/playerChallengeOptions.html';
+		return this.showModal(customModalDefaults, customModalOptions);
+	}
+	
+	this.showTeamChallengeOptions = function(customModalDefaults, customModalOptions) {
+		customModalDefaults.templateUrl = '/partials/modals/challengeOptions/teamChallengeOptions.html';
 		return this.showModal(customModalDefaults, customModalOptions);
 	}
 
