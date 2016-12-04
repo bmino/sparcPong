@@ -68,6 +68,12 @@ angular.module('controllers')
 		teamService.createTeam($scope.team.username, $scope.team.leader._id, $scope.team.partner._id).then(
 			function(success) {
 				// Successfully created a new team.
+				// Clear inputs
+				$scope.team = {
+					username: '',
+					leader: null,
+					partner: null
+				};
 				var modalOptions = {
 					headerText: 'New Team',
 					bodyText: success

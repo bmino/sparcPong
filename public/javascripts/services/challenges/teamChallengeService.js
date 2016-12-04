@@ -7,7 +7,7 @@ angular.module('services')
 	this.createChallenge = function(challengerId, challengeeId) {
 		var request = $http({
 			method: "post",
-			url: "api/challenge/",
+			url: "api/challenge/team",
 			data: {
 				challengerId: challengerId,
 				challengeeId: challengeeId,
@@ -19,7 +19,7 @@ angular.module('services')
 	this.getChallenges = function(playerId) {
 		var request = $http({
 			method: "get",
-			url: "api/challenge/"+playerId
+			url: "api/challenge/team/"+playerId
 		});
 		return request.then( handleSuccess, handleError );
 	};
@@ -27,7 +27,7 @@ angular.module('services')
 	this.revokeChallenge = function(challengerId, challengeeId) {
 		var request = $http({
 			method: "delete",
-			url: "api/challenge/revoke/",
+			url: "api/challenge/team/revoke/",
 			data: {
 				challengerId: challengerId,
 				challengeeId: challengeeId
@@ -39,7 +39,7 @@ angular.module('services')
 	this.resolveChallenge = function(challengeId, challengerScore, challengeeScore) {
 		var request = $http({
 			method: "post",
-			url: "api/challenge/resolve/",
+			url: "api/challenge/team/resolve/",
 			data: {
 				challengeId: challengeId,
 				challengerScore: challengerScore,
@@ -52,7 +52,7 @@ angular.module('services')
 	this.forfeitChallenge = function(challengeId) {
 		var request = $http({
 			method: "post",
-			url: "api/challenge/forfeit/",
+			url: "api/challenge/team/forfeit/",
 			data: {
 				challengeId: challengeId
 			}

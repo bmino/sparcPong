@@ -1,5 +1,5 @@
 angular.module('controllers')
-.controller('teamProfileController', ['$scope', '$rootScope', '$routeParams', 'socket', 'modalService', 'playerService', 'teamChallengeService', function($scope, $rootScope, $routeParams, socket, modalService, playerService, teamChallengeService) {
+.controller('teamProfileController', ['$scope', '$rootScope', '$routeParams', 'socket', 'modalService', 'teamService', 'teamChallengeService', function($scope, $rootScope, $routeParams, socket, modalService, teamService, teamChallengeService) {
 	
 	var profileId;
 	$scope.challenges = {
@@ -21,18 +21,18 @@ angular.module('controllers')
 			return;
 		}
 		
-		loadPlayer();
+		loadTeam();
 		fetchChallenges();
 		getRecord();
 	}
 	
-	function loadPlayer() {
-		playerService.getPlayer(profileId).then(function(player) {
-			if (!player) {
+	function loadTeam() {
+		teamService.getTeam(profileId).then(function(team) {
+			if (!team) {
 				console.log('Could not fetch profile');
 				$scope.loadingProfile = false;
 			} else {
-				$scope.profile = player;
+				$scope.profile = team;
 				$scope.loadingProfile = false;
 			}
 		});
@@ -49,7 +49,7 @@ angular.module('controllers')
 	}
 	
 	function getRecord() {
-		playerService.getRecord(profileId).then(function(data) {
+		teamService.getRecord(profileId).then(function(data) {
 			if (data) {
 				$scope.wins = data.wins;
 				$scope.losses = data.losses;

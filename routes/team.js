@@ -105,7 +105,9 @@ router.get('/fetch/:teamId', function(req, res, next) {
 	var teamId = req.params.teamId;
 	if (!teamId) return next(new Error('You must specify a team id.'));
 	
-	Team.findById(teamId, function(err, team) {
+	Team.findById(teamId)
+	.populate('leader partner')
+	.exec(function(err, team) {
 		if (err) {
 			return next(err);
 		} else {

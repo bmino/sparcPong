@@ -19,6 +19,11 @@ angular.module('services')
 		customModalDefaults.templateUrl = '/partials/modals/challengeOptions.html';
 		return this.showModal(customModalDefaults, customModalOptions);
 	}
+
+	this.showSelectTeamModal = function(customModalDefaults, customModalOptions) {
+		customModalDefaults.templateUrl = '/partials/modals/selectTeam.html';
+		return this.showModal(customModalDefaults, customModalOptions);
+	}
 	
 	this.showAlertModal = function(customModalDefaults, customModalOptions) {
 		customModalDefaults.templateUrl = '/partials/modals/alert.html';
