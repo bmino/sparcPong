@@ -192,7 +192,7 @@ router.post('/resolve', function(req, res, next) {
 	if (challengerScore == challengeeScore)
 		return next(new Error('The final score cannot be equal.'));
 	
-	Challenge.findById(challengeId).populate('challenger challengee').exec(function(err, challenge) {
+	TeamChallenge.findById(challengeId).populate('challenger challengee').exec(function(err, challenge) {
 		if (err) return next(err);
 		
 		if (hasForfeit(challenge.createdAt)) {
@@ -213,7 +213,7 @@ router.post('/resolve', function(req, res, next) {
 			if (err) return next(err);
 			swapRanks(winner, loser, function(err, swapped) {
 				if (err) return next(err);
-				email_resolvedChallenge(winner, loser);
+				//email_resolvedTeamChallenge(winner, loser);
 				req.app.io.sockets.emit('challenge:resolved', { winner: {username: winner.username}, loser: {username: loser.username} });
 				res.json({message: 'Successfully resolved challenge.'});
 			});
@@ -230,7 +230,7 @@ router.post('/forfeit', function(req, res, next) {
 	var challengeId = req.body.challengeId;
 	if (!challengeId)
 		return next(new Error('This is not a valid challenge id.'));
-	Challenge.findById(challengeId).populate('challenger challengee').exec(function(err, challenge) {
+	TeamChallenge.findById(challengeId).populate('challenger challengee').exec(function(err, challenge) {
 		if (err) return next(err);
 	
 		console.log('Forfeiting challenge id ['+challengeId+']');
@@ -245,7 +245,7 @@ router.post('/forfeit', function(req, res, next) {
 			if (err) return next(err);
 			swapRanks(winner, loser, function(err, swapped) {
 				if (err) return next(err);
-				email_forfeitedChallenge(challenge.challenger, challenge.challengee);
+				//email_forfeitedTeamChallenge(challenge.challenger, challenge.challengee);
 				req.app.io.sockets.emit('challenge:forfeited', { challenger: {username: challenge.challenger.username}, challengee: {username: challenge.challengee.username} });
 				res.json({message: 'Challenge successfully forfeited.'});
 			});

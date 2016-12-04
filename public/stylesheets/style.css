@@ -12,9 +12,10 @@ body div.wrapper {
 	max-width: 1000px;
 }
 
-a {
+a, a:link, a:active, a:visited {
 	color: #00B7FF;
 	cursor: pointer;
+	text-decoration: none;
 }
 
 a:hover {

@@ -88,7 +88,11 @@ angular.module('controllers')
 	};
 	
 	function resolveChallenge(challenge) {
-		if ($rootScope.myClient.playerId != challenge.challengee._id && $rootScope.myClient.playerId != challenge.challenger._id) {
+		var playerId = $rootScope.myClient.playerId;
+		if (playerId != challenge.challengee.leader._id &&
+			playerId != challenge.challengee.partner._id &&
+			playerId != challenge.challenger.leader._id &&
+			playerId != challenge.challenger.partner._id) {
 			var modalOptions = {
 				headerText: 'Resolve Challenge',
 				bodyText: 'Only '+ challenge.challenger.username +' or '+ challenge.challengee.username +' can resolve this challenge.'
@@ -126,7 +130,8 @@ angular.module('controllers')
 	};
 	
 	function revokeChallenge(challenge) {
-		if (challenge.challenger._id != $rootScope.myClient.playerId) {
+		var playerId = $rootScope.myClient.playerId;
+		if (playerId != challenge.challenger.leader._id && playerId != challenge.challenger.partner._id) {
 			var modalOptions = {
 				headerText: 'Revoke Challenge',
 				bodyText: 'Only '+ challenge.challenger.username +' can revoke this challenge.'
@@ -163,7 +168,8 @@ angular.module('controllers')
 		});
 	};
 	function forfeitChallenge(challenge) {
-		if (challenge.challengee._id != $rootScope.myClient.playerId) {
+		var playerId = $rootScope.myClient.playerId;
+		if (playerId != challenge.challengee.leader._id && playerId != challenge.challengee.partner._id) {
 			var modalOptions = {
 				headerText: 'Forfeit Challenge',
 				bodyText: 'Only '+ challenge.challengee.username +' can forfeit this challenge.'
