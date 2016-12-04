@@ -8,8 +8,14 @@
 }
 
 .partial-board li .username {
-	display: inline-block;
-	word-wrap: normal;
+	white-space: nowrap;
+	overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: middle;
+	/* Remaining space without rank and challenge button */
+	/* Change this when an element is added to the board */
+    width: calc(100% - 150px);
 }
 
 .partial-board li time-gap {

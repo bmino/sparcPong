@@ -10,7 +10,7 @@
 			<!-- Each Team -->
 			<li class="list-group-item" ng-repeat="team in teams | tier: t">
 				<div class="rank" ng-bind="team.rank"></div>
-				<a class="name" ng-href="#/profile/team/{{player._id}}" ng-bind="team.username"></a>
+				<a class="username" ng-href="#/profile/team/{{player._id}}" ng-bind="team.username"></a>
 				<!--<time-gap type="since" date="team.lastGame" ng-show="team.lastGame" ng-class="dangerLevel(team.lastGame)"></time-gap>-->
 				<div class="initiateButton" ng-click="challenge(team._id)">Challenge</div>
 			</li>
