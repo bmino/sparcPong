@@ -20,7 +20,7 @@ router.post('/', function(req, res, next) {
 	if (!username || typeof username != 'string' || username.length == 0)
 		return next(new Error('Invalid username data type.'));
 	
-	if (!leaderId || !partnerId)
+	if (!leaderId || !partnerId || leaderId == partnerId)
 		return next(new Error('Invalid team members.'));
 	
 	var teamUsername = username ? username.trim() : null;
@@ -28,31 +28,38 @@ router.post('/', function(req, res, next) {
 	validUsername(teamUsername, function(err) {
 		if (err) return next(err);
 		
-		Player.findById(leaderId, function(err, leader) {
+		validPlayerTeamsCount(leaderId, function(err, leaderTeams) {
 			if (err) return next(err);
-			Player.findById(partnerId, function(err, partner) {
+			validPlayerTeamsCount(partnerId, function(err, partnerTeams) {
 				if (err) return next(err);
 				
-				getLowestTeamRank(function(err, lowestRank) {
+				Player.findById(leaderId, function(err, leader) {
 					if (err) return next(err);
-					
-					console.log('Creating new team.');
-				
-					// Create new team
-					var team = new Team();
-					team.username = teamUsername;
-					team.leader = leader._id;
-					team.partner = partner._id;
-					team.rank = lowestRank + 1;
-					
-					console.log(team);
-					
-					// Saves team to DB
-					team.save(function(err) {
+					Player.findById(partnerId, function(err, partner) {
 						if (err) return next(err);
-						req.app.io.sockets.emit('team:new', teamUsername);
-						console.log('Successfully created a new team.');
-						res.json({message: 'Team created!'});
+						
+						getLowestTeamRank(function(err, lowestRank) {
+							if (err) return next(err);
+							
+							console.log('Creating new team.');
+						
+							// Create new team
+							var team = new Team();
+							team.username = teamUsername;
+							team.leader = leader._id;
+							team.partner = partner._id;
+							team.rank = lowestRank + 1;
+							
+							console.log(team);
+							
+							// Saves team to DB
+							team.save(function(err) {
+								if (err) return next(err);
+								req.app.io.sockets.emit('team:new', teamUsername);
+								console.log('Successfully created a new team.');
+								res.json({message: 'Team created!'});
+							});
+						});
 					});
 				});
 			});
@@ -154,6 +161,20 @@ function getLowestTeamRank(callback) {
 		}
 		console.log('Found lowest team rank of ' + lowestRank);
 		callback(err, lowestRank);
+	});
+}
+
+var PLAYER_TEAMS_MAX = process.env.PLAYER_TEAM_MAX || 1;
+function validPlayerTeamsCount(playerId, callback) {
+	Team.find({$or: [{leader: playerId}, {partner: playerId}]}).exec(function(err, teams) {
+		var count = teams ? teams.length : 0;
+		var plural = PLAYER_TEAMS_MAX > 1 ? 's' : '';
+		console.log('Found ' + count + ' teams associated with this player.');
+		if (count >= PLAYER_TEAMS_MAX) {
+			callback(new Error('Players may not be a part of more than ' + PLAYER_TEAMS_MAX + ' team' + plural + '.'));
+		} else {
+			callback(err, count);
+		}
 	});
 }
 
