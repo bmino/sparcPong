@@ -287,9 +287,9 @@ function challengeExists(teamId1, teamId2, callback) {
  *
  * @param: dateIssued - date the challenge was issued
  */
-var ALLOWED_CHALLENGE_DAYS = process.env.ALLOWED_CHALLENGE_DAYS;
+var ALLOWED_CHALLENGE_DAYS_TEAM = process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5;
 function hasForfeit(dateIssued) {
-	var expires = addBusinessDays(dateIssued, ALLOWED_CHALLENGE_DAYS);
+	var expires = addBusinessDays(dateIssued, ALLOWED_CHALLENGE_DAYS_TEAM);
 	// Challenge expired before today
 	return expires < new Date();
 }
