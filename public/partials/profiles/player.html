@@ -1,12 +1,9 @@
-<div class="page-header">
-	<h1 ng-bind="profile ? profile.username : 'Loading Username...'"></h1>
-	<span class="playerFirstName" ng-bind="profile ? profile.firstName : 'Loading name...'"></span>
-	<span class="playerLastName" ng-bind="profile ? profile.lastName : ''"></span> <span ng-show="profile">(<span ng-bind="wins"></span> - <span ng-bind="losses"></span>)</span>
+<div class="page-header" ng-show="profile">
+	<h1 ng-bind="profile.username"></h1>
+	<span ng-bind="profile.firstName"></span>
+	<span ng-bind="profile.lastName"></span> <span>(<span ng-bind="wins"></span> - <span ng-bind="losses"></span>)</span>
 </div>
 
-<div ng-show="loadingChallenges">
-	Loading...
-</div>
 <div class="profile" ng-hide="loadingChallenges">
 	<div class="challenges">
 		<div class="panel panel-default">

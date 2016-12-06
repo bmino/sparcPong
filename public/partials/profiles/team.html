@@ -1,18 +1,15 @@
-<div class="page-header">
-	<h1 ng-bind="profile ? profile.username : 'Loading Username...'"></h1>
+<div class="page-header" ng-show="profile">
+	<h1 ng-bind="profile.username"></h1>
 	
-	<span ng-bind="profile ? profile.leader.firstName : 'Loading name...'"></span>
-	<span ng-bind="profile ? profile.leader.lastName : ''"></span>
+	<span ng-bind="profile.leader.firstName"></span>
+	<span ng-bind="profile.leader.lastName"></span>
 	<span>and </span>
-	<span ng-bind="profile ? profile.partner.firstName : 'Loading name...'"></span>
-	<span ng-bind="profile ? profile.partner.lastName : ''"></span>
+	<span ng-bind="profile.partner.firstName"></span>
+	<span ng-bind="profile.partner.lastName"></span>
 	
-	<span ng-show="profile">(<span ng-bind="wins"></span> - <span ng-bind="losses"></span>)</span>
+	<span>(<span ng-bind="wins"></span> - <span ng-bind="losses"></span>)</span>
 </div>
 
-<div ng-show="loadingChallenges">
-	Loading...
-</div>
 <div class="profile" ng-hide="loadingChallenges">
 	<div class="challenges">
 		<div class="panel panel-default">
