@@ -115,11 +115,19 @@ router.get('/fetch/:teamId', function(req, res, next) {
 	Team.findById(teamId)
 	.populate('leader partner')
 	.exec(function(err, team) {
-		if (err) {
-			return next(err);
-		} else {
-			res.json({message: team});
-		}
+		if (err) return next(err);
+		res.json({message: team});
+	});
+});
+
+/* GET teams by playerId */
+router.get('/fetch/lookup/:playerId', function(req, res, next) {
+	var playerId = req.params.playerId;
+	if (!playerId) return next(new Error('You must specify a player id.'));
+	
+	getTeamsByPlayerId(playerId, function(err, teams) {
+		if (err) return next(err);
+		res.json({message: teams});
 	});
 });
 
@@ -166,7 +174,7 @@ function getLowestTeamRank(callback) {
 
 var PLAYER_TEAMS_MAX = process.env.PLAYER_TEAM_MAX || 1;
 function validPlayerTeamsCount(playerId, callback) {
-	Team.find({$or: [{leader: playerId}, {partner: playerId}]}).exec(function(err, teams) {
+	getTeamsByPlayerId(playerId, function(err, teams) {
 		var count = teams ? teams.length : 0;
 		var plural = PLAYER_TEAMS_MAX > 1 ? 's' : '';
 		console.log('Found ' + count + ' teams associated with this player.');
@@ -175,6 +183,13 @@ function validPlayerTeamsCount(playerId, callback) {
 		} else {
 			callback(err, count);
 		}
+	});
+}
+
+function getTeamsByPlayerId(playerId, callback) {
+	if (!playerId) return [];
+	Team.find({$or: [{leader: playerId}, {partner: playerId}]}).exec(function(err, teams) {
+		callback(err, teams);
 	});
 }
 

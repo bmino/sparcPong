@@ -47,6 +47,14 @@ angular.module('services')
 		return request.then( handleSuccess, handleError );
 	};
 	
+	this.lookupTeams = function(playerId) {
+		var request = $http({
+			method: "get",
+			url: "api/team/fetch/lookup/"+playerId
+		});
+		return request.then( handleSuccess, handleError );
+	};
+	
 	this.getRecord = function(teamId) {
 		var request = $http({
 			method: "get",
