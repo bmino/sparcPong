@@ -1,11 +1,12 @@
-<div class="page-header" ng-show="profile">
-	<h1 ng-bind="profile.username"></h1>
-	<span ng-bind="profile.firstName"></span>
-	<span ng-bind="profile.lastName"></span> <span>(<span ng-bind="wins"></span> - <span ng-bind="losses"></span>)</span>
-</div>
+<div class="partial-profile">
+	<div class="page-header" ng-show="profile">
+		<h1><span class="username" ng-bind="profile.username"></span> <span class="score">({{wins}} - {{losses}})</span></h1>
+		
+		<span ng-bind="profile.firstName"></span>
+		<span ng-bind="profile.lastName"></span>
+	</div>
 
-<div class="profile" ng-hide="loadingChallenges">
-	<div class="challenges">
+	<div class="challenges" ng-hide="loadingChallenges">
 		<div class="panel panel-default">
 			<div class="panel-heading" data-toggle="collapse" data-target="#incomingChallenges">
 				<h3 class="panel-title">{{challenges.incoming.length == 0 ? 'No' : challenges.incoming.length}} Incoming Challenges</h3>
@@ -33,7 +34,7 @@
 		</div>
 	</div>
 	
-	<div class="history">
+	<div class="history" ng-hide="loadingChallenges">
 		<div class="panel panel-default">
 			<div class="panel-heading" data-toggle="collapse" data-target="#resolvedChallenges">
 				<h3 class="panel-title">{{challenges.resolved.length == 0 ? 'No' : challenges.resolved.length}} {{challenges.resolved.length == 1 ? 'Ranked Match' : 'Ranked Matches'}}</h3>
