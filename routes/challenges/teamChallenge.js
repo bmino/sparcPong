@@ -619,56 +619,56 @@ function getRanks(tier, currentTier, lastRank, ranks) {
 }
 
 function email_newTeamChallenge(challenger, challengee) {
-	console.log('Checking email permission for a new team challenge');
+	console.log('Checking email permissions for a new team challenge');
 	Player.findById(challengee.leader).populate('alerts').exec(function(err, leader) {
 		if (err) {
 			console.log(err);
 		} else if (leader.email && leader.alerts.team.challenged) {
-			sendEmail('Doubles Challenge', 'Your team has been challenged by '+ challenger.username +'. Log in at http://sparc-pong.herokuapp.com to deal with those scrubs!', leader.email);
+			sendEmail('Doubles Challenge', 'Your team has been challenged by "'+ challenger.username +'." Log in at http://sparc-pong.herokuapp.com to deal with those scrubs!', leader.email);
 		}
 	});
 	Player.findById(challengee.partner).populate('alerts').exec(function(err, partner) {
 		if (err) {
 			console.log(err);
 		} else if (partner.email && partner.alerts.team.challenged) {
-			sendEmail('Doubles Challenge', 'Your team has been challenged by '+ challenger.username +'. Log in at http://sparc-pong.herokuapp.com to deal with those scrubs!', partner.email);
+			sendEmail('Doubles Challenge', 'Your team has been challenged by "'+ challenger.username +'." Log in at http://sparc-pong.herokuapp.com to deal with those scrubs!', partner.email);
 		}
 	});
 }
 
 function email_revokedTeamChallenge(challenger, challengee) {
-	console.log('Checking email permission for a revoked team challenge');
+	console.log('Checking email permissions for a revoked team challenge');
 	Player.findById(challengee.leader).populate('alerts').exec(function(err, leader) {
 		if (err) {
 			console.log(err);
 		} else if (leader.email && leader.alerts.team.revoked) {
-			sendEmail('Revoked Doubles Challenge', challenger.username +' got scared and revoked a challenge against you.', leader.email);
+			sendEmail('Revoked Doubles Challenge', '"'+ challenger.username +'" got scared and revoked a challenge against you.', leader.email);
 		}
 	});
 	Player.findById(challengee.partner).populate('alerts').exec(function(err, partner) {
 		if (err) {
 			console.log(err);
 		} else if (partner.email && partner.alerts.team.revoked) {
-			sendEmail('Revoked Doubles Challenge', challenger.username +' got scared and revoked a challenge against you.', partner.email);
+			sendEmail('Revoked Doubles Challenge', '"'+ challenger.username +'" got scared and revoked a challenge against you.', partner.email);
 		}
 	});
 }
 
 function email_resolvedTeamChallenge(winner, loser) {
-	console.log('Checking email permission for a resolved team challenge');	
+	console.log('Checking email permissions for a resolved team challenge');	
 	// Contacts losers
 	Player.findById(loser.leader).populate('alerts').exec(function(err, loserLeader) {
 		if (err) {
 			console.log(err);
 		} else if (loserLeader.email && loserLeader.alerts.team.resolved) {
-			sendEmail('Resolved Doubles Challenge', 'Welp, stuff happens. It looks like '+ winner.username +' really laid the smack on your team. Log in at http://sparc-pong.herokuapp.com and pick an easier opponent.', loserLeader.email);
+			sendEmail('Resolved Doubles Challenge', 'Welp, stuff happens. It looks like "'+ winner.username +'" really laid the smack on your team. Log in at http://sparc-pong.herokuapp.com and pick an easier team.', loserLeader.email);
 		}
 	});
 	Player.findById(loser.partner).populate('alerts').exec(function(err, loserPartner) {
 		if (err) {
 			console.log(err);
 		} else if (loserPartner.email && loserPartner.alerts.team.resolved) {
-			sendEmail('Resolved Doubles Challenge', 'Welp, stuff happens. It looks like '+ winner.username +' really laid the smack on your team. Log in at http://sparc-pong.herokuapp.com and pick an easier opponent.', loserPartner.email);
+			sendEmail('Resolved Doubles Challenge', 'Welp, stuff happens. It looks like "'+ winner.username +'" really laid the smack on your team. Log in at http://sparc-pong.herokuapp.com and pick an easier team.', loserPartner.email);
 		}
 	});
 	
@@ -677,32 +677,32 @@ function email_resolvedTeamChallenge(winner, loser) {
 		if (err) {
 			console.log(err);
 		} else if (winnerLeader.email && winnerLeader.alerts.team.resolved) {
-			sendEmail('Resolved Doubles Challenge', 'Congratulations on beating '+ loser.username +'! Log in at http://sparc-pong.herokuapp.com to crush some more feelings.', winnerLeader.email);
+			sendEmail('Resolved Doubles Challenge', 'Congratulations on beating "'+ loser.username +'!" Log in at http://sparc-pong.herokuapp.com to crush some more feelings.', winnerLeader.email);
 		}
 	});
 	Player.findById(winner.partner).populate('alerts').exec(function(err, winnerPartner) {
 		if (err) {
 			console.log(err);
 		} else if (winnerPartner.email && winnerPartner.alerts.team.resolved) {
-			sendEmail('Resolved Doubles Challenge', 'Congratulations on beating '+ loser.username +'! Log in at http://sparc-pong.herokuapp.com to crush some more feelings.', winnerPartner.email);
+			sendEmail('Resolved Doubles Challenge', 'Congratulations on beating "'+ loser.username +'!" Log in at http://sparc-pong.herokuapp.com to crush some more feelings.', winnerPartner.email);
 		}
 	});
 }
 
 function email_forfeitedTeamChallenge(challenger, challengee) {
-	console.log('Checking email permission for a forfeited team challenge');
+	console.log('Checking email permissions for a forfeited team challenge');
 	Player.findById(challenger.leader).populate('alerts').exec(function(err, leader) {
 		if (err) {
 			console.log(err);
 		} else if (leader.email && leader.alerts.team.forfeited) {
-			sendEmail('Forfeited Doubles Challenge', 'Those lil weasels, '+ challengee.username +', forfeited your challenge. You win by default!', leader.email);
+			sendEmail('Forfeited Doubles Challenge', 'That lil chicken of a team "'+ challengee.username +'" forfeited your challenge. You win by default!', leader.email);
 		}
 	});
 	Player.findById(challenger.partner).populate('alerts').exec(function(err, partner) {
 		if (err) {
 			console.log(err);
 		} else if (partner.email && partner.alerts.team.forfeited) {
-			sendEmail('Forfeited Doubles Challenge', 'Those lil weasels, '+ challengee.username +', forfeited your challenge. You win by default!', partner.email);
+			sendEmail('Forfeited Doubles Challenge', 'That lil chicken of a team "'+ challengee.username +'" forfeited your challenge. You win by default!', partner.email);
 		}
 	});
 	
@@ -722,7 +722,7 @@ function sendEmail(subject, message, address) {
 		if (error) {
 			console.log(error);
 		} else {
-			console.log('Message sent: ' + response);
+			console.log('Message sent to ' + address);
 		}
 	});
 }
