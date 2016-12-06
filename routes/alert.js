@@ -20,6 +20,12 @@ router.get('/:playerId', function(req, res, next) {
 		needAlerts.resolved = player.alerts.resolved;
 		needAlerts.forfeited = player.alerts.forfeited;
 		
+		needAlerts.team = {};
+		needAlerts.team.challenged = player.alerts.team.challenged;
+		needAlerts.team.revoked = player.alerts.team.revoked;
+		needAlerts.team.resolved = player.alerts.team.resolved;
+		needAlerts.team.forfeited = player.alerts.team.forfeited;
+		
 		res.json({message: needAlerts});
 	});
 });
@@ -41,6 +47,11 @@ router.post('/', function(req, res, next) {
 		player.alerts.revoked = newAlerts.revoked == true;
 		player.alerts.resolved = newAlerts.resolved == true;
 		player.alerts.forfeited = newAlerts.forfeited == true;
+		
+		player.alerts.team.challenged = newAlerts.team.challenged == true;
+		player.alerts.team.revoked = newAlerts.team.revoked == true;
+		player.alerts.team.resolved = newAlerts.team.resolved == true;
+		player.alerts.team.forfeited = newAlerts.team.forfeited == true;
 		
 		player.alerts.save(function(err) {
 			if (err) return next(err);

@@ -5,7 +5,13 @@ angular.module('controllers')
 		challenged: { name: 'Challenged Alert', status: false },
 		revoked: { name: 'Revoked Alert', status: false },
 		resolved: { name: 'Resolved Alert', status: false },
-		forfeited: { name: 'Forfeited Alert', status: false }
+		forfeited: { name: 'Forfeited Alert', status: false },
+		team: {
+			challenged: { name: 'Challenged Alert', status: false },
+			revoked: { name: 'Revoked Alert', status: false },
+			resolved: { name: 'Resolved Alert', status: false },
+			forfeited: { name: 'Forfeited Alert', status: false }
+		}
 	};
 	
 	init();
@@ -18,21 +24,38 @@ angular.module('controllers')
 		var playerId = $rootScope.myClient.playerId;
 		playerService.getAlerts(playerId).then(function(alerts) {
 			for (var key in alerts) {
-				$scope.alerts[key]['status'] = alerts[key];
+				if (key == 'team') {
+					for (var teamKey in alerts['team']) {
+						$scope.alerts['team'][teamKey]['status'] = alerts['team'][teamKey];
+					}
+				} else {
+					$scope.alerts[key]['status'] = alerts[key];
+				}
 			}
 		});
 	}
 	
 	function minifiedAlerts() {
 		var minified = {};
+		minified.team = {};
 		for (var key in $scope.alerts) {
-			minified[key] = $scope.alerts[key]['status'];
+			if (key == 'team') {
+				for (var teamKey in $scope.alerts.team) {
+					minified['team'][teamKey] = $scope.alerts['team'][teamKey]['status'];
+				}
+			} else {
+				minified[key] = $scope.alerts[key]['status'];
+			}
 		}
 		return minified;
 	}
 	
-	$scope.toggle = function(key) {
-		$scope.alerts[key]['status'] = !$scope.alerts[key]['status'];
+	$scope.toggle = function(key, path) {
+		if (path) {
+			$scope.alerts[path][key]['status'] = !$scope.alerts[path][key]['status'];
+		} else {
+			$scope.alerts[key]['status'] = !$scope.alerts[key]['status'];
+		}
 		updateAlerts();
 	}
 	

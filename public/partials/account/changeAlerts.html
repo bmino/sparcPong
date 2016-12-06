@@ -5,7 +5,12 @@
 	<form class="form-horizontal" ng-submit="updateAlerts()" autocomplete="off">
 		<div class="form-group">
 			<div class="alert-buttons">
-				<button type="button" class="btn btn-default" ng-repeat="(key, alert) in alerts" ng-bind="alert.name" ng-click="toggle(key)" ng-class="{'btn-success' : alert.status}"></button>
+				<button type="button" class="btn btn-default" ng-repeat="(key, alert) in alerts" ng-if="key != 'team'" ng-bind="alert.name" ng-click="toggle(key)" ng-class="{'btn-success' : alert.status}"></button>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="alert-buttons">
+				<button type="button" class="btn btn-default" ng-repeat="(key, alert) in alerts.team" ng-bind="alert.name" ng-click="toggle(key, 'team')" ng-class="{'btn-success' : alert.status}"></button>
 			</div>
 		</div>
 	</form>
