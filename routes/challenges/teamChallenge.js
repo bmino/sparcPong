@@ -66,7 +66,7 @@ router.post('/', function(req, res, next) {
 					
 					challenge.save(function(err) {
 						if (err) return next(err);
-						//email_newTeamChallenge(challenger, challengee);
+						email_newTeamChallenge(challenger, challengee);
 						req.app.io.sockets.emit('challenge:issued', { challenger: { username: challenger.username,
 																					rank: challenger.rank },
 																	  challengee: { username: challengee.username,
@@ -147,8 +147,11 @@ router.delete('/revoke', function(req, res, next) {
 		return next(new Error('Both teams must be provided to revoke a challenge.'));
 	
 	// Checks for forfeit
-	TeamChallenge.find({challenger: challengerId, challengee: challengeeId, winner: null}).populate('challenger challengee').exec(function(err, challenges) {
+	TeamChallenge.find({challenger: challengerId, challengee: challengeeId, winner: null})
+	.populate('challenger challengee')
+	.exec(function(err, challenges) {
 		if (err) return next(err);
+		
 		if (!challenges || challenges.length == 0)
 			return next(new Error('Could not find the challenge.'));
 		
@@ -162,8 +165,8 @@ router.delete('/revoke', function(req, res, next) {
 			if (err) return next(err);
 			
 			if (challenges.result && challenges.result.n) {
-				//email_revokedTeamChallenge(challenger, challengee);
-				req.app.io.sockets.emit('challenge:revoked', { challenger: {username: challenger.username}, challengee: {username: challengee.username} });
+				email_revokedTeamChallenge(challenger, challengee);
+				req.app.io.sockets.emit('challenge:team:revoked', {});
 				res.json({message: 'Successfully revoked challenge.'});
 			} else {
 				return next(new Error('Could not find the challenge.'));
@@ -213,7 +216,7 @@ router.post('/resolve', function(req, res, next) {
 			if (err) return next(err);
 			swapRanks(winner, loser, function(err, swapped) {
 				if (err) return next(err);
-				//email_resolvedTeamChallenge(winner, loser);
+				email_resolvedTeamChallenge(winner, loser);
 				req.app.io.sockets.emit('challenge:resolved', { winner: {username: winner.username}, loser: {username: loser.username} });
 				res.json({message: 'Successfully resolved challenge.'});
 			});
@@ -245,7 +248,7 @@ router.post('/forfeit', function(req, res, next) {
 			if (err) return next(err);
 			swapRanks(winner, loser, function(err, swapped) {
 				if (err) return next(err);
-				//email_forfeitedTeamChallenge(challenge.challenger, challenge.challengee);
+				email_forfeitedTeamChallenge(challenge.challenger, challenge.challengee);
 				req.app.io.sockets.emit('challenge:forfeited', { challenger: {username: challenge.challenger.username}, challengee: {username: challenge.challengee.username} });
 				res.json({message: 'Challenge successfully forfeited.'});
 			});
@@ -615,68 +618,94 @@ function getRanks(tier, currentTier, lastRank, ranks) {
 	return getRanks(tier, ++currentTier, lastRank, ranks);
 }
 
-function email_newChallenge(challenger, challengee) {
-	console.log('Checking email permission for a new challenge');
-	Player.findById(challengee._id).populate('alerts').exec(function(err, challengee) {
+function email_newTeamChallenge(challenger, challengee) {
+	console.log('Checking email permission for a new team challenge');
+	Player.findById(challengee.leader).populate('alerts').exec(function(err, leader) {
 		if (err) {
 			console.log(err);
-			return;
+		} else if (leader.email && leader.alerts.team.challenged) {
+			sendEmail('Doubles Challenge', 'Your team has been challenged by '+ challenger.username +'. Log in at http://sparc-pong.herokuapp.com to deal with those scrubs!', leader.email);
 		}
-		if (challengee.email && challengee.alerts.challenged) {
-			sendEmail('New Challenge', 'You have been challenged by '+ challenger.username +'. Log in at http://sparc-pong.herokuapp.com to deal with that scrub!', challengee.email);
+	});
+	Player.findById(challengee.partner).populate('alerts').exec(function(err, partner) {
+		if (err) {
+			console.log(err);
+		} else if (partner.email && partner.alerts.team.challenged) {
+			sendEmail('Doubles Challenge', 'Your team has been challenged by '+ challenger.username +'. Log in at http://sparc-pong.herokuapp.com to deal with those scrubs!', partner.email);
 		}
 	});
 }
 
-function email_revokedChallenge(challenger, challengee) {
-	console.log('Checking email permission for a revoked challenge');
-	Player.findById(challengee._id).populate('alerts').exec(function(err, challengee) {
+function email_revokedTeamChallenge(challenger, challengee) {
+	console.log('Checking email permission for a revoked team challenge');
+	Player.findById(challengee.leader).populate('alerts').exec(function(err, leader) {
 		if (err) {
 			console.log(err);
-			return;
+		} else if (leader.email && leader.alerts.revoked) {
+			sendEmail('Revoked Doubles Challenge', challenger.username +' got scared and revoked a challenge against you.', leader.email);
 		}
-		if (challengee.email && challengee.alerts.revoked) {
-			sendEmail('Revoked Challenge', challenger.username +' got scared and revoked a challenge against you.', challengee.email);
+	});
+	Player.findById(challengee.partner).populate('alerts').exec(function(err, partner) {
+		if (err) {
+			console.log(err);
+		} else if (leader.partner && partner.alerts.revoked) {
+			sendEmail('Revoked Doubles Challenge', challenger.username +' got scared and revoked a challenge against you.', partner.email);
 		}
 	});
 }
 
-function email_resolvedChallenge(winner, loser) {
-	console.log('Checking email permission for a resolved challenge');	
-	// Contacts loser
-	Player.findById(loser._id).populate('alerts').exec(function(err, loser) {
+function email_resolvedTeamChallenge(winner, loser) {
+	console.log('Checking email permission for a resolved team challenge');	
+	// Contacts losers
+	Player.findById(loser.leader).populate('alerts').exec(function(err, loserLeader) {
 		if (err) {
 			console.log(err);
-			return;
+		} else if (loserLeader.email && loserLeader.alerts.resolved) {
+			sendEmail('Resolved Doubles Challenge', 'Welp, stuff happens. It looks like '+ winner.username +' really laid the smack on your team. Log in at http://sparc-pong.herokuapp.com and pick an easier opponent.', loserLeader.email);
 		}
-		if (loser.email && loser.alerts.resolved) {
-			sendEmail('Resolved Challenge', 'Welp, stuff happens. It looks like '+ winner.username +' really laid the smack on ya. Log in at http://sparc-pong.herokuapp.com and pick an easier opponent.', loser.email);
+	});
+	Player.findById(loser.partner).populate('alerts').exec(function(err, loserPartner) {
+		if (err) {
+			console.log(err);
+		} else if (loserPartner.email && loserPartner.alerts.resolved) {
+			sendEmail('Resolved Doubles Challenge', 'Welp, stuff happens. It looks like '+ winner.username +' really laid the smack on your team. Log in at http://sparc-pong.herokuapp.com and pick an easier opponent.', loserPartner.email);
 		}
-		
-		// Contacts winner
-		Player.findById(winner._id).populate('alerts').exec(function(err, winner) {
-			if (err) {
-				console.log(err);
-				return;
-			}
-			if (winner.email && winner.alerts.resolved) {
-				sendEmail('Resolved Challenge', 'Congratulations on beating '+ loser.username +'! Log in at http://sparc-pong.herokuapp.com to crush some more feelings.', winner.email);
-			}
-		});
+	});
+	
+	// Contacts winners
+	Player.findById(winner.leader).populate('alerts').exec(function(err, winnerLeader) {
+		if (err) {
+			console.log(err);
+		} else if (winnerLeader.email && winnerLeader.alerts.resolved) {
+			sendEmail('Resolved Doubles Challenge', 'Congratulations on beating '+ loser.username +'! Log in at http://sparc-pong.herokuapp.com to crush some more feelings.', winnerLeader.email);
+		}
+	});
+	Player.findById(winner.partner).populate('alerts').exec(function(err, winnerPartner) {
+		if (err) {
+			console.log(err);
+		} else if (winnerPartner.email && winnerPartner.alerts.resolved) {
+			sendEmail('Resolved Doubles Challenge', 'Congratulations on beating '+ loser.username +'! Log in at http://sparc-pong.herokuapp.com to crush some more feelings.', winnerPartner.email);
+		}
 	});
 }
 
-function email_forfeitedChallenge(challenger, challengee) {
-	console.log('Checking email permission for a forfeited challenge');
-	Player.findById(challenger).populate('alerts').exec(function(err, challenger) {
+function email_forfeitedTeamChallenge(challenger, challengee) {
+	console.log('Checking email permission for a forfeited team challenge');
+	Player.findById(challenger.leader).populate('alerts').exec(function(err, leader) {
 		if (err) {
 			console.log(err);
-			return;
-		}
-		if (challenger.email && challenger.alerts.forfeited) {
-			sendEmail('Forfeited Challenge', 'That lil weasel, '+ challengee.username +', forfeited your challenge. You win by default!', challenger.email);
+		} else if (leader.email && leader.alerts.forfeited) {
+			sendEmail('Forfeited Doubles Challenge', 'Those lil weasels, '+ challengee.username +', forfeited your challenge. You win by default!', leader.email);
 		}
 	});
+	Player.findById(challenger.partner).populate('alerts').exec(function(err, partner) {
+		if (err) {
+			console.log(err);
+		} else if (partner.email && partner.alerts.forfeited) {
+			sendEmail('Forfeited Doubles Challenge', 'Those lil weasels, '+ challengee.username +', forfeited your challenge. You win by default!', partner.email);
+		}
+	});
+	
 }
 
 function sendEmail(subject, message, address) {
