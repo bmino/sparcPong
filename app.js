@@ -22,15 +22,6 @@ require('./models/Alert');
 var db_uri = process.env.MONGODB_URI;
 mongoose.connect(db_uri);
 
-
-var routes = require('./routes/basic');
-var player = require('./routes/player');
-var team = require('./routes/team');
-var playerChallenge = require('./routes/challenges/playerChallenge');
-var teamChallenge = require('./routes/challenges/teamChallenge');
-var playerAlerts = require('./routes/alert');
-var envBridge = require('./routes/envBridge');
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -44,13 +35,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Include scripts
 app.use('/bower', express.static(path.join(__dirname, 'bower_components')));
 
-app.use('/', routes);
-app.use('/api/player', player);
-app.use('/api/team', team);
-app.use('/api/challenge/player', playerChallenge);
-app.use('/api/challenge/team', teamChallenge);
-app.use('/api/playerAlerts', playerAlerts);
-app.use('/api/envBridge', envBridge);
+app.use('/',								require('./routes/basic'));
+app.use('/api/player',						require('./routes/player'));
+app.use('/api/team',						require('./routes/team'));
+app.use('/api/challenge/player',			require('./routes/challenges/playerChallenge'));
+app.use('/api/challenge/team',				require('./routes/challenges/teamChallenge'));
+app.use('/api/playerAlerts',				require('./routes/alert'));
+app.use('/api/envBridge',					require('./routes/envBridge'));
 
 
 // catch 404 and forward to error handler
