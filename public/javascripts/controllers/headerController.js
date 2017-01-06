@@ -94,11 +94,8 @@ angular.module('controllers')
 	socket.on('client:leave', function(clients) {
 		$rootScope.clients = clients;
 	});
-	socket.on('client:login', function(data) {
-		$rootScope.onlineUsers = data.users;
-	});
-	socket.on('client:logout', function(data) {
-		$rootScope.onlineUsers = data.users;
+	socket.on('client:online', function(users) {
+		$rootScope.onlineUsers = users;
 	});
 	
 }]);

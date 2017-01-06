@@ -65,9 +65,6 @@ app.use(function(err, req, res, next) {
 var activeSockets = {};
 var USER_KEY = 'userId';
 
-// Logged In Users
-var activeUsers = [];
-
 // Helper functions
 function activeClients() {
     var size = 0, key;
@@ -76,6 +73,20 @@ function activeClients() {
     }
     return size;
 };
+function onlineUsers() {
+	var ids = [], key;
+    for (key in activeSockets) {
+        if (activeSockets.hasOwnProperty(key) && activeSockets[key][USER_KEY] != null) {
+			ids.push(activeSockets[key][USER_KEY]);
+		}
+    }
+    var uniqueIds = [];
+    for ( i = 0; i < ids.length; i++ ) {
+        var current = ids[i];
+        if (uniqueIds.indexOf(current) < 0) uniqueIds.push(current);
+    }
+    return uniqueIds;
+}
 
 // Socket Events
 io.on('connection', function(socket) {
@@ -84,16 +95,18 @@ io.on('connection', function(socket) {
 	activeSockets[socket.id]['socket'] = socket;
 	activeSockets[socket.id][USER_KEY] = null;
 	
-	// Notify all clients
+	// Notify all clients of presence
 	io.sockets.emit('client:enter', activeClients());
+	
+	// Give initial list of online users
+	socket.emit('client:online', onlineUsers());
 	
 	socket.on('disconnect', function() {
 		console.log('Disconnected socket connection...');
 		var userId = activeSockets[socket.id][USER_KEY];
 		delete activeSockets[socket.id];
-		activeUsers.splice(activeUsers.indexOf(userId), 1);
 		if (userId) {
-			io.sockets.emit('client:logout', {'user': userId, 'users': activeUsers});
+			io.sockets.emit('client:online', onlineUsers());
 		}
 		io.sockets.emit('client:leave', activeClients());
 	});
@@ -101,15 +114,13 @@ io.on('connection', function(socket) {
 	socket.on('login', function(userId) {
 		console.log('Login from userId: '+ userId);
 		activeSockets[socket.id][USER_KEY] = userId;
-		if (activeUsers.indexOf(userId) === -1) activeUsers.push(userId);
-		io.sockets.emit('client:login', {'user': userId, 'users': activeUsers});
+		io.sockets.emit('client:online', onlineUsers());
 	});
 	
 	socket.on('logout', function(userId) {
 		console.log('Logout from userId: '+ userId);
 		activeSockets[socket.id][USER_KEY] = null;
-		activeUsers.splice(activeUsers.indexOf(userId), 1);
-		io.sockets.emit('client:logout', {'user': userId, 'users': activeUsers});
+		io.sockets.emit('client:online', onlineUsers());
 	});
 });
 
