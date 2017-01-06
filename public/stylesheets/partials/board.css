@@ -7,6 +7,10 @@
 	margin-right: 8px;
 }
 
+.partial-board .online {
+	background-color: green;
+}
+
 .partial-board li .username {
 	white-space: nowrap;
 	overflow: hidden;

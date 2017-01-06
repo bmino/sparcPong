@@ -61,16 +61,55 @@ app.use(function(err, req, res, next) {
 });
 
 
-// Socket Tracking Variables
-var clients = 0;
+// Active Sockets
+var activeSockets = {};
+var USER_KEY = 'userId';
+
+// Logged In Users
+var activeUsers = [];
+
+// Helper functions
+function activeClients() {
+    var size = 0, key;
+    for (key in activeSockets) {
+        if (activeSockets.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
 
 // Socket Events
 io.on('connection', function(socket) {
-	console.log('New client connection...');
-	io.sockets.emit('client:enter', ++clients);
+	console.log('New client socket connection...');
+	activeSockets[socket.id] = {};
+	activeSockets[socket.id]['socket'] = socket;
+	activeSockets[socket.id][USER_KEY] = null;
+	
+	// Notify all clients
+	io.sockets.emit('client:enter', activeClients());
 	
 	socket.on('disconnect', function() {
-		io.sockets.emit('client:leave', --clients);
+		console.log('Disconnected socket connection...');
+		var userId = activeSockets[socket.id][USER_KEY];
+		delete activeSockets[socket.id];
+		activeUsers.splice(activeUsers.indexOf(userId), 1);
+		if (userId) {
+			io.sockets.emit('client:logout', {'user': userId, 'users': activeUsers});
+		}
+		io.sockets.emit('client:leave', activeClients());
+	});
+	
+	socket.on('login', function(userId) {
+		console.log('Login from userId: '+ userId);
+		activeSockets[socket.id][USER_KEY] = userId;
+		if (activeUsers.indexOf(userId) === -1) activeUsers.push(userId);
+		io.sockets.emit('client:login', {'user': userId, 'users': activeUsers});
+	});
+	
+	socket.on('logout', function(userId) {
+		console.log('Logout from userId: '+ userId);
+		activeSockets[socket.id][USER_KEY] = null;
+		activeUsers.splice(activeUsers.indexOf(userId), 1);
+		io.sockets.emit('client:logout', {'user': userId, 'users': activeUsers});
 	});
 });
 

@@ -13,6 +13,7 @@ angular.module('controllers')
 		var prevUserId = $cookies.getObject(COOKIE_USER_KEY);
 		$rootScope.myClient = {};
 		if (prevUserId) {
+			socket.emit('login', prevUserId);
 			$rootScope.myClient.playerId = prevUserId;
 		}
 		
@@ -33,6 +34,7 @@ angular.module('controllers')
 		if ($rootScope.myClient.playerId) {
 			// Log Out
 			$cookies.remove(COOKIE_USER_KEY);
+			socket.emit('logout', $rootScope.myClient.playerId);
 			$rootScope.myClient = {};
 			$location.path("/");
 			modalOptions = {
@@ -52,6 +54,7 @@ angular.module('controllers')
 			modalService.showLogInModal({}, modalOptions).then(function(player) {
 				if (!player) return;
 				addUserCookie(player._id);
+				socket.emit('login', player._id);
 				$rootScope.myClient.playerId = player._id;
 				$location.path("/");
 			});
@@ -82,15 +85,20 @@ angular.module('controllers')
 		populateUserList();
 	});
 	socket.on('player:change:username', function(username) {
+		console.log(new Date().toLocaleTimeString() +' - Username change detected.');
 		populateUserList();
 	});
 	socket.on('client:enter', function(clients) {
-		console.log(new Date().toLocaleTimeString() +' - Detected client entering.');
 		$rootScope.clients = clients;
 	});
 	socket.on('client:leave', function(clients) {
-		console.log(new Date().toLocaleTimeString() +' - Detected client leaving.');
 		$rootScope.clients = clients;
+	});
+	socket.on('client:login', function(data) {
+		$rootScope.onlineUsers = data.users;
+	});
+	socket.on('client:logout', function(data) {
+		$rootScope.onlineUsers = data.users;
 	});
 	
 }]);

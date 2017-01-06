@@ -34,6 +34,11 @@ angular.module('controllers')
 		}
 	}
 	
+	$scope.isOnline = function(playerId) {
+		if (!$rootScope.onlineUsers) return false;
+		return $rootScope.onlineUsers.indexOf(playerId) !== -1;
+	}
+	
 	$scope.dangerLevel = function(gameTime) {
 		var hours = timeService.hoursBetween(new Date(gameTime), new Date());
 		if (hours <= 48)
