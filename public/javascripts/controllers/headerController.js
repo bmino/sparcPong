@@ -9,17 +9,19 @@ angular.module('controllers')
 	init();
 	
 	function init() {
-		// Look for previous user cookie
-		var prevUserId = $cookies.getObject(COOKIE_USER_KEY);
-		$rootScope.myClient = {};
-		if (prevUserId) {
-			socket.emit('login', prevUserId);
-			$rootScope.myClient.playerId = prevUserId;
-		}
-		
+		relogin();
 		populateUserList();
 	}
-	
+
+	function relogin() {
+        // Look for previous user cookie
+        var prevUserId = $cookies.getObject(COOKIE_USER_KEY);
+        $rootScope.myClient = {};
+        if (prevUserId) {
+            socket.emit('login', prevUserId);
+            $rootScope.myClient.playerId = prevUserId;
+        }
+	}
 	function populateUserList() {
 		playerService.getPlayers().then(function (players) {
 			// Alphabetize and return
@@ -96,6 +98,9 @@ angular.module('controllers')
 	});
 	socket.on('client:online', function(users) {
 		$rootScope.onlineUsers = users;
+	});
+	socket.on('reconnect', function() {
+		relogin();
 	});
 	
 }]);
