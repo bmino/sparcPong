@@ -1,5 +1,5 @@
 angular.module('services')
-.factory('socket', function ($rootScope) {
+.factory('socket', ['$rootScope', '$cookies', function($rootScope, $cookies) {
 	var socket = io().connect();
 	socket.on('reconnect', function() {
 		// Log in upon reconnect
@@ -30,4 +30,4 @@ angular.module('services')
 			})
 		}
 	};
-});
+}]);
