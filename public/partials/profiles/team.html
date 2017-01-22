@@ -2,9 +2,9 @@
 	<div class="page-header" ng-show="profile">
 		<h1><span class="username" ng-bind="profile.username"></span> <span class="score">({{wins}} - {{losses}})</span></h1>
 		
-		<div class="userLabel">Leader:</div> <a ng-href="#/profile/player/{{profile.leader._id}}">{{profile.leader.firstName}} {{profile.leader.lastName}}</a>
+		<div class="userLabel">Leader:</div> <a ng-href="#!/profile/player/{{profile.leader._id}}">{{profile.leader.firstName}} {{profile.leader.lastName}}</a>
 		<br />
-		<div class="userLabel">Partner:</div> <a ng-href="#/profile/player/{{profile.partner._id}}">{{profile.partner.firstName}} {{profile.partner.lastName}}</a>
+		<div class="userLabel">Partner:</div> <a ng-href="#!/profile/player/{{profile.partner._id}}">{{profile.partner.firstName}} {{profile.partner.lastName}}</a>
 	</div>
 
 	<div class="challenges" ng-hide="loadingChallenges">
@@ -14,7 +14,7 @@
 			</div>
 			<ul class="list-group in" id="incomingChallenges">
 				<li class="list-group-item challenge-incoming" ng-repeat="challenge in challenges.incoming | orderBy : '-updatedAt'">
-					<a ng-href="#/profile/team/{{challenge.challenger._id}}" ng-bind="challenge.challenger.username"></a>
+					<a ng-href="#!/profile/team/{{challenge.challenger._id}}" ng-bind="challenge.challenger.username"></a>
 					<until-forfeit date="challenge.createdAt"></until-forfeit>
 					<div logged-in="[challenge.challenger.leader._id,
 									 challenge.challenger.partner._id,
@@ -32,7 +32,7 @@
 			</div>
 			<ul class="list-group in" id="outgoingChallenges">
 				<li class="list-group-item challenge-outgoing" ng-repeat="challenge in challenges.outgoing | orderBy : '-updatedAt'">
-					<a ng-href="#/profile/team/{{challenge.challengee._id}}" ng-bind="challenge.challengee.username"></a>
+					<a ng-href="#!/profile/team/{{challenge.challengee._id}}" ng-bind="challenge.challengee.username"></a>
 					<until-forfeit date="challenge.createdAt"></until-forfeit>
 					<div logged-in="[challenge.challenger.leader._id,
 									 challenge.challenger.partner._id,
@@ -52,10 +52,10 @@
 			</div>
 			<ul class="list-group in" id="resolvedChallenges">
 				<li class="list-group-item challenge-resolved" ng-repeat="challenge in challenges.resolved | orderBy : '-updatedAt'">
-					<a ng-href="#/profile/team/{{challenge.challenger._id}}"><span ng-bind="challenge.challenger.username"></span></a>
+					<a ng-href="#!/profile/team/{{challenge.challenger._id}}"><span ng-bind="challenge.challenger.username"></span></a>
 					<span>({{challenge.challengerScore != null ? challenge.challengerScore : '-'}})</span>
 					<span> vs </span>
-					<a ng-href="#/profile/team/{{challenge.challengee._id}}"><span ng-bind="challenge.challengee.username" ></span></a>
+					<a ng-href="#!/profile/team/{{challenge.challengee._id}}"><span ng-bind="challenge.challengee.username" ></span></a>
 					<span>({{challenge.challengeeScore != null ? challenge.challengeeScore : 'forfeit'}})</span>
 					<br />
 					<span ng-bind="challenge.updatedAt | mongoDate" ng-show="challenge.winner"></span>

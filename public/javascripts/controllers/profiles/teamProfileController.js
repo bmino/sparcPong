@@ -28,7 +28,7 @@ angular.module('controllers')
 			teamService.lookupTeams($rootScope.myClient.playerId).then(function(teams) {
 				if (!teams || teams.length == 0) {
 					// Found no teams
-					$location.path('/signUp/team');
+					$location.path('signUp/team');
 				} else {
 					console.log('Found team [' + teams[0].username + ']');
 					profileId = teams[0]._id;

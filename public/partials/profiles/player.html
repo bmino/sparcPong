@@ -13,7 +13,7 @@
 			</div>
 			<ul class="list-group in" id="incomingChallenges">
 				<li class="list-group-item challenge-incoming" ng-repeat="challenge in challenges.incoming | orderBy : '-updatedAt'">
-					<a ng-href="#/profile/player/{{challenge.challenger._id}}" ng-bind="challenge.challenger.username"></a>
+					<a ng-href="#!/profile/player/{{challenge.challenger._id}}" ng-bind="challenge.challenger.username"></a>
 					<until-forfeit date="challenge.createdAt"></until-forfeit>
 					<div logged-in="[challenge.challenger._id, challenge.challengee._id]" class="initiateButton" ng-click="expandChallenge(challenge)">Report</div>
 				</li>
@@ -26,7 +26,7 @@
 			</div>
 			<ul class="list-group in" id="outgoingChallenges">
 				<li class="list-group-item challenge-outgoing" ng-repeat="challenge in challenges.outgoing | orderBy : '-updatedAt'">
-					<a ng-href="#/profile/player/{{challenge.challengee._id}}" ng-bind="challenge.challengee.username"></a>
+					<a ng-href="#!/profile/player/{{challenge.challengee._id}}" ng-bind="challenge.challengee.username"></a>
 					<until-forfeit date="challenge.createdAt"></until-forfeit>
 					<div logged-in="[challenge.challenger._id, challenge.challengee._id]" class="initiateButton" ng-click="expandChallenge(challenge)">Report</div>
 				</li>
@@ -41,10 +41,10 @@
 			</div>
 			<ul class="list-group in" id="resolvedChallenges">
 				<li class="list-group-item challenge-resolved" ng-repeat="challenge in challenges.resolved | orderBy : '-updatedAt'">
-					<a ng-href="#/profile/player/{{challenge.challenger._id}}"><span ng-bind="challenge.challenger.username"></span></a>
+					<a ng-href="#!/profile/player/{{challenge.challenger._id}}"><span ng-bind="challenge.challenger.username"></span></a>
 					<span>({{challenge.challengerScore != null ? challenge.challengerScore : '-'}})</span>
 					<span> vs </span>
-					<a ng-href="#/profile/player/{{challenge.challengee._id}}"><span ng-bind="challenge.challengee.username" ></span></a>
+					<a ng-href="#!/profile/player/{{challenge.challengee._id}}"><span ng-bind="challenge.challengee.username" ></span></a>
 					<span>({{challenge.challengeeScore != null ? challenge.challengeeScore : 'forfeit'}})</span>
 					<br />
 					<span ng-bind="challenge.updatedAt | mongoDate" ng-show="challenge.winner"></span>
