@@ -7,7 +7,15 @@ angular.module('services')
 			deferral.resolve(data.days);
 		});
 		return deferral.promise;
-	}
+	};
+
+    this.getAllowedChallengeDaysTeam = function() {
+        var deferral = $q.defer();
+        $.get('/api/envBridge/ALLOWED_CHALLENGE_DAYS_TEAM').then(function(data) {
+            deferral.resolve(data.days);
+        });
+        return deferral.promise;
+    };
 	
 	this.parseDate = function (date) {
 		// Is the date a mongoose date?
@@ -15,7 +23,7 @@ angular.module('services')
 			return new Date($filter('mongoDate')(date));
 		else
 			return new Date($filter('date')(date));
-	}
+	};
 	
 	this.hoursBetween = function(date1, date2) {
 		var diff =  Math.abs(date2 - date1);
@@ -23,7 +31,7 @@ angular.module('services')
 		var minutes = Math.floor(seconds/60);
 		var hours = Math.floor(minutes/60);
 		return hours;
-	}
+	};
 	
 	this.timeBetween = function (date1, date2) {
 		var neg = (date2 - date1) < 0;
@@ -34,12 +42,13 @@ angular.module('services')
 		var hours = Math.floor(minutes/60);
 		minutes = minutes % 60;
 		return this.prettyTime(hours, minutes, seconds, neg);
-	}
+	};
 	
-	this.prettyTime = function (hour, min, sec, neg=false) {
+	this.prettyTime = function (hour, min, sec, neg) {
+		if (neg == undefined) neg = false;
 		neg = neg ? '-' : '';
 		return neg + this.leftPad(hour, 2) + ':' + this.leftPad(min, 2) + ':' + this.leftPad(sec, 2);
-	}
+	};
 	
 	this.leftPad = function (number, targetLength) {
 		var output = number + '';
@@ -47,7 +56,7 @@ angular.module('services')
 			output = '0' + output;
 		}
 		return output;
-	}
+	};
 	
 	this.addBusinessDays = function (date, days) {
 		// Bad Inputs
@@ -64,7 +73,7 @@ angular.module('services')
 			}
 		}
 		return d;
-	}
+	};
 
 	/*
 	 * Determines if the given date is a business day.
@@ -73,5 +82,5 @@ angular.module('services')
 	 */
 	this.isBusinessDay = function (date) {
 		return date.getDay() != 0 && date.getDay() != 6;
-	}
+	};
 }]);
