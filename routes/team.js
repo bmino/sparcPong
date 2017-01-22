@@ -32,8 +32,8 @@ router.post('/', function(req, res, next) {
 	var validatePartner = Player.findById(partnerId).exec();
 	var lowestTeamRank = getLowestTeamRank();
 	
-	Promise.all([validateUsername, validateLeaderTeamsCount, validatePartnerTeamsCount, validateLeader, validatePartner, lowestTeamRank]).then(
-		values => {
+	Promise.all([validateUsername, validateLeaderTeamsCount, validatePartnerTeamsCount, validateLeader, validatePartner, lowestTeamRank])
+		.then(function(values) {
 			console.log('Creating new team.');
 			
 			// Create new team
@@ -52,7 +52,8 @@ router.post('/', function(req, res, next) {
 				console.log('Successfully created a new team.');
 				res.json({message: 'Team created!'});
 			});
-		}, error => {
+		})
+		.catch(function(error) {
 			return next(error);
 		});
 });
@@ -69,8 +70,8 @@ router.post('/change/username', function(req, res, next) {
 	if (!teamId || !playerId)
 		return next(new Error('You must provide a valid player ids.'));
 	
-	validUsername(newUsername).then(
-		result => {
+	validUsername(newUsername)
+		.then(function(result) {
 			console.log('Changing team username.');
 			Team.findById(teamId, function(err, team) {
 				if (err) return next(err);
@@ -83,11 +84,10 @@ router.post('/change/username', function(req, res, next) {
 					res.json({message: 'Successfully changed your username from '+ oldUsername +' to '+ newUsername +'!'});
 				});
 			});
-		},
-		error => {
+		})
+		.catch(function(error) {
 			return next(error);
-		}
-	);
+		});
 });
 
 
@@ -117,14 +117,13 @@ router.get('/fetch/lookup/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;
 	if (!playerId) return next(new Error('You must specify a player id.'));
 	
-	getTeamsByPlayerId(playerId).then(
-		teams => {
+	getTeamsByPlayerId(playerId)
+		.then(function(teams) {
 			res.json({message: teams});
-		},
-		error => {
+		})
+		.catch(function(error) {
 			return next(error);
-		}
-	);
+		});
 });
 
 
@@ -155,7 +154,7 @@ router.get('/record/:teamId', function(req, res, next) {
 
 function getLowestTeamRank() {
 	console.log('Looking for lowest team rank.');
-	return new Promise((resolve, reject) => {
+	return new Promise(function(resolve, reject) {
 		Team.find().sort({'rank': -1}).limit(1).exec(function(err, lowestRankTeam) {
 			if (err) reject(err);
 			var lowestRank = 0;
@@ -171,9 +170,9 @@ function getLowestTeamRank() {
 var PLAYER_TEAMS_MAX = process.env.PLAYER_TEAM_MAX || 1;
 function validPlayerTeamsCount(playerId) {
 	console.log('Validating if player is a part of too many teams.');
-	return new Promise((resolve, reject) => {
-		countTeamsByPlayerId(playerId).then(
-			count => {
+	return new Promise(function(resolve, reject) {
+		countTeamsByPlayerId(playerId)
+			.then(function(count) {
 				var plural = PLAYER_TEAMS_MAX > 1 ? 's' : '';
 				console.log('Found ' + count + ' teams associated with this player.');
 				if (count >= PLAYER_TEAMS_MAX) {
@@ -181,16 +180,13 @@ function validPlayerTeamsCount(playerId) {
 				} else {
 					resolve(count);
 				}
-			},
-			error => {
-				reject(error);
-			}
-		);
+			})
+			.catch(reject);
 	});
 }
 
 function getTeamsByPlayerId(playerId) {
-	return new Promise((resolve, reject) => {
+	return new Promise(function(resolve, reject) {
 		Team.find({$or: [{leader: playerId}, {partner: playerId}]}, function(err, teams) {
 			if (err) {
 				reject(err);
@@ -202,7 +198,7 @@ function getTeamsByPlayerId(playerId) {
 }
 
 function countTeamsByPlayerId(playerId) {
-	return new Promise((resolve, reject) => {
+	return new Promise(function(resolve, reject) {
 		Team.count({$or: [{leader: playerId}, {partner: playerId}]}, function(err, count) {
 			if (err) {
 				reject(err);
@@ -216,37 +212,32 @@ function countTeamsByPlayerId(playerId) {
 var USERNAME_LENGTH_MIN = process.env.USERNAME_LENGTH_MIN || 2;
 var USERNAME_LENGTH_MAX = process.env.USERNAME_LENGTH_MAX || 15;
 function validUsername(username) {	
-	var checkSyntax = new Promise((resolve, reject) => {
+	var checkSyntax = new Promise(function(resolve, reject) {
 		console.log('Verifying username of ['+ username +']');
 		
-		if (!username || username == '') {
+		if (!username || username == '')
 			reject(new Error('You must give a username.'));
-		}
 		
 		// Allowed character length
-		if (username.length > USERNAME_LENGTH_MAX || username.length < USERNAME_LENGTH_MIN) {
+		if (username.length > USERNAME_LENGTH_MAX || username.length < USERNAME_LENGTH_MIN)
 			reject(new Error('Username length must be between '+ USERNAME_LENGTH_MIN +' and '+ USERNAME_LENGTH_MAX +' characters.'));
-		}
 		
 		// No special characters
-		if (!/^[A-Za-z0-9_ ]*$/.test(username)) {
+		if (!/^[A-Za-z0-9_ ]*$/.test(username))
 			reject(new Error('Username can only include letters, numbers, underscores, and spaces.'));
-		}
 		
 		// Concurrent spaces
-		if (/\s{2,}/.test(username)) {
+		if (/\s{2,}/.test(username))
 			reject(new Error('Username cannot have concurrent spaces.'));
-		}
 		
 		// Concurrent underscores
-		if (/_{2,}/.test(username)) {
+		if (/_{2,}/.test(username))
 			reject(new Error('Username cannot have concurrent underscores.'));
-		}
 		
 		resolve(true);
 	});
 	
-	var usernameExists = new Promise((resolve, reject) => {
+	var usernameExists = new Promise(function(resolve, reject) {
 		console.log('Checking if team username ['+ username +'] exists.');
 		Team.count({username: username}, function(err, count) {
 			if (err) reject(err);
@@ -259,14 +250,10 @@ function validUsername(username) {
 	});
 	
 	console.log('Validating team username.');
-	return new Promise((resolve, reject) => {
-		Promise.all([checkSyntax, usernameExists]).then(
-			function(success) {
-				resolve(true);
-			},
-			function (error) {
-				reject(error);
-			});
+	return new Promise(function(resolve, reject) {
+		Promise.all([checkSyntax, usernameExists])
+			.then(resolve)
+			.catch(reject);
 	});
 	
 }

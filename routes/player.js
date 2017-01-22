@@ -25,49 +25,39 @@ router.post('/', function(req, res, next) {
 	var playerLastName = req.body.lastName ? req.body.lastName.trim() : null;
 	var playerPhone = req.body.phone;
 	var playerEmail = req.body.email ? req.body.email.replace(/\s+/g, '') : "";
-	
-	validRealName(playerFirstName, playerLastName, function(err) {
-		if (err) return next(err);
-		
-		validUsername(playerUsername, function(err) {
-			if (err) return next(err);
-			
-			validEmail(playerEmail, function(err) {
+
+	Promise.all([validRealName(playerFirstName,playerLastName), validUsername(playerUsername), validEmail(playerEmail), getLowestRank()])
+		.then(function(values) {
+			console.log('Creating new player.');
+
+			// Creates player alerts
+			console.log('Creating player alert settings.');
+			var newAlert = new Alert();
+			newAlert.save(function(err) {
 				if (err) return next(err);
-				
-				getLowestRank(function(err, lowestRank) {
+
+				// Create new player
+				var player = new Player();
+				player.username = playerUsername;
+				player.firstName = playerFirstName;
+				player.lastName = playerLastName;
+				player.alerts = newAlert._id;
+				player.rank = values[3] + 1;
+				player.phone = playerPhone;
+				player.email = playerEmail;
+
+				// Saves player to DB
+				player.save(function(err) {
 					if (err) return next(err);
-					
-					console.log('Creating new player.');
-					
-					// Creates player alerts
-					console.log('Creating player alert settings.');
-					var newAlert = new Alert();
-					newAlert.save(function(err) {
-						if (err) return next(err);
-						
-						// Create new player
-						var player = new Player();
-						player.username = playerUsername;
-						player.firstName = playerFirstName;
-						player.lastName = playerLastName;
-						player.alerts = newAlert._id;
-						player.rank = lowestRank + 1;
-						player.phone = playerPhone;
-						player.email = playerEmail;
-						
-						// Saves player to DB
-						player.save(function(err) {
-							if (err) return next(err);
-							req.app.io.sockets.emit('player:new', playerUsername);
-							console.log('Successfully created a new player.');
-							res.json({message: 'Player created!'});
-						});
-					});
+					req.app.io.sockets.emit('player:new', playerUsername);
+					console.log('Successfully created a new player.');
+					res.json({message: 'Player created!'});
 				});
 			});
+		})
+		.catch(function(err) {
+			return next(err);
 		});
-	});
 });
 
 /* 
@@ -81,23 +71,25 @@ router.post('/change/username', function(req, res, next) {
 	if (!playerId)
 		return next(new Error('You must provide a valid player id.'));
 	
-	validUsername(newUsername, function(err) {
-		if (err) return next(err);
-	
-		console.log('Changing player username.');
-		Player.findById(playerId, function(err, player) {
-			if (err) return next(err);
-			if (!player)
-				return next(new Error('Could not find your current account.'));
-			var oldUsername = player.username;
-			player.username = newUsername;
-			player.save(function(err) {
+	validUsername(newUsername)
+		.then(function() {
+			console.log('Changing player username.');
+			Player.findById(playerId, function(err, player) {
 				if (err) return next(err);
-				req.app.io.sockets.emit('player:change:username', {oldUsername: oldUsername, newUsername: newUsername});
-				res.json({message: 'Successfully changed your username from '+ oldUsername +' to '+ newUsername +'!'});
+				if (!player)
+					return next(new Error('Could not find your current account.'));
+				var oldUsername = player.username;
+				player.username = newUsername;
+				player.save(function(err) {
+					if (err) return next(err);
+					req.app.io.sockets.emit('player:change:username', {oldUsername: oldUsername, newUsername: newUsername});
+					res.json({message: 'Successfully changed your username from '+ oldUsername +' to '+ newUsername +'!'});
+				});
 			});
+		})
+		.catch(function(err) {
+			return next(err);
 		});
-	});
 });
 
 
@@ -117,23 +109,25 @@ router.post('/change/email', function(req, res, next) {
 	if (newEmail.length > 50)
 		return next(new Error('Your email length cannot exceed 50 characters.'));
 	
-	validEmail(newEmail, function(err) {
-		if (err) return next(err);
-	
-		console.log('Changing player email.');
-		Player.findById(playerId, function(err, player) {
-			if (err) return next(err);
-			if (!player)
-				return next(new Error('Could not find your current account.'));
-			var oldEmail = player.email;
-			player.email = newEmail;
-			player.save(function(err) {
+	validEmail(newEmail)
+		.then(function() {
+			console.log('Changing player email.');
+			Player.findById(playerId, function(err, player) {
 				if (err) return next(err);
-				req.app.io.sockets.emit('player:change:email', {oldEmail: oldEmail, newEmail: newEmail});
-				res.json({message: 'Successfully changed your email to '+ newEmail +'!'});
+				if (!player)
+					return next(new Error('Could not find your current account.'));
+				var oldEmail = player.email;
+				player.email = newEmail;
+				player.save(function(err) {
+					if (err) return next(err);
+					req.app.io.sockets.emit('player:change:email', {oldEmail: oldEmail, newEmail: newEmail});
+					res.json({message: 'Successfully changed your email to '+ newEmail +'!'});
+				});
 			});
+		})
+		.catch(function(err) {
+			return next(err);
 		});
-	});
 });
 
 /* 
@@ -174,7 +168,6 @@ router.get('/', function(req, res, next) {
 /* GET player by id */
 router.get('/fetch/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;
-	
 	if (!playerId) return next(new Error('You must specify a player id.'));
 	
 	Player.findById(playerId, function(err, player) {
@@ -215,151 +208,125 @@ router.get('/record/:playerId', function(req, res, next) {
 	});
 });
 
-function getLowestRank(callback) {
-	Player.find().sort({'rank': -1}).limit(1).exec(function(err, lowestRankPlayer) {
-		if (err) {
-			callback(err, null);
-			return;
-		}
-		var lowestRank = 0;
-		if (lowestRankPlayer && lowestRankPlayer.length > 0) {
-			lowestRank = lowestRankPlayer[0].rank;
-		}
-		console.log('Found lowest rank of ' + lowestRank);
-		callback(err, lowestRank);
+function getLowestRank() {
+	return new Promise(function(resolve, reject) {
+        Player.find().sort({'rank': -1}).limit(1).exec(function(err, lowestRankPlayer) {
+            if (err) reject(err);
+            var lowestRank = 0;
+            if (lowestRankPlayer && lowestRankPlayer.length > 0) {
+                lowestRank = lowestRankPlayer[0].rank;
+            }
+            console.log('Found lowest rank of ' + lowestRank);
+            resolve(lowestRank);
+        });
 	});
 }
 
 var USERNAME_LENGTH_MIN = process.env.USERNAME_LENGTH_MIN || 2;
 var USERNAME_LENGTH_MAX = process.env.USERNAME_LENGTH_MAX || 15;
-function validUsername(username, callback) {
-	console.log('Verifying username of '+ username);
-	
-	if (!username || username == '') {
-		callback(new Error('You must give a username.'));
-		return;
-	}
-	
-	// Can only be 15 characters long
-	if (username.length > USERNAME_LENGTH_MAX || username.length < USERNAME_LENGTH_MIN) {
-		callback(new Error('Username length must be between '+ USERNAME_LENGTH_MIN +' and '+ USERNAME_LENGTH_MAX +' characters.'));
-		return;
-	}
-	
-	// No special characters
-	if (!/^[A-Za-z0-9_ ]*$/.test(username)) {
-		callback(new Error('Username can only include letters, numbers, underscores, and spaces.'));
-		return;
-	}
-	
-	// Concurrent spaces
-	if (/\s{2,}/.test(username)) {
-		callback(new Error('You cannot have concurrent spaces.'));
-		return;
-	}
-	
-	// Concurrent underscores
-	if (/_{2,}/.test(username)) {
-		callback(new Error('You cannot have concurrent underscores.'));
-		return;
-	}
-	
-	usernameExists(username, function(err) {
-		callback(err);
+function validUsername(username) {
+	return new Promise(function(resolve, reject) {
+        console.log('Verifying username of '+ username);
+
+        if (!username || username == '')
+            reject(new Error('You must give a username.'));
+
+        // Can only be 15 characters long
+        if (username.length > USERNAME_LENGTH_MAX || username.length < USERNAME_LENGTH_MIN)
+            reject(new Error('Username length must be between '+ USERNAME_LENGTH_MIN +' and '+ USERNAME_LENGTH_MAX +' characters.'));
+
+        // No special characters
+        if (!/^[A-Za-z0-9_ ]*$/.test(username))
+            reject(new Error('Username can only include letters, numbers, underscores, and spaces.'));
+
+        // Concurrent spaces
+        if (/\s{2,}/.test(username))
+            reject(new Error('You cannot have concurrent spaces.'));
+
+        // Concurrent underscores
+        if (/_{2,}/.test(username))
+            reject(new Error('You cannot have concurrent underscores.'));
+
+        usernameExists(username)
+            .then(resolve)
+            .catch(reject);
 	});
 }
 
-function validRealName(first, last, callback) {
-	console.log('Verifying real name of '+ first +' '+ last);
-	
-	if (!first || first == '' || !last || last == '') {
-		callback(new Error('You must give a first and last name.'));
-		return;
-	}
-	
-	// Can only be 15 characters long
-	if (first.length > 15 || first.length < 1 || last.length > 15 || last.length < 1) {
-		callback(new Error('First and last name must be between '+ 1 +' and '+ 15 +' characters.'));
-		return;
-	}
-	
-	// No special characters
-	if (!/^[A-Za-z0-9_ ]*$/.test(first) || !/^[A-Za-z0-9_ ]*$/.test(last)) {
-		callback(new Error('First and last name can only include letters, numbers, underscores, and spaces.'));
-		return;
-	}
-	
-	// Concurrent spaces
-	if (/\s{2,}/.test(first) || /\s{2,}/.test(last)) {
-		callback(new Error('First and last name cannot have concurrent spaces.'));
-		return;
-	}
-	
-	// Concurrent underscores
-	if (/_{2,}/.test(first) || /_{2,}/.test(last)) {
-		callback(new Error('First and last name cannot have concurrent underscores.'));
-		return;
-	}
-	
-	callback(null);
-}
+function validRealName(first, last) {
+	return new Promise(function(resolve, reject) {
+        console.log('Verifying real name of '+ first +' '+ last);
 
-function validEmail(email, callback) {
-	console.log('Verifying email of '+ email);
-	
-	if (email.length == 0) {
-		callback(null);
-		return;
-	}
-	
-	var count = 0;
-	var i = 0;
-	for (i in email) {
-		if (email[i] == '@') count++;
-	}
-	if (count != 1) {
-		callback(new Error('Email must contain one @ symbol.'));
-		return;
-	}
-	
-	count = 0;
-	i = 0;
-	for (i in email) {
-		if (email[i] == '.') count++;
-	}
-	if (count == 0) {
-		callback(new Error('Email must contain at least one period.'));
-		return;
-	}
-	
-	emailExists(email, function(err) {
-		callback(err);
+        if (!first || first == '' || !last || last == '')
+            reject(new Error('You must give a first and last name.'));
+
+        // Can only be 15 characters long
+        if (first.length > 15 || first.length < 1 || last.length > 15 || last.length < 1)
+            reject(new Error('First and last name must be between '+ 1 +' and '+ 15 +' characters.'));
+
+        // No special characters
+        if (!/^[A-Za-z0-9_ ]*$/.test(first) || !/^[A-Za-z0-9_ ]*$/.test(last))
+            reject(new Error('First and last name can only include letters, numbers, underscores, and spaces.'));
+
+        // Concurrent spaces
+        if (/\s{2,}/.test(first) || /\s{2,}/.test(last))
+            reject(new Error('First and last name cannot have concurrent spaces.'));
+
+        // Concurrent underscores
+        if (/_{2,}/.test(first) || /_{2,}/.test(last))
+            reject(new Error('First and last name cannot have concurrent underscores.'));
+
+        resolve(null);
 	});
 }
 
-function usernameExists(username, callback) {
-	console.log('Checking if username, '+ username +', exists.');
-	Player.count({username: username}, function(err, count) {
-		if (err) {
-			callback(err);
-		} else if (count != 0) {
-			callback(new Error('Username already exists.'));
-		} else {
-			callback(null);
-		}
+function validEmail(email) {
+	return new Promise(function(resolve, reject) {
+        console.log('Verifying email of '+ email);
+
+        if (email.length == 0)	reject(new Error('Email is too short.'));
+
+        // Needs one @ symbol
+        if ((email.match(/@/g) || []).length != 1)
+        	reject(new Error('Email must contain one @ symbol.'));
+
+        // Needs a period
+        if ((email.match(/\./g) || []).length < 1)
+        	reject(new Error('Email must contain at least one period.'));
+
+        emailExists(email)
+			.then(resolve)
+			.catch(reject);
 	});
 }
 
-function emailExists(email, callback) {
-	console.log('Checking if email, '+ email +', exists.');
-	Player.count({email: email}, function(err, count) {
-		if (err) {
-			callback(err);
-		} else if (count != 0) {
-			callback(new Error('Email already exists.'));
-		} else {
-			callback(null);
-		}
+function usernameExists(username) {
+	return new Promise(function(resolve, reject) {
+        console.log('Checking if username, '+ username +', exists.');
+        Player.count({username: username}, function(err, count) {
+            if (err) {
+                reject(err);
+            } else if (count != 0) {
+                reject(new Error('Username already exists.'));
+            } else {
+                resolve(null);
+            }
+        });
+	});
+}
+
+function emailExists(email) {
+	return new Promise(function(resolve, reject) {
+        console.log('Checking if email, '+ email +', exists.');
+        Player.count({email: email}, function(err, count) {
+            if (err) {
+                reject(err);
+            } else if (count != 0) {
+                reject(new Error('Email already exists.'));
+            } else {
+                resolve(null);
+            }
+        });
 	});
 }
 
