@@ -22,7 +22,7 @@ angular.module('directives')
 				}
 			});
 		}
-	}
+	};
 	
 	function inArray(needle, arr) {
 		// This happens when a single parameter is passed in

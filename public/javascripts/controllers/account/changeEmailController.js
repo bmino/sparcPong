@@ -20,6 +20,7 @@ angular.module('controllers')
 	
 	$scope.validateEmail = function() {
 		var playerId = $rootScope.myClient.playerId;
+		var modalOptions;
 		playerService.changeEmail(playerId, $scope.email).then(
 			// Success
 			function(success) {
@@ -38,10 +39,11 @@ angular.module('controllers')
 				modalService.showAlertModal({}, modalOptions);
 			}
 		);
-	}
+	};
 	
 	$scope.removeEmail = function() {
 		var playerId = $rootScope.myClient.playerId;
+		var modalOptions;
 		playerService.removeEmail(playerId).then(
 			// Success
 			function(success) {
@@ -61,5 +63,6 @@ angular.module('controllers')
 				modalService.showAlertModal({}, modalOptions);
 			}
 		);
-	}
+	};
+
 }]);

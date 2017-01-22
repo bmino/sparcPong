@@ -61,7 +61,7 @@ angular.module('controllers')
 				modalService.showAlertModal({}, modalOptions);
 			}
 		);
-	}
+	};
 	
 	$scope.createTeam = function() {
 		if (!$scope.team.leader || !$scope.team.partner) return;
@@ -90,5 +90,6 @@ angular.module('controllers')
 				modalService.showAlertModal({}, modalOptions);
 			}
 		);
-	}
+	};
+
 }]);

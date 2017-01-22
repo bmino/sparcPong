@@ -7,33 +7,36 @@ angular.module('controllers')
 	function init() {
 		var playerId = $rootScope.myClient.playerId;
 		if (playerId) {
-			playerService.getPlayer(playerId).then(function (player) {
-				if (player) {
-					$scope.newUsername = player.username;
-				}
-			});
+			playerService.getPlayer(playerId)
+				.then(applyUsernameChange)
+				.catch(function(err) {
+					console.log(err);
+				});
 		}
+	}
+
+	function applyUsernameChange(player) {
+		if (player) $scope.newUsername = player.username;
 	}
 	
 	$scope.validateUsername = function() {
 		var playerId = $rootScope.myClient.playerId;
-		playerService.changeUsername(playerId, $scope.newUsername).then(
-			// Success
-			function(success) {
+		var modalOptions;
+		playerService.changeUsername(playerId, $scope.newUsername)
+			.then(function(success) {
 				modalOptions = {
 					headerText: 'Change Username',
 					bodyText: success
 				};
 				modalService.showAlertModal({}, modalOptions);
-			},
-			// Error
-			function(error) {
+			})
+			.catch(function(error) {
 				modalOptions = {
 					headerText: 'Change Username',
 					bodyText: error
 				};
 				modalService.showAlertModal({}, modalOptions);
-			}
-		);
-	}
+			});
+	};
+
 }]);

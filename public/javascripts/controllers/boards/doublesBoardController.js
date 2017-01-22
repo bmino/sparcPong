@@ -46,13 +46,13 @@ angular.module('controllers')
 	};
 	
 	$scope.challengeTeam = function(challengeeId) {
-		var teamId;
 		var challengerId = $rootScope.myClient.playerId;
 		var challengerTeams = playerTeams(challengerId);
+		var modalOptions;
 		if (!challengerId || challengerTeams.length == 0) {
-			var modalOptions = {
+			modalOptions = {
 				headerText: 'Team Challenge',
-				bodyText: challengerId ? 'You are not a member of any team.' : 'You must log before issuing challenges.'
+				bodyText: challengerId ? 'You are not a member of any team.' : 'You must log in before issuing challenges.'
 			};
 			modalService.showAlertModal({}, modalOptions);
 			return;
@@ -60,7 +60,7 @@ angular.module('controllers')
 		
 		if (challengerTeams.length > 1) {
 			// More than 1 team... prompt for which one
-			var modalOptions = {
+			modalOptions = {
 				headerText: 'Team Challenge',
 				actionButtonText: 'Challenge',
 				closeButtonText: 'Cancel',

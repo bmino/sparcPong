@@ -22,31 +22,33 @@ angular.module('controllers')
 	
 	function getAlerts() {
 		var playerId = $rootScope.myClient.playerId;
-		playerService.getAlerts(playerId).then(function(alerts) {
-			for (var key in alerts) {
-				if (key == 'team') {
-					for (var teamKey in alerts['team']) {
-						$scope.alerts['team'][teamKey]['status'] = alerts['team'][teamKey];
-					}
-				} else {
-					$scope.alerts[key]['status'] = alerts[key];
-				}
-			}
-		});
+		playerService.getAlerts(playerId)
+			.then(function(alerts) {
+				angular.forEach(alerts, function(alert, alertKey) {
+                    if (alertKey == 'team') {
+                    	angular.forEach(alerts.team, function(team, teamKey) {
+                            $scope.alerts['team'][teamKey]['status'] = alerts['team'][teamKey];
+						});
+                    } else {
+                        $scope.alerts[alertKey]['status'] = alerts[alertKey];
+                    }
+				});
+			})
+			.catch(function() {});
 	}
 	
 	function minifiedAlerts() {
 		var minified = {};
 		minified.team = {};
-		for (var key in $scope.alerts) {
-			if (key == 'team') {
-				for (var teamKey in $scope.alerts.team) {
-					minified['team'][teamKey] = $scope.alerts['team'][teamKey]['status'];
-				}
-			} else {
-				minified[key] = $scope.alerts[key]['status'];
-			}
-		}
+		angular.forEach($scope.alerts, function(value, alertKey) {
+            if (alertKey == 'team') {
+                angular.forEach($scope.alerts.team, function(value, teamKey) {
+                    minified['team'][teamKey] = $scope.alerts['team'][teamKey]['status'];
+                });
+            } else {
+                minified[alertKey] = $scope.alerts[alertKey]['status'];
+            }
+		});
 		return minified;
 	}
 	
@@ -57,24 +59,22 @@ angular.module('controllers')
 			$scope.alerts[key]['status'] = !$scope.alerts[key]['status'];
 		}
 		updateAlerts();
-	}
+	};
 	
 	function updateAlerts() {
 		var playerId = $rootScope.myClient.playerId;
-		playerService.updateAlerts(playerId, minifiedAlerts()).then(
-			// Success
-			function(success) {
+		playerService.updateAlerts(playerId, minifiedAlerts())
+			.then(function(success) {
 				// Do nothing
 				console.log(success);
-			},
-			// Error
-			function(error) {
-				modalOptions = {
+			})
+			.catch(function(error) {
+				var modalOptions = {
 					headerText: 'Change Alerts',
 					bodyText: error
 				};
 				modalService.showAlertModal({}, modalOptions);
-			}
-		);
-	};
+			});
+	}
+
 }]);

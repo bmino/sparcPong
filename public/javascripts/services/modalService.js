@@ -19,33 +19,33 @@ angular.module('services')
 	this.showPlayerChallengeOptions = function(customModalDefaults, customModalOptions) {
 		customModalDefaults.templateUrl = '/partials/modals/challengeOptions/playerChallengeOptions.html';
 		return this.showModal(customModalDefaults, customModalOptions);
-	}
+	};
 	
 	this.showTeamChallengeOptions = function(customModalDefaults, customModalOptions) {
 		customModalDefaults.templateUrl = '/partials/modals/challengeOptions/teamChallengeOptions.html';
 		return this.showModal(customModalDefaults, customModalOptions);
-	}
+	};
 
 	this.showSelectTeamModal = function(customModalDefaults, customModalOptions) {
 		customModalDefaults.templateUrl = '/partials/modals/selectTeam.html';
 		return this.showModal(customModalDefaults, customModalOptions);
-	}
+	};
 	
 	this.showAlertModal = function(customModalDefaults, customModalOptions) {
 		customModalDefaults.templateUrl = '/partials/modals/alert.html';
 		customModalOptions.actionButtonText = 'OK';
 		return this.showModal(customModalDefaults, customModalOptions);
-	}
+	};
 	
 	this.showScoreModal = function(customModalDefaults, customModalOptions) {
 		customModalDefaults.templateUrl = '/partials/modals/score.html';
 		return this.showModal(customModalDefaults, customModalOptions);
-	}
+	};
 	
 	this.showLogInModal = function(customModalDefaults, customModalOptions) {
 		customModalDefaults.templateUrl = '/partials/modals/logIn.html';
 		return this.showModal(customModalDefaults, customModalOptions);
-	}	
+	};
 	
 	this.showModal = function (customModalDefaults, customModalOptions) {
 		if (!customModalDefaults) customModalDefaults = {};
@@ -66,7 +66,7 @@ angular.module('services')
 		angular.extend(tempModalOptions, modalOptions, customModalOptions);
 
 		if (!tempModalDefaults.controller) {
-			tempModalDefaults.controller = function ($scope, $uibModalInstance) {
+			tempModalDefaults.controller = ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
 				$scope.modalOptions = tempModalOptions;
 				$scope.modalOptions.ok = function (result) {
 					$uibModalInstance.close(result);
@@ -74,7 +74,7 @@ angular.module('services')
 				$scope.modalOptions.close = function (result) {
 					$uibModalInstance.dismiss('cancel');
 				};
-			}
+			}]
 		}
 
 		return $uibModal.open(tempModalDefaults).result;

@@ -20,18 +20,22 @@ angular.module('filters')
 		}
 		
 		return tierPlayers.sort(playerSort);
-	}
+	};
 	
 	function playerSort(a, b) {
 		return a.rank > b.rank;
 	}
 	
-	function getRanks(tier, currentTier=1, lastRank=0, ranks=[]) {
+	function getRanks(tier, currentTier, lastRank, ranks) {
+		if (currentTier == undefined) currentTier = 1;
+		if (lastRank == undefined) lastRank = 0;
+		if (ranks == undefined) ranks = [];
+
 		if (ranks.length >= tier) {
 			return ranks;
 		}
-		
-		var ranks = [];
+
+		ranks = [];
 		for (var r=lastRank+1; r<=lastRank+currentTier; r++) {
 			ranks.push(r);
 		}

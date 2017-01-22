@@ -1,8 +1,5 @@
 angular.module('controllers')
 .controller('headerController', ['$scope', '$rootScope', '$location', '$cookies', 'socket', 'modalService', 'playerService', function($scope, $rootScope, $location, $cookies, socket, modalService, playerService) {
-
-	$scope.player;
-	$scope.clients;
 	
 	var COOKIE_USER_KEY = 'sparcPongUser';
 	
@@ -53,13 +50,15 @@ angular.module('controllers')
 				actionButtonText: 'Log In',
 				players: $scope.players
 			};
-			modalService.showLogInModal({}, modalOptions).then(function(player) {
-				if (!player) return;
-				addUserCookie(player._id);
-				socket.emit('login', player._id);
-				$rootScope.myClient.playerId = player._id;
-				$location.path("/");
-			});
+			modalService.showLogInModal({}, modalOptions)
+				.then(function(player) {
+					if (!player) return;
+					addUserCookie(player._id);
+					socket.emit('login', player._id);
+					$rootScope.myClient.playerId = player._id;
+					$location.path("/");
+				})
+				.catch(function() {});
 		}
 	};
 	

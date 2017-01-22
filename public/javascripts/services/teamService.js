@@ -67,16 +67,13 @@ angular.module('services')
 	
 	
 	function handleSuccess(response) {
-		var successMessage = response.data.message;
-		return successMessage;
+		return response.data.message;
 	}
 	
 	function handleError(response) {
 		var dummy = document.createElement('body');
 		dummy.innerHTML = response.data;
-		var errorMessage = dummy.getElementsByTagName("h1")[0].innerHTML;
-		throw errorMessage;
-		return null;
+		throw dummy.getElementsByTagName("h1")[0].innerHTML;
 	}
 	
 });
