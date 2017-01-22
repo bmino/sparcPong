@@ -366,8 +366,8 @@ function isBusinessDay(date) {
  * @return: boolean - true if allowed, and false if not allowed
  * @return: String - error message if not allowed
  */
-var ALLOWED_OUTGOING = process.env.ALLOWED_OUTGOING;
-var ALLOWED_INCOMING = process.env.ALLOWED_INCOMING;
+var ALLOWED_OUTGOING = process.env.ALLOWED_OUTGOING || 1;
+var ALLOWED_INCOMING = process.env.ALLOWED_INCOMING || 1;
 function allowedToChallenge(challenger, challengee, callback) {
 	// Checks challenger
 	countChallenges(challenger._id, function(err, incoming, outgoing) {

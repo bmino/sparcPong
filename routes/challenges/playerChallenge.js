@@ -15,7 +15,7 @@ var transporter = nodemailer.createTransport("SMTP", {
 			user: process.env.EMAIL_ADDRESS,
 			clientId: process.env.AUTH_CLIENT_ID,
 			clientSecret: process.env.AUTH_CLIENT_SECRET,
-			refreshToken: process.env.AUTH_CLIENT_REFRESH,
+			refreshToken: process.env.AUTH_CLIENT_REFRESH
 		}
     }
 });
@@ -273,7 +273,7 @@ function challengeExists(playerId1, playerId2, callback) {
  *
  * @param: dateIssued - date the challenge was issued
  */
-var ALLOWED_CHALLENGE_DAYS = process.env.ALLOWED_CHALLENGE_DAYS;
+var ALLOWED_CHALLENGE_DAYS = process.env.ALLOWED_CHALLENGE_DAYS || 4;
 function hasForfeit(dateIssued) {
 	var expires = addBusinessDays(dateIssued, ALLOWED_CHALLENGE_DAYS);
 	// Challenge expired before today
@@ -352,8 +352,8 @@ function isBusinessDay(date) {
  * @return: boolean - true if allowed, and false if not allowed
  * @return: String - error message if not allowed
  */
-var ALLOWED_OUTGOING = process.env.ALLOWED_OUTGOING;
-var ALLOWED_INCOMING = process.env.ALLOWED_INCOMING;
+var ALLOWED_OUTGOING = process.env.ALLOWED_OUTGOING || 1;
+var ALLOWED_INCOMING = process.env.ALLOWED_INCOMING || 1;
 function allowedToChallenge(challenger, challengee, callback) {
 	// Checks challenger
 	countChallenges(challenger._id, function(err, incoming, outgoing) {
@@ -392,7 +392,7 @@ function allowedToChallenge(challenger, challengee, callback) {
 						else return 1;
 					});
 					if (challenges && challenges[0]) {
-						var CHALLENGE_BACK_DELAY_HOURS = process.env.CHALLENGE_BACK_DELAY_HOURS || 12;
+						var CHALLENGE_BACK_DELAY_HOURS = process.env.CHALLENGE_BACK_DELAY_HOURS || 4;
 						var reissueTime = addHours(challenges[0].updatedAt, CHALLENGE_BACK_DELAY_HOURS);
 						var canReissue = reissueTime < new Date();
 						if (!canReissue) {
