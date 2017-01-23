@@ -570,7 +570,7 @@ function getTier(rank) {
 	var tier = 1;
 	
 	while (true) {
-		var tierRanks = getRanks(tier, 1, 0, []);
+		var tierRanks = getRanks(tier);
 		for (var r=0; r<tierRanks.length; r++) {
 			if (rank == tierRanks[r]) {
 				// Found tier
@@ -586,22 +586,16 @@ function getTier(rank) {
  * Calculates the possible ranks for a given tier.
  *
  * @param: tier
- * @param: currentTier - defaults to 1
- * @param: lastRank - defaults to 0
- * @param: ranks - defaults to []
  *
  * @return: array - contains possible ranks
  */
-function getRanks(tier, currentTier, lastRank, ranks) {
-	if (ranks.length >= tier) {
-		return ranks;
-	}
-	var ranks = [];
-	for (var r=lastRank+1; r<=lastRank+currentTier; r++) {
-		ranks.push(r);
-	}
-	lastRank = ranks[ranks.length-1];
-	return getRanks(tier, ++currentTier, lastRank, ranks);
+function getRanks(tier) {
+    var ranks = [];
+    var first = (tier * (tier-1) + 2) / 2;
+    for (var r=0; r<tier; r++) {
+        ranks.push(first+r);
+    }
+    return ranks;
 }
 
 function email_newChallenge(challenger, challengee) {

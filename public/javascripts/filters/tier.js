@@ -26,21 +26,12 @@ angular.module('filters')
 		return a.rank > b.rank;
 	}
 	
-	function getRanks(tier, currentTier, lastRank, ranks) {
-		if (currentTier == undefined) currentTier = 1;
-		if (lastRank == undefined) lastRank = 0;
-		if (ranks == undefined) ranks = [];
-
-		if (ranks.length >= tier) {
-			return ranks;
-		}
-
-		ranks = [];
-		for (var r=lastRank+1; r<=lastRank+currentTier; r++) {
-			ranks.push(r);
-		}
-		lastRank = ranks[ranks.length-1];
-		
-		return getRanks(tier, ++currentTier, lastRank, ranks);
+	function getRanks(tier) {
+        var ranks = [];
+        var first = (tier * (tier-1) + 2) / 2;
+        for (var r=0; r<tier; r++) {
+            ranks.push(first+r);
+        }
+        return ranks;
 	}
 });

@@ -4,8 +4,8 @@ angular.module('controllers')
 	init();
 	
 	function init() {
-		// TODO: implement a better solution than guessing big at 12 tiers
-		generateTiers(12);
+		// TODO: implement a better solution than guessing big at 16 tiers
+		generateTiers(16);
 		populateTeams();
 	}
 	
