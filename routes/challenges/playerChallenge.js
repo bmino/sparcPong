@@ -4,22 +4,8 @@ var mongoose = require('mongoose');
 var Challenge = mongoose.model('Challenge');
 var Player = mongoose.model('Player');
 var Team = mongoose.model('Team');
-
-var nodemailer = require('nodemailer');
-var xoauth2 = require('xoauth2');
-
-var transporter = nodemailer.createTransport("SMTP", {
-    service: 'gmail',
-    auth: {
-        XOAuth2: {
-			user: process.env.EMAIL_ADDRESS,
-			clientId: process.env.AUTH_CLIENT_ID,
-			clientSecret: process.env.AUTH_CLIENT_SECRET,
-			refreshToken: process.env.AUTH_CLIENT_REFRESH
-		}
-    }
-});
-
+var Mailer = require('../Mailer');
+var Util = require('../Util');
 
 
 /* POST new challenge
@@ -60,12 +46,12 @@ router.post('/', function(req, res, next) {
 					
 					if (challenger.rank < challengee.rank)
 						return next(new Error('You cannot challenger a player below your rank.'));
-					else if (Math.abs(getTier(challenger.rank) - getTier(challengee.rank)) > 1)
+					else if (Math.abs(Util.getTier(challenger.rank) - Util.getTier(challengee.rank)) > 1)
 						return next(new Error('You cannot challenge a player beyond 1 tier.'));
 					
 					challenge.save(function(err) {
 						if (err) return next(err);
-						email_newChallenge(challenger, challengee);
+						Mailer.newChallenge(challenger, challengee);
 						req.app.io.sockets.emit('challenge:issued', { challenger: { username: challenger.username,
 																					rank: challenger.rank },
 																	  challengee: { username: challengee.username,
@@ -151,7 +137,7 @@ router.delete('/revoke', function(req, res, next) {
 			if (err) return next(err);
 			
 			if (challenges.result && challenges.result.n) {
-				email_revokedChallenge(challenger, challengee);
+				Mailer.revokedChallenge(challenger, challengee);
 				req.app.io.sockets.emit('challenge:revoked', { challenger: {username: challenger.username}, challengee: {username: challengee.username} });
 				res.json({message: 'Successfully revoked challenge.'});
 			} else {
@@ -202,7 +188,7 @@ router.post('/resolve', function(req, res, next) {
 			if (err) return next(err);
 			swapRanks(winner, loser, function(err, swapped) {
 				if (err) return next(err);
-				email_resolvedChallenge(winner, loser);
+                Mailer.resolvedChallenge(winner, loser);
 				req.app.io.sockets.emit('challenge:resolved', { winner: {username: winner.username}, loser: {username: loser.username} });
 				res.json({message: 'Successfully resolved challenge.'});
 			});
@@ -234,7 +220,7 @@ router.post('/forfeit', function(req, res, next) {
 			if (err) return next(err);
 			swapRanks(winner, loser, function(err, swapped) {
 				if (err) return next(err);
-				email_forfeitedChallenge(challenge.challenger, challenge.challengee);
+				Mailer.forfeitedChallenge(challenge.challenger, challenge.challengee);
 				req.app.io.sockets.emit('challenge:forfeited', { challenger: {username: challenge.challenger.username}, challengee: {username: challenge.challengee.username} });
 				res.json({message: 'Challenge successfully forfeited.'});
 			});
@@ -275,73 +261,11 @@ function challengeExists(playerId1, playerId2, callback) {
  */
 var ALLOWED_CHALLENGE_DAYS = process.env.ALLOWED_CHALLENGE_DAYS || 4;
 function hasForfeit(dateIssued) {
-	var expires = addBusinessDays(dateIssued, ALLOWED_CHALLENGE_DAYS);
+	var expires = Util.addBusinessDays(dateIssued, ALLOWED_CHALLENGE_DAYS);
 	// Challenge expired before today
 	return expires < new Date();
 }
 
-/*
- * Adds business days to a date.
- *
- * @param: date - the starting date
- * @param: days - number of days to add
- */
-function addBusinessDays(date, days) {
-	// Bad Inputs
-	if (!days || days == 0)
-		return date;
-	
-	var d = new Date(date.getTime());
-	var added = 0;
-	while (added < days) {
-		// Looks at tomorrow's day
-		d.setDate(d.getDate()+1);
-		if (isBusinessDay(d)) {
-			added++;
-		}
-	}
-	return d;
-}
-/*
- * Adds regular days to a date.
- *
- * @param: date - the starting date
- * @param: days - number of days to add
- */
-function addDays(date, days) {
-	// Bad Inputs
-	if (!days || days == 0)
-		return date;
-	
-	var d = new Date(date.getTime());
-	d.setDate(d.getDate()+days);
-	return d;
-}
-/*
- * Adds hours to a date.
- *
- * @param: date - the starting date
- * @param: hours - number of hours to add
- */
-function addHours(date, hours) {
-	// Bad Inputs
-	if (!hours || hours == 0)
-		return date;
-	
-	var d = new Date(date.getTime());
-	d.setHours(d.getHours()+hours);
-	return d;
-}
-
-
-/*
- * Determines if the given date is a business day.
- *
- * @param: date
- */
-function isBusinessDay(date) {
-	return date.getDay() != 0 && date.getDay() != 6;
-}
 
 /*
  * Determines if a given player is eligible to issue challenges.
@@ -393,7 +317,7 @@ function allowedToChallenge(challenger, challengee, callback) {
 					});
 					if (challenges && challenges[0]) {
 						var CHALLENGE_BACK_DELAY_HOURS = process.env.CHALLENGE_BACK_DELAY_HOURS || 4;
-						var reissueTime = addHours(challenges[0].updatedAt, CHALLENGE_BACK_DELAY_HOURS);
+						var reissueTime = Util.addHours(challenges[0].updatedAt, CHALLENGE_BACK_DELAY_HOURS);
 						var canReissue = reissueTime < new Date();
 						if (!canReissue) {
 							callback(new Error('You must wait at least '+ CHALLENGE_BACK_DELAY_HOURS +' hours before re-challenging the same player.'));
@@ -558,127 +482,5 @@ function updateLastGames(challenge, callback) {
 	});
 }
 
-
-/*
- * Calculates the tier for a given ranking.
- *
- * @param: rank
- *
- * @return: number - tier
- */
-function getTier(rank) {
-	var tier = 1;
-	
-	while (true) {
-		var tierRanks = getRanks(tier);
-		for (var r=0; r<tierRanks.length; r++) {
-			if (rank == tierRanks[r]) {
-				// Found tier
-				return tier;
-			}
-		}
-		tier++;
-	}
-}
-
-
-/*
- * Calculates the possible ranks for a given tier.
- *
- * @param: tier
- *
- * @return: array - contains possible ranks
- */
-function getRanks(tier) {
-    var ranks = [];
-    var first = (tier * (tier-1) + 2) / 2;
-    for (var r=0; r<tier; r++) {
-        ranks.push(first+r);
-    }
-    return ranks;
-}
-
-function email_newChallenge(challenger, challengee) {
-	console.log('Checking email permission for a new challenge');
-	Player.findById(challengee._id).populate('alerts').exec(function(err, challengee) {
-		if (err) {
-			console.log(err);
-			return;
-		}
-		if (challengee.email && challengee.alerts.challenged) {
-			sendEmail('New Challenge', 'You have been challenged by '+ challenger.username +'. Log in at http://sparc-pong.herokuapp.com to deal with that scrub!', challengee.email);
-		}
-	});
-}
-
-function email_revokedChallenge(challenger, challengee) {
-	console.log('Checking email permission for a revoked challenge');
-	Player.findById(challengee._id).populate('alerts').exec(function(err, challengee) {
-		if (err) {
-			console.log(err);
-			return;
-		}
-		if (challengee.email && challengee.alerts.revoked) {
-			sendEmail('Revoked Challenge', challenger.username +' got scared and revoked a challenge against you.', challengee.email);
-		}
-	});
-}
-
-function email_resolvedChallenge(winner, loser) {
-	console.log('Checking email permission for a resolved challenge');	
-	// Contacts loser
-	Player.findById(loser._id).populate('alerts').exec(function(err, loser) {
-		if (err) {
-			console.log(err);
-			return;
-		}
-		if (loser.email && loser.alerts.resolved) {
-			sendEmail('Resolved Challenge', 'Welp, stuff happens. It looks like '+ winner.username +' really laid the smack on ya. Log in at http://sparc-pong.herokuapp.com and pick an easier opponent.', loser.email);
-		}
-		
-		// Contacts winner
-		Player.findById(winner._id).populate('alerts').exec(function(err, winner) {
-			if (err) {
-				console.log(err);
-				return;
-			}
-			if (winner.email && winner.alerts.resolved) {
-				sendEmail('Resolved Challenge', 'Congratulations on beating '+ loser.username +'! Log in at http://sparc-pong.herokuapp.com to crush some more feelings.', winner.email);
-			}
-		});
-	});
-}
-
-function email_forfeitedChallenge(challenger, challengee) {
-	console.log('Checking email permission for a forfeited challenge');
-	Player.findById(challenger).populate('alerts').exec(function(err, challenger) {
-		if (err) {
-			console.log(err);
-			return;
-		}
-		if (challenger.email && challenger.alerts.forfeited) {
-			sendEmail('Forfeited Challenge', 'That lil weasel, '+ challengee.username +', forfeited your challenge. You win by default!', challenger.email);
-		}
-	});
-}
-
-function sendEmail(subject, message, address) {
-	console.log('Trying to send email to '+ address);
-	
-	var mailOptions = {
-		to: address,
-		from: process.env.EMAIL_TITLE +' <'+ process.env.EMAIL_ADDRESS +'>',
-		subject: subject,
-		text: message
-	};
-
-	transporter.sendMail(mailOptions, function(error, response) {
-		if (error) {
-			console.log(error);
-		} else {
-			console.log('Message sent: ' + response);
-		}
-	});
-}
 
 module.exports = router;
