@@ -2,6 +2,10 @@
   "name": "sparcPong",
   "version": "0.8.0",
   "private": true,
+  "engines": {
+    "node": "7.4.0",
+    "npm": "4.0.5"
+  },
   "scripts": {
     "start": "node app.js",
     "postinstall": "bower install"
