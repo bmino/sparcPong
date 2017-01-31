@@ -81,11 +81,14 @@ angular.module('controllers')
 		}
 	});
 	
-	socket.on('player:new', function(username) {
+	socket.on('player:new', function() {
 		console.log(new Date().toLocaleTimeString() +' - New user detected.');
 		populateUserList();
 	});
-	socket.on('player:change:username', function(username) {
+    socket.on('team:new', function() {
+        console.log(new Date().toLocaleTimeString() +' - New team detected.');
+    });
+    socket.on('player:change:username', function() {
 		console.log(new Date().toLocaleTimeString() +' - Username change detected.');
 		populateUserList();
 	});

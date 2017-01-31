@@ -102,16 +102,16 @@ angular.module('controllers')
         modalService.showAlertModal({}, modalOptions);
 	}
 	
-	socket.on('team:new', function(username) {
+	socket.on('team:new', function() {
 		populateTeams();
 	});
-	socket.on('team:change:username', function(username) {
+	socket.on('team:change:username', function() {
 		populateTeams();
 	});
-	socket.on('challenge:resolved', function() {
+	socket.on('challenge:team:resolved', function() {
 		populateTeams();
 	});
-	socket.on('challenge:forfeited', function() {
+	socket.on('challenge:team:forfeited', function() {
 		populateTeams();
 	});
 }]);

@@ -8,7 +8,7 @@ angular.module('controllers')
 		resolved: []
 	};
 	
-	$scope.loadingProfile = true
+	$scope.loadingProfile = true;
 	$scope.loadingChallenges = true;
 	$scope.loadingRecord = true;
 	
@@ -95,18 +95,19 @@ angular.module('controllers')
 	
 	function resolveChallenge(challenge) {
 		var playerId = $rootScope.myClient.playerId;
+		var modalOptions;
 		if (playerId != challenge.challengee.leader._id &&
 			playerId != challenge.challengee.partner._id &&
 			playerId != challenge.challenger.leader._id &&
 			playerId != challenge.challenger.partner._id) {
-			var modalOptions = {
+			modalOptions = {
 				headerText: 'Resolve Challenge',
 				bodyText: 'Only '+ challenge.challenger.username +' or '+ challenge.challengee.username +' can resolve this challenge.'
 			};
 			modalService.showAlertModal({}, modalOptions);
 			return;
 		}
-		var modalOptions = {
+		modalOptions = {
 			headerText: 'Resolve Challenge',
 			challenge: challenge
 		};
@@ -133,12 +134,13 @@ angular.module('controllers')
 				}
 			);
 		});		
-	};
+	}
 	
 	function revokeChallenge(challenge) {
 		var playerId = $rootScope.myClient.playerId;
+		var modalOptions;
 		if (playerId != challenge.challenger.leader._id && playerId != challenge.challenger.partner._id) {
-			var modalOptions = {
+			modalOptions = {
 				headerText: 'Revoke Challenge',
 				bodyText: 'Only '+ challenge.challenger.username +' can revoke this challenge.'
 			};
@@ -146,7 +148,7 @@ angular.module('controllers')
 			return;
 		}
 		
-		var modalOptions = {
+		modalOptions = {
             closeButtonText: 'Cancel',
             actionButtonText: 'Revoke Challenge',
             headerText: 'Revoke',
@@ -172,11 +174,12 @@ angular.module('controllers')
 				}
 			);
 		});
-	};
+	}
 	function forfeitChallenge(challenge) {
 		var playerId = $rootScope.myClient.playerId;
+		var modalOptions;
 		if (playerId != challenge.challengee.leader._id && playerId != challenge.challengee.partner._id) {
-			var modalOptions = {
+			modalOptions = {
 				headerText: 'Forfeit Challenge',
 				bodyText: 'Only '+ challenge.challengee.username +' can forfeit this challenge.'
 			};
@@ -184,7 +187,7 @@ angular.module('controllers')
 			return;
 		}
 		
-		var modalOptions = {
+		modalOptions = {
             closeButtonText: 'Cancel',
             actionButtonText: 'Forfeit Challenge',
             headerText: 'Forfeit',
@@ -210,26 +213,30 @@ angular.module('controllers')
 				}
 			);
         });
-	};
+	}
 	
 	$scope.hadForfeit = function(challenge) {
 		return !challenge.challengerScore && !challenge.challengeeScore;
 	};
 	
-	socket.on('player:change:username', function(username) {
+	socket.on('player:change:username', function() {
+		loadTeam();
+	});
+	socket.on('team:change:username', function() {
+		loadTeam();
 		fetchChallenges();
 	});
-	socket.on('challenge:issued', function() {
+	socket.on('challenge:team:issued', function() {
 		fetchChallenges();
 	});
-	socket.on('challenge:resolved', function() {
+	socket.on('challenge:team:resolved', function() {
 		fetchChallenges();
 		getRecord();
 	});
-	socket.on('challenge:revoked', function() {
+	socket.on('challenge:team:revoked', function() {
 		fetchChallenges();
 	});
-	socket.on('challenge:forfeited', function() {
+	socket.on('challenge:team:forfeited', function() {
 		fetchChallenges();
 		getRecord();
 	});
