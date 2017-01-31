@@ -8,14 +8,15 @@ var Mailer = require('../Mailer');
 var Util = require('../Util');
 
 
-/* POST new challenge
- *
+/**
+ * POST new challenge
  * @param: challengerId
  * @param: challengeeId
  */
 router.post('/', function(req, res, next) {
 	var challengerId = req.body.challengerId;
 	var challengeeId = req.body.challengeeId;
+	var challenger, challengee;
 	
 	if (!challengerId || !challengeeId)
 		return next(new Error('Two teams are required for a challenge.'));
@@ -27,47 +28,36 @@ router.post('/', function(req, res, next) {
 	var CHALLENGE_ANYTIME = process.env.CHALLENGE_ANYTIME || false;
 	if ((todayDay == 0 || todayDay == 6) && !CHALLENGE_ANYTIME)
 		return next(new Error('You can only issue challenges on business days.'));
-	
-	challengeExists(challengerId, challengeeId, function(err) {
-		if (err) return next(err);
-		
-		// Grabs team info on both challenge participants
-		Team.findById(challengerId).exec(function(err, challenger) {
-			if (err) return next(err);
-			Team.findById(challengeeId).exec(function(err, challengee) {
-				if (err) return next(err);
-				
-				// Verifies the challenge can be issued and received
-				allowedToChallenge(challenger, challengee, function(err) {
-					if (err) return next(err);
-					
-					if (challenger.rank < challengee.rank)
-						return next(new Error('You cannot challenger a team below your rank.'));
-					else if (Math.abs(Util.getTier(challenger.rank) - Util.getTier(challengee.rank)) > 1)
-						return next(new Error('You cannot challenge a team beyond 1 tier.'));
-					
-					var challenge = new TeamChallenge();
-					challenge.challenger = challengerId;
-					challenge.challengee = challengeeId;
-					
-					challenge.save(function(err) {
-						if (err) return next(err);
-						Mailer.newTeamChallenge(challenger, challengee);
-						req.app.io.sockets.emit('challenge:issued', { challenger: { username: challenger.username,
-																					rank: challenger.rank },
-																	  challengee: { username: challengee.username,
-																					rank: challengee.rank }});
-						res.json({message: 'Challenge issued!'});
-					});
-				});
-			});
-		});
-	});	
+
+	// Grabs team info on both challenge participants
+	var challengerPromise = Team.findById(challengerId).exec();
+	var challengeePromise =	Team.findById(challengeeId).exec();
+
+	Promise.all([challengerPromise, challengeePromise])
+		.then(function(teams) {
+            return allowedToChallenge(teams[0], teams[1]);
+        })
+		.then(function(teams) {
+			challenger = teams[0];
+			challengee = teams[1];
+			var challenge = new TeamChallenge();
+			challenge.challenger = challengerId;
+			challenge.challengee = challengeeId;
+			return challenge.save();
+		})
+		.then(function() {
+			return Mailer.newTeamChallenge(challenger, challengee);
+		})
+		.then(function() {
+            req.app.io.sockets.emit('challenge:team:issued');
+            res.json({message: 'Challenge issued!'});
+		})
+		.catch(next);
 });
 
 
-/* GET all challenges involving a team
- * 
+/**
+ * GET all challenges involving a team
  * @param: teamId
  * @return: message.resolved
  * @return: message.outgoing
@@ -76,93 +66,79 @@ router.post('/', function(req, res, next) {
 router.get('/:teamId', function(req, res, next) {
 	var teamId = req.params.teamId;
 	if (!teamId) {
-		console.log(challengeId + ' is not a valid team id.');
+		console.log(teamId + ' is not a valid team id.');
 		return next(new Error('This is not a valid team.'));
 	}
-	
-	// Resolved
-	TeamChallenge.find({ $and: [
-						{$or: [{'challenger': teamId}, {'challengee': teamId}]}, 
-						{'winner': {$ne: null}}
-					]})
-					.populate('challenger challengee')
-					.exec(function(err, challenges) {
-		if (err) return next(err);
-		var resolved = challenges;
-		
-		// Outgoing
-		TeamChallenge.find({challenger: teamId, winner: null})
-						.populate({
-							path: 'challenger challengee',
-							populate: {
-								path: 'leader partner'
-							}
-						})
-						.exec(function(err, challenges) {
-			if (err) return next(err);
-			var outgoing = challenges;
-			
-			// Incoming
-			TeamChallenge.find({challengee: teamId, winner: null})
+
+	var resolvedChallenges = TeamChallenge.find({ $and: [
+								{$or: [{'challenger': teamId}, {'challengee': teamId}]},
+								{'winner': {$ne: null}}
+							]})
+							.populate('challenger challengee')
+							.exec();
+
+	var outgoingChallenges = TeamChallenge.find({challenger: teamId, winner: null})
 							.populate({
 								path: 'challenger challengee',
-								populate: {
-									path: 'leader partner'
-								}
+								populate: {path: 'leader partner'}
 							})
-							.exec(function(err, challenges) {
-				if (err) return next(err);
-				var incoming = challenges;
-				
-				res.json({message: {resolved: resolved, outgoing: outgoing, incoming: incoming}});
-			});
-		});
-	});
+							.exec();
+
+	var incomingChallenges = TeamChallenge.find({challengee: teamId, winner: null})
+							.populate({
+								path: 'challenger challengee',
+								populate: {path: 'leader partner'}
+							})
+							.exec();
+
+	Promise.all([resolvedChallenges, outgoingChallenges, incomingChallenges])
+		.then(function(challenges) {
+            res.json({message: {resolved: challenges[0], outgoing: challenges[1], incoming: challenges[2]}});
+		})
+		.catch(next);
+
 });
 
 
-/* DELETE wrongly issued challenge by challengerId
- *
+/**
+ * DELETE wrongly issued challenge by challengerId
  * @param: challengerId
  */
 router.delete('/revoke', function(req, res, next) {
 	var challengerId = req.body.challengerId;
 	var challengeeId = req.body.challengeeId;
+	var challenges, challenger, challengee;
 	
 	if (!challengerId || !challengeeId)
 		return next(new Error('Both teams must be provided to revoke a challenge.'));
 	
 	// Checks for forfeit
 	TeamChallenge.find({challenger: challengerId, challengee: challengeeId, winner: null})
-	.populate('challenger challengee')
-	.exec(function(err, challenges) {
-		if (err) return next(err);
-		
-		if (!challenges || challenges.length == 0)
-			return next(new Error('Could not find the challenge.'));
-		
-		var challenger = challenges[0].challenger;
-		var challengee = challenges[0].challengee;
-		
-		if (hasForfeit(challenges[0].createdAt))
-			return next(new Error('This challenge has expired. '+challengee.username+' must forfeit.'));
-		
-		TeamChallenge.remove({challenger: challengerId, challengee: challengeeId, winner: null}, function(err, challenges) {
-			if (err) return next(err);
-			
-			if (challenges.result && challenges.result.n) {
-                Mailer.revokedTeamChallenge(challenger, challengee);
-				req.app.io.sockets.emit('challenge:team:revoked', {});
-				res.json({message: 'Successfully revoked challenge.'});
-			} else {
-				return next(new Error('Could not find the challenge.'));
-			}
-		});
-	});
+	.populate('challenger challengee').exec()
+		.then(function(c) {
+			challenges = c;
+            if (!challenges || challenges.length == 0) return next(new Error('Could not find the challenge.'));
+
+            challenger = challenges[0].challenger;
+            challengee = challenges[0].challengee;
+
+            if (hasForfeit(challenges[0].createdAt))
+                return next(new Error('This challenge has expired. ' + challengee.username + ' must forfeit.'));
+
+            return TeamChallenge.remove({challenger: challengerId, challengee: challengeeId, winner: null}).exec();
+        })
+		.then(function() {
+            return Mailer.revokedTeamChallenge(challenger, challengee);
+		})
+		.then(function() {
+            req.app.io.sockets.emit('challenge:team:revoked');
+            res.json({message: 'Successfully revoked challenge.'});
+		})
+		.catch(next);
 });
 
-/* POST resolved challenge by adding a score and winner
- *
+/**
+ * POST resolved challenge by adding a score and winner
  * @param: challengeId
  * @param: challengerScore
  * @param: challengeeScore
@@ -171,6 +147,7 @@ router.post('/resolve', function(req, res, next) {
 	var challengeId = req.body.challengeId;
 	var challengerScore = req.body.challengerScore;
 	var challengeeScore = req.body.challengeeScore;
+	var challenge, winner, loser;
 	
 	if (!challengeId) {
 		console.log(challengeId + ' is not a valid challenge id.');
@@ -180,318 +157,222 @@ router.post('/resolve', function(req, res, next) {
 		return next(new Error('You must give valid scores for both players.'));
 	if (challengerScore == challengeeScore)
 		return next(new Error('The final score cannot be equal.'));
-	
-	TeamChallenge.findById(challengeId).populate('challenger challengee').exec(function(err, challenge) {
-		if (err) return next(err);
-		
-		if (hasForfeit(challenge.createdAt)) {
-			return next(new Error('This challenge has expired. '+challenge.challengee.username+' must forfeit.'));
-		} else {
-			console.log('Resolving challenge id ['+challengeId+']');
-		}
-		
-		var winner = challengerScore > challengeeScore ? challenge.challenger : challenge.challengee;
-		var loser  = challengerScore < challengeeScore ? challenge.challenger : challenge.challengee;
-		
-		challenge.winner = winner._id;
-		challenge.challengerScore = challengerScore;
-		challenge.challengeeScore = challengeeScore;
-		challenge.save();
-		
-		updateLastGames(challenge, function(err) {
-			if (err) return next(err);
-			swapRanks(winner, loser, function(err, swapped) {
-				if (err) return next(err);
-                Mailer.resolvedTeamChallenge(winner, loser);
-				req.app.io.sockets.emit('challenge:resolved', { winner: {username: winner.username}, loser: {username: loser.username} });
-				res.json({message: 'Successfully resolved challenge.'});
-			});
-		});
-	});
+
+	TeamChallenge.findById(challengeId).populate('challenger challengee').exec()
+		.then(function(c) {
+			challenge = c;
+            if (hasForfeit(challenge.createdAt))
+                return next(new Error('This challenge has expired. ' + challenge.challengee.username + ' must forfeit.'));
+
+            console.log('Resolving challenge id [' + challengeId + ']');
+            winner = challengerScore > challengeeScore ? challenge.challenger : challenge.challengee;
+            loser = challengerScore < challengeeScore ? challenge.challenger : challenge.challengee;
+            return concludeChallenge(challenge, winner, challengerScore, challengeeScore);
+        })
+		.then(function() {
+            return Mailer.resolvedTeamChallenge(winner, loser);
+		})
+		.then(function() {
+			req.app.io.sockets.emit('challenge:team:resolved');
+			res.json({message: 'Successfully resolved challenge.'});
+		})
+		.catch(next);
 });
 
-/*
+/**
  * Forfeits an expired challenge.
- *
  * @param: challengeId
  */
 router.post('/forfeit', function(req, res, next) {
 	var challengeId = req.body.challengeId;
-	if (!challengeId)
-		return next(new Error('This is not a valid challenge id.'));
-	TeamChallenge.findById(challengeId).populate('challenger challengee').exec(function(err, challenge) {
-		if (err) return next(err);
-	
-		console.log('Forfeiting challenge id ['+challengeId+']');
-		
-		// Challenger wins in the event of a forfeit
-		var winner = challenge.challenger;
-		var loser = challenge.challengee;
-		challenge.winner = winner._id;
-		challenge.save();
-		
-		updateLastGames(challenge, function(err) {
-			if (err) return next(err);
-			swapRanks(winner, loser, function(err, swapped) {
-				if (err) return next(err);
-                Mailer.forfeitedTeamChallenge(challenge.challenger, challenge.challengee);
-				req.app.io.sockets.emit('challenge:forfeited', { challenger: {username: challenge.challenger.username}, challengee: {username: challenge.challengee.username} });
-				res.json({message: 'Challenge successfully forfeited.'});
-			});
-		});
-	});
+	if (!challengeId) return next(new Error('This is not a valid challenge id.'));
+	var challenge;
+	TeamChallenge.findById(challengeId).populate('challenger challengee').exec()
+		.then(function(c) {
+			challenge = c;
+            console.log('Forfeiting challenge id [' + challengeId + ']');
+            var winner = challenge.challenger;
+            return concludeChallenge(challenge, winner);
+        })
+		.then(function() {
+			return Mailer.forfeitedTeamChallenge(challenge.challenger, challenge.challengee);
+		})
+		.then(function() {
+			req.app.io.sockets.emit('challenge:team:forfeited');
+			res.json({message: 'Challenge successfully forfeited.'});
+		})
+		.catch(next);
 });
 
 
-/*
- * Determines if an open challenge between two teams exists.
- *
- * @param: teamId1
- * @param: teamId2
- *
- * @return: err
- * @return: boolean - true if challenges exist, false if none exist
- */
-function challengeExists(teamId1, teamId2, callback) {
-	TeamChallenge.find({$or: [ 
-						{$and: [{challenger: teamId1}, {challengee: teamId2}, {winner: null}]}, 
-						{$and: [{challenger: teamId2}, {challengee: teamId1}, {winner: null}]}
-					]}, function(err, challenges) {
-		
-		if (err) {
-			callback(err);
-		} else if (challenges.length > 0){
-			callback(new Error('A challenge already exists between these teams.'));
-		} else {
-			callback(null);
-		}
-	});
-}
-
-/*
+/**
  * Determines if the given challenge issue date should be forfeited.
- *
- * @param: dateIssued - date the challenge was issued
+ * @param dateIssued
+ * @returns {boolean}
  */
 var ALLOWED_CHALLENGE_DAYS_TEAM = process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5;
 function hasForfeit(dateIssued) {
 	var expires = Util.addBusinessDays(dateIssued, ALLOWED_CHALLENGE_DAYS_TEAM);
-	// Challenge expired before today
 	return expires < new Date();
 }
 
-/*
- * Determines if a given player is eligible to issue challenges.
- *
- * @param: playerId
- *
- * @return: err
- * @return: boolean - true if allowed, and false if not allowed
- * @return: String - error message if not allowed
+/**
+ * Determines if two teams are allowed to challenge each other.
+ * @param challenger
+ * @param challengee
+ * @returns {Promise} - Resolves if allowed
  */
 var ALLOWED_OUTGOING = process.env.ALLOWED_OUTGOING || 1;
 var ALLOWED_INCOMING = process.env.ALLOWED_INCOMING || 1;
-function allowedToChallenge(challenger, challengee, callback) {
-	// Checks challenger
-	countChallenges(challenger._id, function(err, incoming, outgoing) {
-		if (err) {
-			callback(err);
-			return;
-		} else if (incoming >= ALLOWED_INCOMING) {
-			callback(new Error(challenger.username +' cannot have more than '+ALLOWED_INCOMING+' incoming challenge.'));
-			return;
-		} else if (outgoing >= ALLOWED_OUTGOING) {
-			callback(new Error(challenger.username +' cannot have more than '+ALLOWED_OUTGOING+' outgoing challenge.'));
-			return;
-		}
-		// Checks challengee
-		countChallenges(challengee._id, function(err, incoming, outgoing) {
-			if (err) {
-				callback(err);
-				return;
-			} else if (incoming >= ALLOWED_INCOMING) {
-				callback(new Error(challengee.username +' cannot have more than '+ALLOWED_INCOMING+' incoming challenge.'));
-				return;
-			} else if (outgoing >= ALLOWED_OUTGOING) {
-				callback(new Error(challengee.username +' cannot have more than '+ALLOWED_OUTGOING+' outgoing challenge.'));
-				return;
-			} else {
-				// Checks for no "challenge-back" delay
-				console.log('Checking for recently resolved challenges.');
-				getResolvedChallenges(challenger, challengee, function(err, challenges) {
-					if (err) {
-						callback(err);
-						return;
-					}
-					// Get most recent challenge
-					challenges.sort(function(a, b) {
-						if (a.updatedAt > b.updatedAt) return -1;
-						else return 1;
-					});
-					if (challenges && challenges[0]) {
-						var CHALLENGE_BACK_DELAY_HOURS = process.env.CHALLENGE_BACK_DELAY_HOURS || 12;
-						var reissueTime = Util.addHours(challenges[0].updatedAt, CHALLENGE_BACK_DELAY_HOURS);
-						var canReissue = reissueTime < new Date();
-						if (!canReissue) {
-							callback(new Error('You must wait at least '+ CHALLENGE_BACK_DELAY_HOURS +' hours before re-challenging the same player.'));
-							return;
-						}
-					}
-					// Did not find any challenge history
-					callback(null);
+function allowedToChallenge(challenger, challengee) {
+	return new Promise(function(resolve, reject) {
+        if (challenger.rank < challengee.rank)
+            return reject(new Error('You cannot challenger a team below your rank.'));
+        else if (Math.abs(Util.getTier(challenger.rank) - Util.getTier(challengee.rank)) > 1)
+            return reject(new Error('You cannot challenge a team beyond 1 tier.'));
+
+        var challengerIncoming = TeamChallenge.count({challengee: challenger._id, winner: null}).exec();
+        var challengerOutgoing = TeamChallenge.count({challenger: challenger._id, winner: null}).exec();
+        var challengeeIncoming = TeamChallenge.count({challengee: challengee._id, winner: null}).exec();
+        var challengeeOutgoing = TeamChallenge.count({challenger: challengee._id, winner: null}).exec();
+        var challengesBetween  = TeamChallenge.count(
+        								{$or: [
+											{$and: [{challenger: challenger._id}, {challengee: challengee._id}, {winner: null}]},
+											{$and: [{challenger: challengee._id}, {challengee: challenger._id}, {winner: null}]}
+										]
+									}).exec();
+
+        return Promise.all([challengerIncoming, challengerOutgoing, challengeeIncoming, challengeeOutgoing, challengesBetween])
+            .then(function (counts) {
+                if (counts[0] >= ALLOWED_INCOMING) return reject(new Error(challenger.username + ' cannot have more than ' + ALLOWED_INCOMING + ' incoming challenges.'));
+                if (counts[1] >= ALLOWED_OUTGOING) return reject(new Error(challenger.username + ' cannot have more than ' + ALLOWED_OUTGOING + ' outgoing challenges.'));
+                if (counts[2] >= ALLOWED_INCOMING) return reject(new Error(challengee.username + ' cannot have more than ' + ALLOWED_INCOMING + ' incoming challenges.'));
+                if (counts[3] >= ALLOWED_OUTGOING) return reject(new Error(challengee.username + ' cannot have more than ' + ALLOWED_OUTGOING + ' outgoing challenges.'));
+                if (counts[4] >= 1) return reject(new Error('A challenge already exists between ' + challenger.username + ' and ' + challengee.username));
+
+                console.log('Checking for recently resolved challenges.');
+
+                return getResolvedChallenges(challenger, challengee);
+            })
+			.then(function (challenges) {
+				if (!challenges || challenges.length == 0) return resolve([challenger, challengee]);
+
+				// Get most recent challenge
+				challenges.sort(function (a, b) {
+					if (a.updatedAt > b.updatedAt) return -1;
+					else return 1;
 				});
-			}
-		});
-	});
+				var CHALLENGE_BACK_DELAY_HOURS = process.env.CHALLENGE_BACK_DELAY_HOURS || 12;
+				var reissueTime = Util.addHours(challenges[0].updatedAt, CHALLENGE_BACK_DELAY_HOURS);
+				var canReissue = reissueTime < new Date();
+				if (canReissue) {
+					return resolve([challenger, challengee]);
+				} else {
+					return reject(new Error('You must wait at least ' + CHALLENGE_BACK_DELAY_HOURS + ' hours before re-challenging the same team.'));
+				}
+			})
+			.catch(reject);
+    });
 }
 
-/*
- * Counts incoming and outgoing challenges for a given team.
- *
- * @param: teamId
- *
- * @return: incoming challenges
- * @return: outgoing challenges
+/**
+ * Returns a list of resolved challenges between two teams.
+ * @param challenger
+ * @param challengee
+ * @returns {Promise} - List of resolved challenges
  */
-function countChallenges(teamId, callback) {
-	TeamChallenge.find({challenger: teamId, winner: null}, function(err, challenges) {
-		if (err) {
-			callback(err);
-			return;
-		}
-		var outgoing = challenges ? challenges.length : 0;
-		TeamChallenge.find({challengee: teamId, winner: null}, function(err, challenges) {
-			if (err) {
-				callback(err);
-				return;
-			}
-			var incoming = 0;
-			if (challenges)
-				incoming = challenges.length;
-			callback(err, incoming, outgoing);
-		});
+function getResolvedChallenges(challenger, challengee) {
+	return new Promise(function(resolve, reject) {
+        return TeamChallenge.find({$or: [
+            {$and: [{challenger: challenger._id}, {challengee: challengee._id}, {winner: {$ne: null}}]},
+            {$and: [{challenger: challengee._id}, {challengee: challenger._id}, {winner: {$ne: null}}]}
+        ]}).exec()
+			.then(resolve)
+			.catch(reject);
 	});
 }
 
-function getResolvedChallenges(challenger, challengee, callback) {
-	TeamChallenge.find({$or: [ 
-			{$and: [{challenger: challenger._id}, {challengee: challengee._id}, {winner: {$ne: null}}]}, 
-			{$and: [{challenger: challengee._id}, {challengee: challenger._id}, {winner: {$ne: null}}]}
-		]}, function(err, challenges) {
-			if (err) {
-				callback(err);
-				return;
-			} else {
-				callback(null, challenges);
-			}
-	});
-}
-
-/*
+/**
  * Swaps the rankings for two given teams.
- *
- * @param: winner
- * @param: loser
- *
- * @return: err
+ * @param winner
+ * @param loser
+ * @returns {Promise}
  */
-function swapRanks(winner, loser, callback) {
-	var swapped = false;
-	if (winner.rank < loser.rank) {
-		console.log('Swapping rankings is not required.');
-		callback(null, swapped);
-		return;
-	}
-	swapped = true;
-	console.log('Swapping rankings between ' + winner.username + ' and ' + loser.username);
-	setRank(winner, TEMP_RANK, function(err, oldRank, newRank) {
-		if (err) {
-			callback(err, swapped);
-			return;
-		}
-		var team1_oldRank = oldRank;
-		setRank(loser, team1_oldRank, function(err, oldRank, newRank) {
-			if (err) {
-				callback(err, swapped);
-				return;
-			}
-			var team2_oldRank = oldRank;
-			setRank(winner, team2_oldRank, function(err, oldRank, newRank) {
-				console.log('Swapping rankings completed successfully.');
-				callback(err, swapped);
-			});
-		});
+function swapRanks(winner, loser) {
+	return new Promise(function(resolve, reject) {
+		console.log('Winner ' + winner.username + ' has rank of [' + winner.rank + ']');
+		console.log('Loser ' + loser.username + ' has rank of [' + loser.rank + ']');
+        if (winner.rank < loser.rank) {
+            console.log('Swapping rankings is not required.');
+            return resolve();
+        }
+        console.log('Swapping rankings between ' + winner.username + ' and ' + loser.username);
+		var setLoserRank = setRank(loser, winner.rank);
+		var setWinnerRank = setRank(winner, loser.rank);
+		return Promise.all([setLoserRank, setWinnerRank])
+			.then(resolve)
+			.catch(reject);
 	});
 }
 
 
-/*
+/**
  * Manually sets the rank of a given team.
- *
- * @param: teamId
- * @param: newRank
- *
- * @return: err
- * @return: oldRank
- * @return: newRank
+ * @param team
+ * @param newRank
+ * @returns {Promise}
  */
-var TEMP_RANK = -1;
-function setRank(teamId, newRank, callback) {
-	Team.findById(teamId, function(err, team) {
-		if (err) {
-			callback(err, null, null);
-			return;
-		}
-		var oldRank = team.rank;
-		team.rank = newRank;
-		team.save(function(err) {
-			callback(err, oldRank, newRank);
-		});
+function setRank(team, newRank) {
+	return new Promise(function(resolve, reject) {
+		console.log('Changing rank of ' + team.username + ' from [' + team.rank + '] to [' + newRank + ']');
+        return Team.findById(team._id).exec()
+			.then(function(team) {
+                team.rank = newRank;
+                return team.save();
+            })
+			.then(function() {
+				return resolve(team.rank);
+            })
+			.catch(reject);
 	});
 }
 
 
-/*
- * Updates the last game time of both teams.
- *
- * @param: challenge
- *
- * @return: err
+/**
+ * Updates the last game time of both teams and assigns the challenge winner.
+ * @param challenge
+ * @param winner
+ * @param challengerScore
+ * @param challengeeScore
+ * @returns {Promise} - Resolves if successful
  */
-function updateLastGames(challenge, callback) {
-	if (!challenge.challenger._id || !challenge.challengee._id) {
-		console.log("This error is likely caused by not calling populate().")
-		callback(new Error('Two teams were not provided.'));
-		return;
-	}
-	
-	var gameTime = challenge.updatedAt;
-	if (!gameTime) {
-		console.log("This error is likely caused by not saving the challenge first.");
-		callback(new Error('Challenge time was not updated.'));
-		return;
-	}
-	
-	var challengerId = challenge.challenger._id;
-	var challengeeId = challenge.challengee._id;
-	
-	// Update challenger
-	Team.findByIdAndUpdate(challengerId, {$set: {lastGame: gameTime}}, function(err, team) {
-		if (err) {
-			callback(err);
-			return;
-		}
-		
-		// Update challengee
-		Team.findByIdAndUpdate(challengeeId, {$set: {lastGame: gameTime}}, function(err, team) {
-			if (err) {
-				callback(err);
-				return;
-			}
-			
-			// Done successfully
-			callback(null);
-		});
+function concludeChallenge(challenge, winner, challengerScore, challengeeScore) {
+	return new Promise(function(resolve, reject) {
+        if (!challenge.challenger._id || !challenge.challengee._id) {
+            console.log("This error is likely caused by not calling populate().");
+            return reject(new Error('Two teams were not provided.'));
+        }
+
+        var loser = (winner._id == challenge.challenger._id) ? challenge.challengee : challenge.challenger;
+        if (challengerScore != undefined) challenge.challengerScore = challengerScore;
+        if (challengeeScore != undefined) challenge.challengeeScore = challengeeScore;
+        challenge.winner = winner._id;
+        challenge.save()
+			.then(function() {
+				return swapRanks(winner, loser);
+            })
+			.then(function() {
+                var challengerId = challenge.challenger._id;
+                var challengeeId = challenge.challengee._id;
+                var gameTime	 = challenge.updatedAt;
+
+                var updateChallenger = Team.findByIdAndUpdate(challengerId, {$set: {lastGame: gameTime}}).exec();
+                var updateChallengee = Team.findByIdAndUpdate(challengeeId, {$set: {lastGame: gameTime}}).exec();
+
+               	return Promise.all([updateChallenger, updateChallengee]);
+			})
+			.then(resolve)
+			.catch(reject);
 	});
 }
 
