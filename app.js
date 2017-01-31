@@ -12,6 +12,7 @@ require('dotenv').config({path: 'config/local.env'});
 
 // Mongo
 var mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 
 require('./models/Player');
 require('./models/Team');
@@ -72,7 +73,7 @@ function activeClients() {
         if (activeSockets.hasOwnProperty(key)) size++;
     }
     return size;
-};
+}
 function onlineUsers() {
 	var ids = [], key;
     for (key in activeSockets) {
