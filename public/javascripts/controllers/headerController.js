@@ -8,8 +8,6 @@ function HeaderController($scope, $rootScope, $location, $cookies, socket, modal
 	
 	var COOKIE_USER_KEY = 'sparcPongUser';
 	
-	init();
-	
 	function init() {
 		relogin();
 		populateUserList();
@@ -109,5 +107,7 @@ function HeaderController($scope, $rootScope, $location, $cookies, socket, modal
 	socket.on('reconnect', function() {
 		relogin();
 	});
-	
+
+    init();
+
 }

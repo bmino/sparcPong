@@ -17,8 +17,6 @@ function TeamProfileController($scope, $rootScope, $routeParams, $location, sock
 	$scope.loadingChallenges = true;
 	$scope.loadingRecord = true;
 	
-	init();
-	
 	function init() {
 		profileId = $routeParams.id;
 		
@@ -245,5 +243,7 @@ function TeamProfileController($scope, $rootScope, $routeParams, $location, sock
 		fetchChallenges();
 		getRecord();
 	});
-	
+
+    init();
+
 }

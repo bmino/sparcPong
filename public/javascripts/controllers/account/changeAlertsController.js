@@ -19,8 +19,6 @@ function changeAlertsController($scope, $rootScope, modalService, playerService)
         }
     };
 
-    init();
-
     function init() {
         getAlerts();
     }
@@ -82,5 +80,7 @@ function changeAlertsController($scope, $rootScope, modalService, playerService)
                 modalService.showAlertModal({}, modalOptions);
             });
     }
+
+    init();
 
 }

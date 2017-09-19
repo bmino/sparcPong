@@ -6,8 +6,6 @@ SinglesBoardController.$inject = ['$scope', '$rootScope', 'socket', 'modalServic
 
 function SinglesBoardController($scope, $rootScope, socket, modalService, timeService, playerService, playerChallengeService) {
 	
-	init();
-	
 	function init() {
 		// TODO: implement a better solution than guessing big at 16 tiers
 		generateTiers(16);
@@ -95,5 +93,7 @@ function SinglesBoardController($scope, $rootScope, socket, modalService, timeSe
 	socket.on('challenge:forfeited', function() {
 		populatePlayers();
 	});
+
+    init();
 
 }

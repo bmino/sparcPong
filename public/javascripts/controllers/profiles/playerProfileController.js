@@ -16,9 +16,7 @@ function PlayerProfileController($scope, $rootScope, $routeParams, socket, modal
 	$scope.loadingProfile = true;
 	$scope.loadingChallenges = true;
 	$scope.loadingRecord = true;
-	
-	init();
-	
+
 	function init() {
 		profileId = $routeParams.id;
 		if (!profileId) {
@@ -235,5 +233,7 @@ function PlayerProfileController($scope, $rootScope, $routeParams, socket, modal
 		fetchChallenges();
 		getRecord();
 	});
-	
+
+    init();
+
 }

@@ -7,8 +7,7 @@ ChangeUsernameController.$inject = ['$scope', '$rootScope', 'modalService', 'pla
 function ChangeUsernameController($scope, $rootScope, modalService, playerService) {
 	
 	$scope.newUsername = '';
-	init();
-	
+
 	function init() {
 		var playerId = $rootScope.myClient.playerId;
 		if (playerId) {
@@ -43,5 +42,7 @@ function ChangeUsernameController($scope, $rootScope, modalService, playerServic
 				modalService.showAlertModal({}, modalOptions);
 			});
 	};
+
+    init();
 
 }

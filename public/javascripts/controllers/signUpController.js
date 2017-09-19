@@ -22,8 +22,6 @@ function SignUpController($scope, modalService, playerService, teamService) {
 		partner: null
 	};
 	
-	init();
-	
 	function init() {
 		$scope.loadingPlayers = true;
 		loadPlayers();
@@ -96,5 +94,7 @@ function SignUpController($scope, modalService, playerService, teamService) {
 			}
 		);
 	};
+
+    init();
 
 }

@@ -7,8 +7,6 @@ DoublesBoardController.$inject = ['$scope', '$rootScope', 'socket', 'modalServic
 
 function DoublesBoardController($scope, $rootScope, socket, modalService, timeService, teamService, teamChallengeService) {
 
-    init();
-
     function init() {
         // TODO: implement a better solution than guessing big at 16 tiers
         generateTiers(16);
@@ -121,4 +119,7 @@ function DoublesBoardController($scope, $rootScope, socket, modalService, timeSe
     socket.on('challenge:team:forfeited', function () {
         populateTeams();
     });
+
+    init();
+
 }

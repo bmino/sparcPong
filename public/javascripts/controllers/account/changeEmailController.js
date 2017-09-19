@@ -8,9 +8,7 @@ ChangeEmailController.$inject = ['$scope', '$rootScope', 'modalService', 'player
 function ChangeEmailController($scope, $rootScope, modalService, playerService) {
 	
 	$scope.email = '';
-	
-	init();
-	
+
 	function init() {
 		$rootScope.pageTitle = 'Change Email';
 		getEmail();
@@ -70,5 +68,7 @@ function ChangeEmailController($scope, $rootScope, modalService, playerService) 
 			}
 		);
 	};
+
+    init();
 
 }
