@@ -1,5 +1,10 @@
-angular.module('controllers')
-.controller('playerProfileController', ['$scope', '$rootScope', '$routeParams', 'socket', 'modalService', 'playerService', 'playerChallengeService', function($scope, $rootScope, $routeParams, socket, modalService, playerService, playerChallengeService) {
+angular
+	.module('controllers')
+	.controller('playerProfileController', PlayerProfileController);
+
+PlayerProfileController.$inject = ['$scope', '$rootScope', '$routeParams', 'socket', 'modalService', 'playerService', 'playerChallengeService'];
+
+function PlayerProfileController($scope, $rootScope, $routeParams, socket, modalService, playerService, playerChallengeService) {
 	
 	var profileId;
 	$scope.challenges = {
@@ -8,7 +13,7 @@ angular.module('controllers')
 		resolved: []
 	};
 	
-	$scope.loadingProfile = true
+	$scope.loadingProfile = true;
 	$scope.loadingChallenges = true;
 	$scope.loadingRecord = true;
 	
@@ -231,4 +236,4 @@ angular.module('controllers')
 		getRecord();
 	});
 	
-}]);
+}

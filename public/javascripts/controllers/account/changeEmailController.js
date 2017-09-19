@@ -1,5 +1,11 @@
-angular.module('controllers')
-.controller('changeEmailController', ['$scope', '$rootScope', 'modalService', 'playerService', function($scope, $rootScope, modalService, playerService) {
+angular
+	.module('controllers')
+	.controller('changeEmailController', ChangeEmailController);
+
+ChangeEmailController.$inject = ['$scope', '$rootScope', 'modalService', 'playerService'];
+
+
+function ChangeEmailController($scope, $rootScope, modalService, playerService) {
 	
 	$scope.email = '';
 	
@@ -65,4 +71,4 @@ angular.module('controllers')
 		);
 	};
 
-}]);
+}

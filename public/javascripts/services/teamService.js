@@ -1,5 +1,10 @@
-angular.module('services')
-.service('teamService', function($http, $q) {
+angular
+	.module('services')
+	.service('teamService', teamService);
+
+teamService.$inject = ['$http'];
+
+function teamService($http) {
 	
 	// Default Headers
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
@@ -76,4 +81,4 @@ angular.module('services')
 		throw dummy.getElementsByTagName("h1")[0].innerHTML;
 	}
 	
-});
+}

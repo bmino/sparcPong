@@ -1,5 +1,11 @@
-angular.module('services')
-.factory('socket', ['$rootScope', function($rootScope) {
+angular
+	.module('services')
+	.factory('socket', socket);
+
+socket.$inject = ['$rootScope'];
+
+function socket($rootScope) {
+
 	var socket = io().connect();
 	return {
 		on: function (eventName, callback) {
@@ -21,4 +27,5 @@ angular.module('services')
 			})
 		}
 	};
-}]);
+
+}

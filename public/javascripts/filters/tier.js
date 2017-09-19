@@ -1,5 +1,11 @@
-angular.module('filters')
-.filter('tier', function() {
+angular
+	.module('filters')
+	.filter('tier', tier);
+
+tier.$inject = [];
+
+function tier() {
+
 	return function (players, tier) {
 		var tierPlayers = [];
 		
@@ -34,4 +40,5 @@ angular.module('filters')
         }
         return ranks;
 	}
-});
+
+}

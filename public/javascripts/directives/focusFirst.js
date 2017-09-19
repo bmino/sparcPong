@@ -1,5 +1,11 @@
-angular.module('directives')
-.directive('focusFirst', ['$timeout', function($timeout) {
+angular
+	.module('directives')
+	.directive('focusFirst', focusFirst);
+
+focusFirst.$inject = ['$timeout'];
+
+function focusFirst($timeout) {
+
 	return {
 		restrict: 'A',
 		link : function($scope, $element) {
@@ -8,4 +14,5 @@ angular.module('directives')
 			});
 		}
 	}
-}]);
+
+}

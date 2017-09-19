@@ -1,5 +1,10 @@
-angular.module('services')
-.service('timeService', ['$filter', '$q', function($filter, $q) {
+angular
+	.module('services')
+	.service('timeService', timeService);
+
+timeService.$inject = ['$filter', '$q'];
+
+function timeService($filter, $q) {
 	
 	this.getAllowedChallengeDays = function() {
 		var deferral = $q.defer();
@@ -83,4 +88,5 @@ angular.module('services')
 	this.isBusinessDay = function (date) {
 		return date.getDay() != 0 && date.getDay() != 6;
 	};
-}]);
+
+}

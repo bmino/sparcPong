@@ -1,5 +1,10 @@
-angular.module('controllers')
-.controller('teamProfileController', ['$scope', '$rootScope', '$routeParams', '$location', 'socket', 'modalService', 'teamService', 'teamChallengeService', function($scope, $rootScope, $routeParams, $location, socket, modalService, teamService, teamChallengeService) {
+angular
+	.module('controllers')
+	.controller('teamProfileController', TeamProfileController);
+
+TeamProfileController.$inject = ['$scope', '$rootScope', '$routeParams', '$location', 'socket', 'modalService', 'teamService', 'teamChallengeService'];
+
+function TeamProfileController($scope, $rootScope, $routeParams, $location, socket, modalService, teamService, teamChallengeService) {
 	
 	var profileId;
 	$scope.challenges = {
@@ -241,4 +246,4 @@ angular.module('controllers')
 		getRecord();
 	});
 	
-}]);
+}

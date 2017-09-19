@@ -1,5 +1,11 @@
-angular.module('directives')
-.directive('timeGap', ['$interval', 'timeService', function($interval, timeService) {	
+angular
+	.module('directives')
+	.directive('timeGap', timeGap);
+
+timeGap.$inject = ['timeService'];
+
+function timeGap(timeService) {
+
 	return {
 		restrict: 'E',
 		scope: {
@@ -33,4 +39,5 @@ angular.module('directives')
 			if (oDate) updateLater();
 		}
 	}
-}]);
+
+}

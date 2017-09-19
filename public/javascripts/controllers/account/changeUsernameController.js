@@ -1,5 +1,10 @@
-angular.module('controllers')
-.controller('changeUsernameController', ['$scope', '$rootScope', 'modalService', 'playerService', function($scope, $rootScope, modalService, playerService) {
+angular
+	.module('controllers')
+	.controller('changeUsernameController', ChangeUsernameController);
+
+ChangeUsernameController.$inject = ['$scope', '$rootScope', 'modalService', 'playerService'];
+
+function ChangeUsernameController($scope, $rootScope, modalService, playerService) {
 	
 	$scope.newUsername = '';
 	init();
@@ -39,4 +44,4 @@ angular.module('controllers')
 			});
 	};
 
-}]);
+}

@@ -1,5 +1,12 @@
-angular.module('directives')
-.directive('untilForfeit', ['$interval', 'timeService', function($interval, timeService) {	
+angular
+	.module('directives')
+	.directive('untilForfeit', untilForfeit);
+
+untilForfeit.$inject = ['timeService'];
+
+
+function untilForfeit(timeService) {
+
 	return {
 		restrict: 'E',
 		scope: {
@@ -7,7 +14,7 @@ angular.module('directives')
 			doubles: '@?'
 		},
 		link: function(scope, elem, attrs) {
-			
+
 			var oDate, expireDate, getDaysMethod;
 
 			if (angular.isDefined(scope.doubles))
@@ -20,7 +27,7 @@ angular.module('directives')
 				expireDate = timeService.addBusinessDays(oDate, days);
 				updateLater();
 			});
-			
+
 			function updateLater() {
 				updateTime();
 				setTimeout(function() {
@@ -35,4 +42,5 @@ angular.module('directives')
 
 		}
 	}
-}]);
+
+}

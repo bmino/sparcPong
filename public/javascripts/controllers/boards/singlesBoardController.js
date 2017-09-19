@@ -1,5 +1,10 @@
-angular.module('controllers')
-.controller('singlesBoardController', ['$scope', '$rootScope', 'socket', 'modalService', 'timeService', 'playerService', 'playerChallengeService', function($scope, $rootScope, socket, modalService, timeService, playerService, playerChallengeService) {
+angular
+	.module('controllers')
+	.controller('singlesBoardController', SinglesBoardController);
+
+SinglesBoardController.$inject = ['$scope', '$rootScope', 'socket', 'modalService', 'timeService', 'playerService', 'playerChallengeService'];
+
+function SinglesBoardController($scope, $rootScope, socket, modalService, timeService, playerService, playerChallengeService) {
 	
 	init();
 	
@@ -90,4 +95,5 @@ angular.module('controllers')
 	socket.on('challenge:forfeited', function() {
 		populatePlayers();
 	});
-}]);
+
+}

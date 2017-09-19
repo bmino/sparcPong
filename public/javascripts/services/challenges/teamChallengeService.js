@@ -1,5 +1,10 @@
-angular.module('services')
-.service('teamChallengeService', function($http, $q) {
+angular
+	.module('services')
+	.service('teamChallengeService', teamChallengeService);
+
+teamChallengeService.$inject = ['$http'];
+
+function teamChallengeService($http) {
 	
 	// Default Headers
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
@@ -73,4 +78,4 @@ angular.module('services')
 		throw dummy.getElementsByTagName("h1")[0].innerHTML || 'Uh oh, something unexpected happened.';
 	}
 	
-});
+}

@@ -1,5 +1,10 @@
-angular.module('services')
-.service('modalService', ['$uibModal', function ($uibModal) {
+angular
+	.module('services')
+	.service('modalService', modalService);
+
+modalService.$inject = ['$uibModal'];
+
+function modalService($uibModal) {
 
 	var modalDefaults = {
 		backdrop: true,
@@ -80,4 +85,4 @@ angular.module('services')
 		return $uibModal.open(tempModalDefaults).result;
 	};
 
-}]);
+}

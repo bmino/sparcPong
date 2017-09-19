@@ -1,5 +1,10 @@
-angular.module('controllers')
-.controller('headerController', ['$scope', '$rootScope', '$location', '$cookies', 'socket', 'modalService', 'playerService', function($scope, $rootScope, $location, $cookies, socket, modalService, playerService) {
+angular
+	.module('controllers')
+	.controller('headerController', HeaderController);
+
+HeaderController.$inject = ['$scope', '$rootScope', '$location', '$cookies', 'socket', 'modalService', 'playerService'];
+
+function HeaderController($scope, $rootScope, $location, $cookies, socket, modalService, playerService) {
 	
 	var COOKIE_USER_KEY = 'sparcPongUser';
 	
@@ -105,4 +110,4 @@ angular.module('controllers')
 		relogin();
 	});
 	
-}]);
+}

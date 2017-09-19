@@ -1,5 +1,10 @@
-angular.module('controllers')
-.controller('signUpController', ['$scope', 'socket', 'modalService', 'playerService', 'teamService', function($scope, socket, modalService, playerService, teamService) {
+angular
+	.module('controllers')
+	.controller('signUpController', SignUpController);
+
+SignUpController.$inject = ['$scope', 'modalService', 'playerService', 'teamService'];
+
+function SignUpController($scope, modalService, playerService, teamService) {
 	
 	$scope.players = [];
 	
@@ -92,4 +97,4 @@ angular.module('controllers')
 		);
 	};
 
-}]);
+}

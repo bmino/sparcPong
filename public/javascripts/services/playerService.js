@@ -1,5 +1,10 @@
-angular.module('services')
-.service('playerService', ['$http', function($http) {
+angular
+	.module('services')
+	.service('playerService', playerService);
+
+playerService.$inject = ['$http'];
+
+function playerService($http) {
 	
 	// Default Headers
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
@@ -113,4 +118,4 @@ angular.module('services')
 		throw dummy.getElementsByTagName("h1")[0].innerHTML;
 	}
 	
-}]);
+}

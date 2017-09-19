@@ -1,5 +1,11 @@
-angular.module('directives')
-.directive('loggedIn', ['$rootScope', function($rootScope) {	
+angular
+	.module('directives')
+	.directive('loggedIn', loggedIn);
+
+loggedIn.$inject = ['$rootScope'];
+
+function loggedIn($rootScope) {
+
 	return {
 		link: function(scope, elem, attrs) {
 			$rootScope.$watch('myClient.playerId', function(playerId) {
@@ -36,4 +42,5 @@ angular.module('directives')
 		}
 		return false;
 	}
-}]);
+
+}
