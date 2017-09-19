@@ -1,15 +1,11 @@
-angular.module('sparcPongApp', [
-	'ngRoute',
-	'ngCookies',
-	'ui.bootstrap',
-	'filters',
-	'services',
-	'directives',
-	'controllers'
-])
+angular
+	.module('sparcPongApp')
+	.config(routes);
 
+routes.$inject = ['$routeProvider'];
 
-.config(function ($routeProvider) {
+function routes($routeProvider) {
+
 	$routeProvider
 		/* Board Routes */
 		.when('/board/singles', {
@@ -70,4 +66,4 @@ angular.module('sparcPongApp', [
 			redirectTo: '/board/singles'
 		});
 
-});
+}
