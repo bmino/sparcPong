@@ -84,7 +84,7 @@ function SinglesBoardController($scope, $rootScope, socket, modalService, timeSe
 	socket.on('player:new', function(username) {
 		populatePlayers();
 	});
-	socket.on('player:change:username', function(username) {
+	socket.on('player:change:username', function() {
 		populatePlayers();
 	});
 	socket.on('challenge:resolved', function() {

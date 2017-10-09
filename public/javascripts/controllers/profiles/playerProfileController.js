@@ -216,7 +216,7 @@ function PlayerProfileController($scope, $rootScope, $routeParams, socket, modal
 		return !challenge.challengerScore && !challenge.challengeeScore;
 	};
 	
-	socket.on('player:change:username', function(username) {
+	socket.on('player:change:username', function() {
 		fetchChallenges();
 	});
 	socket.on('challenge:issued', function() {
