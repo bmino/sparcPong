@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
 var Challenge = mongoose.model('Challenge');
 var Alert = mongoose.model('Alert');
+var NameService = require('../services/NameService');
 
 /* 
  * POST new player
@@ -35,10 +36,16 @@ router.post('/', function(req, res, next) {
     player.email = playerEmail;
 
 
-	Promise.all([player.validRealName(), player.validUsername(), player.validEmail(), Player.lowestRank()])
+	Promise.all([
+		NameService.verifyRealName(player),
+		NameService.verifyUsername(player.username),
+		Player.usernameExists(player.username),
+		player.validEmail(),
+		Player.lowestRank()
+	])
 		.then(function(values) {
 			// Set initial rank of player
-			player.rank = values[3] + 1;
+			player.rank = values[4] + 1;
 			return player.save();
 		})
 		.then(Alert.attachToPlayer)
@@ -59,16 +66,17 @@ router.post('/change/username', function(req, res, next) {
 	var playerId = req.body.playerId;
 	var newUsername = req.body.newUsername ? req.body.newUsername.trim() : null;
 	if (!playerId) return next(new Error('You must provide a valid player id.'));
-	
-	Player.findById(playerId).exec()
+
+	NameService.verifyUsername(newUsername)
+		.then(Player.usernameExists)
+		.then(function() {
+            return Player.findById(playerId).exec()
+		})
 		.then(function(player) {
             if (!player) return next(new Error('Could not find your account.'));
             player.username = newUsername;
-            return player.validUsername();
-        })
-		.then(function(player) {
             return player.save();
-		})
+        })
 		.then(function() {
             req.app.io.sockets.emit('player:change:username');
             res.json({message: 'Successfully changed your username to '+ newUsername});
