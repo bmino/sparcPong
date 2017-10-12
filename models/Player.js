@@ -17,27 +17,6 @@ playerSchema.methods.attachAlert = function(alert) {
 	return this.save();
 };
 
-playerSchema.methods.validEmail = function() {
-    var self = this;
-	console.log('Verifying email of '+ self.email);
-
-    return new Promise(function(resolve, reject) {
-        if (self.email.length === 0) return reject(new Error('Email is too short.'));
-
-        // Needs one @ symbol
-        if ((self.email.match(/@/g) || []).length !== 1) return reject(new Error('Email must contain one @ symbol.'));
-
-        // Needs a period
-        if ((self.email.match(/\./g) || []).length < 1) return reject(new Error('Email must contain at least one period.'));
-
-        return Player.emailExists(self.email)
-            .then(function() {
-            	return resolve(self);
-			})
-            .catch(reject);
-    });
-};
-
 playerSchema.statics.usernameExists = function(username) {
     console.log('Checking if player username, ' + username + ', exists.');
     return new Promise(function (resolve, reject) {

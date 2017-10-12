@@ -5,6 +5,7 @@ var Player = mongoose.model('Player');
 var Challenge = mongoose.model('Challenge');
 var Alert = mongoose.model('Alert');
 var NameService = require('../services/NameService');
+var EmailService = require('../services/EmailService');
 
 /* 
  * POST new player
@@ -40,12 +41,13 @@ router.post('/', function(req, res, next) {
 		NameService.verifyRealName(player),
 		NameService.verifyUsername(player.username),
 		Player.usernameExists(player.username),
-		player.validEmail(),
+        EmailService.verifyEmail(player.email),
+		Player.emailExists(player.email),
 		Player.lowestRank()
 	])
 		.then(function(values) {
 			// Set initial rank of player
-			player.rank = values[4] + 1;
+			player.rank = values[5] + 1;
 			return player.save();
 		})
 		.then(Alert.attachToPlayer)
@@ -97,15 +99,16 @@ router.post('/change/email', function(req, res, next) {
 	if (!playerId) return next(new Error('You must provide a valid player id.'));
 	if (!newEmail || newEmail.length === 0) return next(new Error('You must provide an email address.'));
 	if (newEmail.length > 50) return next(new Error('Your email length cannot exceed 50 characters.'));
-	
-	Player.findById(playerId).exec()
-		.then(function(player) {
-            if (!player) return next(new Error('Could not find your current account.'));
-            player.email = newEmail;
-            return player.validEmail();
+
+    EmailService.verifyEmail(newEmail)
+		.then(Player.emailExists(newEmail))
+		.then(function() {
+            return Player.findById(playerId).exec();
 		})
 		.then(function(player) {
-			console.log('Changing player email.');
+            if (!player) return next(new Error('Could not find your current account.'));
+            console.log('Changing player email.');
+            player.email = newEmail;
 			return player.save();
 		})
 		.then(function() {
