@@ -2,62 +2,55 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
-var Alert = mongoose.model('Alert');
 
 /* Get player alerts */
 router.get('/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;
-	if (!playerId)
-		return next(new Error('You must provide a valid player id.'));
-	Player.findById(playerId).populate('alerts').exec(function(err, player) {
-		if (err) return next(err);
-		if (!player || !player.alerts) return next(new Error("Could not find the player's alert settings."));
-		var needAlerts = {};
-		
-		/* Add New Alerts Here */
-		needAlerts.challenged = player.alerts.challenged;
-		needAlerts.revoked = player.alerts.revoked;
-		needAlerts.resolved = player.alerts.resolved;
-		needAlerts.forfeited = player.alerts.forfeited;
-		
-		needAlerts.team = {};
-		needAlerts.team.challenged = player.alerts.team.challenged;
-		needAlerts.team.revoked = player.alerts.team.revoked;
-		needAlerts.team.resolved = player.alerts.team.resolved;
-		needAlerts.team.forfeited = player.alerts.team.forfeited;
-		
-		res.json({message: needAlerts});
-	});
+	if (!playerId) return next(new Error('You must provide a valid player id.'));
+	Player.findById(playerId).populate('alerts').exec()
+		.then(function(player) {
+			if (!player || !player.alerts) return next(new Error("Could not find the player's alert settings."));
+			var alerts = {};
+
+            alerts.challenged = player.alerts.challenged;
+            alerts.revoked = player.alerts.revoked;
+            alerts.resolved = player.alerts.resolved;
+            alerts.forfeited = player.alerts.forfeited;
+
+            alerts.team = player.alerts.team;
+
+			res.json({message: alerts});
+        })
+		.catch(next);
 });
 
-/* POST player alerts */
+/* Update player alerts */
 router.post('/', function(req, res, next) {
 	var playerId = req.body.playerId;
 	var newAlerts = req.body.alerts;
-	if (!playerId)
-		return next(new Error('You must provide a valid player id.'));
-	if (!newAlerts)
-		return next(new Error('Uh oh, the alert preferences got lost along the way.'));
+	if (!playerId) return next(new Error('You must provide a valid player id.'));
+	if (!newAlerts) return next(new Error('Uh oh, the alert preferences got lost along the way.'));
 	
-	Player.findById(playerId).populate('alerts').exec(function(err, player) {
-		if (err) return next(err);
-		if (!player || !player.alerts) return (new Error("Could not find the player."));
-		
-		player.alerts.challenged = newAlerts.challenged == true;
-		player.alerts.revoked = newAlerts.revoked == true;
-		player.alerts.resolved = newAlerts.resolved == true;
-		player.alerts.forfeited = newAlerts.forfeited == true;
-		
-		player.alerts.team.challenged = newAlerts.team.challenged == true;
-		player.alerts.team.revoked = newAlerts.team.revoked == true;
-		player.alerts.team.resolved = newAlerts.team.resolved == true;
-		player.alerts.team.forfeited = newAlerts.team.forfeited == true;
-		
-		player.alerts.save(function(err) {
-			if (err) return next(err);
+	Player.findById(playerId).populate('alerts').exec()
+		.then(function(player) {
+            if (!player || !player.alerts) return next(new Error("Could not find the player's alert settings."));
+
+            player.alerts.challenged = newAlerts.challenged ;
+            player.alerts.revoked = newAlerts.revoked ;
+            player.alerts.resolved = newAlerts.resolved ;
+            player.alerts.forfeited = newAlerts.forfeited ;
+
+            player.alerts.team.challenged = newAlerts.team.challenged ;
+            player.alerts.team.revoked = newAlerts.team.revoked ;
+            player.alerts.team.resolved = newAlerts.team.resolved ;
+            player.alerts.team.forfeited = newAlerts.team.forfeited ;
+
+            return player.alerts.save();
+        })
+		.then(function() {
 			res.json({message: 'Alerts updated successfully!'});
-		});
-	});
+		})
+		.catch(next);
 });
 
 
