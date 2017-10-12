@@ -9,6 +9,38 @@ var teamSchema = new Schema({
 	lastGame: { type: Date, default: null }
 });
 
+teamSchema.statics.getTeamsByPlayerId = function(playerId) {
+	return Team.find({$or: [{leader: playerId}, {partner: playerId}]}).exec();
+};
+
+teamSchema.statics.usernameExists = function(username) {
+    console.log('Checking if team username, ' + username + ', exists.');
+    return new Promise(function (resolve, reject) {
+        Team.count({username: username}).exec()
+            .then(function(count) {
+                if (count !== 0) return reject(new Error('Team username already exists.'));
+                return resolve(username);
+            })
+            .catch(reject);
+    });
+};
+
+teamSchema.statics.lowestRank = function() {
+    console.log('Finding lowest team rank.');
+    return new Promise(function(resolve, reject) {
+        Team.find().sort({'rank': -1}).limit(1).exec()
+            .then(function (lowestRankTeam) {
+                var lowestRank = 0;
+                if (lowestRankTeam && lowestRankTeam.length > 0) {
+                    lowestRank = lowestRankTeam[0].rank;
+                }
+                console.log('Found lowest rank of ' + lowestRank);
+                return resolve(lowestRank);
+            })
+            .catch(reject);
+    });
+};
+
 var Team = mongoose.model('Team', teamSchema);
 
 module.exports = Team;
