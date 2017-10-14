@@ -178,7 +178,7 @@ router.get('/record/:playerId', function(req, res, next) {
 			var wins = 0;
 			var losses = 0;
             challenges.forEach(function(challenge) {
-                if (challenge.winner === playerId) wins++;
+                if (challenge.winner.toString() === playerId) wins++;
                 else losses++;
             });
             res.json({message: {wins: wins, losses: losses}});
