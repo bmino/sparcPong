@@ -1,10 +1,10 @@
 angular
 	.module('services')
-	.service('modalService', modalService);
+	.service('modalService', ModalService);
 
-modalService.$inject = ['$uibModal'];
+ModalService.$inject = ['$uibModal'];
 
-function modalService($uibModal) {
+function ModalService($uibModal) {
 
 	var modalDefaults = {
 		backdrop: true,

@@ -1,10 +1,10 @@
 angular
 	.module('services')
-	.service('playerService', playerService);
+	.service('playerService', PlayerService);
 
-playerService.$inject = ['$http'];
+PlayerService.$inject = ['$http'];
 
-function playerService($http) {
+function PlayerService($http) {
 	
 	// Default Headers
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };

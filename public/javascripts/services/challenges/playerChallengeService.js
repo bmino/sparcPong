@@ -1,10 +1,10 @@
 angular
 	.module('services')
-	.service('playerChallengeService', playerChallengeService);
+	.service('playerChallengeService', PlayerChallengeService);
 
-playerChallengeService.$inject = ['$http'];
+PlayerChallengeService.$inject = ['$http'];
 
-function playerChallengeService($http) {
+function PlayerChallengeService($http) {
 	
 	// Default Headers
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };

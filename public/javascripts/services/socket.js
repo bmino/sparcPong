@@ -1,10 +1,10 @@
 angular
 	.module('services')
-	.factory('socket', socket);
+	.factory('socket', Socket);
 
-socket.$inject = ['$rootScope'];
+Socket.$inject = ['$rootScope'];
 
-function socket($rootScope) {
+function Socket($rootScope) {
 
 	var socket = io().connect();
 	return {

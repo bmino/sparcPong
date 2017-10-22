@@ -1,10 +1,10 @@
 angular
 	.module('services')
-	.service('timeService', timeService);
+	.service('timeService', TimeService);
 
-timeService.$inject = ['$filter', '$q'];
+TimeService.$inject = ['$filter', '$q'];
 
-function timeService($filter, $q) {
+function TimeService($filter, $q) {
 	
 	this.getAllowedChallengeDays = function() {
 		var deferral = $q.defer();
