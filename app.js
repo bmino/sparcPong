@@ -21,6 +21,10 @@ require('./models/TeamChallenge');
 require('./models/Alert');
 
 var db_uri = process.env.MONGODB_URI;
+if (!db_uri) {
+	console.log('Defaulting to local mongo db instance.');
+	db_uri = 'mongodb://127.0.0.1/sparcPongDb';
+}
 mongoose.connect(db_uri);
 
 // view engine setup
