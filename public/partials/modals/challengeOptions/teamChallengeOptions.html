@@ -2,17 +2,17 @@
 	<h3>Challenge Options</h3>
 </div>
 <div class="modal-body">
-	<button class="btn" logged-in="[modalOptions.challenge.challenger.leader._id,
-									modalOptions.challenge.challenger.partner._id,
-									modalOptions.challenge.challengee.leader._id,
-									modalOptions.challenge.challengee.partner._id]" ng-click="modalOptions.ok('resolve')">Resolve</button>
-	<button class="btn" logged-in="[modalOptions.challenge.challenger.leader._id,
-									modalOptions.challenge.challenger.partner._id]" ng-click="modalOptions.ok('revoke')">Revoke</button>
-	<button class="btn" logged-in="[modalOptions.challenge.challengee.leader._id,
-									modalOptions.challenge.challengee.partner._id]" ng-click="modalOptions.ok('forfeit')">Forfeit</button>
+	<button class="btn btn-default" logged-in="[modalOptions.challenge.challenger.leader._id,
+												modalOptions.challenge.challenger.partner._id,
+												modalOptions.challenge.challengee.leader._id,
+												modalOptions.challenge.challengee.partner._id]" ng-click="modalOptions.ok('resolve')">Resolve</button>
+	<button class="btn btn-danger" logged-in="[modalOptions.challenge.challenger.leader._id,
+												modalOptions.challenge.challenger.partner._id]" ng-click="modalOptions.ok('revoke')">Revoke</button>
+	<button class="btn btn-danger" logged-in="[modalOptions.challenge.challengee.leader._id,
+												modalOptions.challenge.challengee.partner._id]" ng-click="modalOptions.ok('forfeit')">Forfeit</button>
 </div>
 <div class="modal-footer">
-	<button type="button" class="btn" data-ng-click="modalOptions.close()">
+	<button type="button" class="btn btn-default" data-ng-click="modalOptions.close()">
 		Cancel
 	</button>
 </div>
