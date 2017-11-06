@@ -62,8 +62,8 @@ function updateLastGames(challenge) {
         console.log('Updating last games for the challenge with id of ['+ challenge._id +']');
 
         var gameTime = challenge.updatedAt;
-        var challengerUpdate = Player.findByIdAndUpdate(challenge.challenger._id, {$set: {lastGame: gameTime}}).exec();
-        var challengeeUpdate = Player.findByIdAndUpdate(challenge.challengee._id, {$set: {lastGame: gameTime}}).exec();
+        var challengerUpdate = Player.findByIdAndUpdate(challenge.challenger, {$set: {lastGame: gameTime}});
+        var challengeeUpdate = Player.findByIdAndUpdate(challenge.challengee, {$set: {lastGame: gameTime}});
 
         return Promise.all([challengerUpdate, challengeeUpdate])
             .then(function() {return resolve(challenge);})

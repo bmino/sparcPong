@@ -9,6 +9,7 @@ var ChallengeService = {
     CHALLENGE_ANYTIME: process.env.CHALLENGE_ANYTIME || false,
     CHALLENGE_BACK_DELAY_HOURS: process.env.CHALLENGE_BACK_DELAY_HOURS || 12,
     ALLOWED_CHALLENGE_DAYS: process.env.ALLOWED_CHALLENGE_DAYS || 4,
+    ALLOWED_CHALLENGE_DAYS_TEAM : process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5,
     ALLOWED_OUTGOING: process.env.ALLOWED_OUTGOING || 1,
     ALLOWED_INCOMING: process.env.ALLOWED_INCOMING || 1,
 
@@ -17,6 +18,10 @@ var ChallengeService = {
     verifyRank : verifyRank,
     verifyTier : verifyTier,
     verifyForfeit : verifyForfeit,
+
+    verifyInvolvedByPlayerId : verifyInvolvedByPlayerId,
+    verifyChallengerByPlayerId : verifyChallengerByPlayerId,
+    verifyChallengeeByPlayerId : verifyChallengeeByPlayerId,
 
     swapRanks : swapRanks,
     setRank : setRank,
@@ -78,6 +83,28 @@ function verifyForfeit(challenge) {
         var expires = Util.addBusinessDays(dateIssued, ChallengeService.ALLOWED_CHALLENGE_DAYS);
         if (expires < new Date()) return reject(new Error('This challenge has expired. It must be forfeited.'));
         return resolve(challenge);
+    });
+}
+
+function verifyInvolvedByPlayerId(entity, playerId, message) {
+    return new Promise(function(resolve, reject) {
+        if (entity.challenger.toString() === playerId ||
+            entity.challengee.toString() === playerId) return resolve(entity);
+        return reject(new Error(message || 'Expected the player to be the challenger or challengee.'));
+    });
+}
+
+function verifyChallengerByPlayerId(entity, playerId, message) {
+    return new Promise(function(resolve, reject) {
+        if (entity.challenger.toString() === playerId) return resolve(entity);
+        return reject(new Error(message || 'Expected the player to be the challenger.'));
+    });
+}
+
+function verifyChallengeeByPlayerId(entity, playerId, message) {
+    return new Promise(function(resolve, reject) {
+        if (entity.challengee.toString() === playerId) return resolve(entity);
+        return reject(new Error(message || 'Expected the player to be the challengee.'));
     });
 }
 

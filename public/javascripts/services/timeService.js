@@ -2,27 +2,29 @@ angular
 	.module('services')
 	.service('timeService', TimeService);
 
-TimeService.$inject = ['$filter', '$q'];
+TimeService.$inject = ['$http', '$filter'];
 
-function TimeService($filter, $q) {
+function TimeService($http, $filter) {
 	
-	this.getAllowedChallengeDays = function() {
-		var deferral = $q.defer();
-		$.get('/api/envBridge/ALLOWED_CHALLENGE_DAYS').then(function(data) {
-			deferral.resolve(data.days);
-		});
-		return deferral.promise;
+	var service = this;
+	
+	service.getAllowedChallengeDays = function() {
+        var request = $http({
+            method: 'get',
+            url: '/api/envBridge/ALLOWED_CHALLENGE_DAYS'
+        });
+        return request.then( handleSuccess, handleError );
 	};
 
-    this.getAllowedChallengeDaysTeam = function() {
-        var deferral = $q.defer();
-        $.get('/api/envBridge/ALLOWED_CHALLENGE_DAYS_TEAM').then(function(data) {
-            deferral.resolve(data.days);
+    service.getAllowedChallengeDaysTeam = function() {
+        var request = $http({
+            method: 'get',
+            url: '/api/envBridge/ALLOWED_CHALLENGE_DAYS_TEAM'
         });
-        return deferral.promise;
+        return request.then( handleSuccess, handleError );
     };
 	
-	this.parseDate = function (date) {
+	service.parseDate = function (date) {
 		// Is the date a mongoose date?
 		if (date.includes('T'))
 			return new Date($filter('mongoDate')(date));
@@ -30,15 +32,14 @@ function TimeService($filter, $q) {
 			return new Date($filter('date')(date));
 	};
 	
-	this.hoursBetween = function(date1, date2) {
+	service.hoursBetween = function(date1, date2) {
 		var diff =  Math.abs(date2 - date1);
 		var seconds = Math.floor(diff/1000);
 		var minutes = Math.floor(seconds/60);
-		var hours = Math.floor(minutes/60);
-		return hours;
+		return Math.floor(minutes/60);
 	};
 	
-	this.timeBetween = function (date1, date2) {
+	service.timeBetween = function (date1, date2) {
 		var neg = (date2 - date1) < 0;
 		var diff =  Math.abs(date2 - date1);
 		var seconds = Math.floor(diff/1000);
@@ -46,16 +47,15 @@ function TimeService($filter, $q) {
 		seconds = seconds % 60;
 		var hours = Math.floor(minutes/60);
 		minutes = minutes % 60;
-		return this.prettyTime(hours, minutes, seconds, neg);
+		return service.prettyTime(hours, minutes, seconds, neg);
 	};
 	
-	this.prettyTime = function (hour, min, sec, neg) {
-		if (neg == undefined) neg = false;
+	service.prettyTime = function (hour, min, sec, neg) {
 		neg = neg ? '-' : '';
-		return neg + this.leftPad(hour, 2) + ':' + this.leftPad(min, 2) + ':' + this.leftPad(sec, 2);
+		return neg + service.leftPad(hour, 2) + ':' + service.leftPad(min, 2) + ':' + service.leftPad(sec, 2);
 	};
 	
-	this.leftPad = function (number, targetLength) {
+	service.leftPad = function (number, targetLength) {
 		var output = number + '';
 		while (output.length < targetLength) {
 			output = '0' + output;
@@ -63,30 +63,34 @@ function TimeService($filter, $q) {
 		return output;
 	};
 	
-	this.addBusinessDays = function (date, days) {
-		// Bad Inputs
-		if (!days || days == 0)
-			return date;
+	service.addBusinessDays = function (date, days) {
+		if (!days) return date;
 		
-		var d = new Date(date.getTime());
+		var dateClone = new Date(date.getTime());
 		var added = 0;
 		while (added < days) {
 			// Looks at tomorrow's day
-			d.setDate(d.getDate()+1);
-			if (this.isBusinessDay(d)) {
+            dateClone.setDate(dateClone.getDate()+1);
+			if (service.isBusinessDay(dateClone)) {
 				added++;
 			}
 		}
-		return d;
+		return dateClone;
 	};
 
-	/*
-	 * Determines if the given date is a business day.
-	 *
-	 * @param: date
-	 */
-	this.isBusinessDay = function (date) {
-		return date.getDay() != 0 && date.getDay() != 6;
+	service.isBusinessDay = function (date) {
+		return date.getDay() !== 0 && date.getDay() !== 6;
 	};
+
+
+	function handleSuccess(response) {
+		return response.data.days;
+	}
+
+	function handleError(response) {
+        var dummy = document.createElement('body');
+        dummy.innerHTML = response.data;
+        throw dummy.getElementsByTagName("h1")[0].innerHTML;
+	}
 
 }

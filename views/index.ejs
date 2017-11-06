@@ -17,10 +17,10 @@
     <link rel='stylesheet' href='/stylesheets/partials/changeAlerts.css' />
 
 </head>
-<body ng-app="sparcPongApp">
+<body ng-app="sparcPongApp" ng-cloak>
     <div class="wrapper">
         <nav class="navbar navbar-default navbar-fixed-top" ng-controller="headerController">
-            <div class="container-fluid">
+            <div class="container-fluid" logged-in>
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar" aria-expanded="false">
                         <span class="sr-only">Toggle navigation</span>
@@ -39,15 +39,16 @@
                         <li role="presentation"><a href="#!/board/doubles">Doubles</a></li>
 
                         <!-- Account Links -->
-                        <li role="presentation" class="dropdown" logged-in>
+                        <li role="presentation" class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" role="button">Account <span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li role="presentation" class="dropdown-header">Singles</li>
-                                <li role="presentation"><a ng-href="#!/profile/player/{{myClient.playerId}}">Profile</a></li>
+                                <li role="presentation"><a ng-href="#!/profile/player/">Profile</a></li>
                                 <li role="presentation"><a ng-href="#!/account/changeUsername">Change Username</a></li>
+                                <li role="presentation"><a ng-href="#!/account/changePassword">Change Password</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li role="presentation" class="dropdown-header">Doubles</li>
-                                <li role="presentation"><a ng-href="#!/profile/team/FIND">Profile</a></li>
+                                <li role="presentation"><a ng-href="#!/profile/team/">Profile</a></li>
                                 <li role="presentation" class="disabled"><a ng-href="">Change Team Name</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li role="presentation"><a ng-href="#!/account/changeEmail">Change Email</a></li>
@@ -68,10 +69,7 @@
 
                     <!-- Log In/Out -->
                     <ul class="nav navbar-nav navbar-right">
-                        <li role="presentation" ng-hide="myClient.playerId"><a ng-href="#!/signUp/player">Sign Up</a></li>
-                        <li role="presentation">
-                            <a id="logInOut" ng-click="changeUser()" ng-bind="myClient.playerId ? 'Log Out' : 'Log In'"></a>
-                        </li>
+                        <li role="presentation"><a ng-href="#!/login">Log Out</a></li>
                     </ul>
 
                 </div><!-- /.navbar-collapse -->
@@ -82,7 +80,7 @@
         <div ng-view></div>
 
         <footer>
-            <span ng-bind="clients"></span> <span ng-bind="clients == 1 ? 'ponger' : 'pongers'"></span> currently online<br>
+            <online-users-display></online-users-display>
             <span>Version 2.3.3</span>
         </footer>
 
@@ -103,10 +101,12 @@
     <script src="/bower/angular-route/angular-route.min.js"></script>
     <script src="/bower/angular-cookies/angular-cookies.min.js"></script>
     <script src='/bower/angular-bootstrap/ui-bootstrap-tpls.js'></script>
+    <script src='/node_modules/angular-jwt/dist/angular-jwt.js'></script>
 
     <!-- Angular: Major App Structure -->
     <script src='/javascripts/app.modules.js'></script>
     <script src='/javascripts/app.routes.js'></script>
+    <script src='/javascripts/app.run.js'></script>
 
     <!-- Angular: Filters -->
     <script src='/javascripts/filters/tier.js'></script>
@@ -120,23 +120,35 @@
     <script src='/javascripts/services/socket.js'></script>
     <script src='/javascripts/services/timeService.js'></script>
     <script src='/javascripts/services/modalService.js'></script>
+    <script src='/javascripts/services/loginService.js'></script>
+    <script src='/javascripts/services/userBankService.js'></script>
+    <script src='/javascripts/services/jwtService.js'></script>
 
     <!-- Angular: Directives -->
     <script src='/javascripts/directives/timeGap.js'></script>
     <script src='/javascripts/directives/loggedIn.js'></script>
     <script src='/javascripts/directives/untilForfeit.js'></script>
     <script src='/javascripts/directives/focusFirst.js'></script>
+    <script src='/javascripts/directives/onlineUsersDisplay.js'></script>
+    <script src='/javascripts/directives/reportPlayerChallenge.js'></script>
+    <script src='/javascripts/directives/reportTeamChallenge.js'></script>
 
     <!-- Angular: Controllers -->
     <script src='/javascripts/controllers/headerController.js'></script>
+    <script src='/javascripts/controllers/loginController.js'></script>
+    <script src='/javascripts/controllers/reportPlayerChallengeController.js'></script>
+    <script src='/javascripts/controllers/reportTeamChallengeController.js'></script>
     <script src='/javascripts/controllers/boards/singlesBoardController.js'></script>
     <script src='/javascripts/controllers/boards/doublesBoardController.js'></script>
-    <script src='/javascripts/controllers/signUpController.js'></script>
+    <script src='/javascripts/controllers/signUp/signUpPlayerController.js'></script>
+    <script src='/javascripts/controllers/signUp/signUpTeamController.js'></script>
     <script src='/javascripts/controllers/profiles/playerProfileController.js'></script>
     <script src='/javascripts/controllers/profiles/teamProfileController.js'></script>
     <script src='/javascripts/controllers/account/changeUsernameController.js'></script>
+    <script src='/javascripts/controllers/account/changePasswordController.js'></script>
     <script src='/javascripts/controllers/account/changeEmailController.js'></script>
     <script src='/javascripts/controllers/account/changeAlertsController.js'></script>
+
 
 </body>
 </html>

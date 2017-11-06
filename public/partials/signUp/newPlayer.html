@@ -5,16 +5,20 @@
 	<form class="form-horizontal" ng-submit="createPlayer()" autocomplete="off">
 		<div class="form-group">
 			<label class="control-label col-md-2" for="name">Username</label>
-			<div class="col-md-10"><input class="form-control" id="name" type="string" ng-model="player.username" focus-first required /></div>
+			<div class="col-md-10"><input class="form-control" id="name" type="text" ng-model="player.username" focus-first required /></div>
+
+			<label class="control-label col-md-2" for="name">Password</label>
+			<div class="col-md-10"><input class="form-control" id="password" type="password" ng-model="player.password" required /></div>
 		</div>
+
 		<div class="form-group">
 			<label class="control-label col-md-2" for="phone">First Name</label>
-			<div class="col-md-10"><input class="form-control" id="firstName" type="string" ng-model="player.firstName" required /></div>
-		</div>
-		<div class="form-group">
+			<div class="col-md-10"><input class="form-control" id="firstName" type="text" ng-model="player.firstName" required /></div>
+
 			<label class="control-label col-md-2" for="phone">Last Name</label>
-			<div class="col-md-10"><input class="form-control" id="lastName" type="string" ng-model="player.lastName" required /></div>
+			<div class="col-md-10"><input class="form-control" id="lastName" type="text" ng-model="player.lastName" required /></div>
 		</div>
+
 		<div class="form-group">
 			<label class="control-label col-md-2" for="phone">Phone Number</label>
 			<div class="col-md-10"><input class="form-control" id="phone" type="number" ng-model="player.phone" /></div>
@@ -23,9 +27,11 @@
 			<label class="control-label col-md-2" for="email">Email</label>
 			<div class="col-md-10"><input class="form-control" id="email" type="email" ng-model="player.email" /></div>
 		</div>
+
 		<div class="form-group"> 
 			<div class="col-md-offset-2 col-md-10">
-				<button type="submit" class="btn btn-primary">Create</button>
+				<button type="submit" class="btn btn-primary">Create Player</button>
+				<button type="button" class="btn btn-default" ng-click="goToLogin()">Log In</button>
 			</div>
 		</div>
 	</form>

@@ -1,0 +1,15 @@
+<form class="partial-login" ng-submit="login()">
+	<div class="page-header">
+		<h1>Log In</h1>
+	</div>
+	<select class="form-control"
+			ng-model="player"
+			ng-options="player as player.username for player in players"
+			focus-first>
+		<option value=""> -- Select your user name -- </option>
+	</select>
+	<input type="password" class="form-control" ng-model="password">
+	<br />
+	<input type="submit" class="btn btn-primary" value="Login">
+	<input type="button" class="btn btn-default" value="Sign Up" ng-click="signUp()">
+</form>

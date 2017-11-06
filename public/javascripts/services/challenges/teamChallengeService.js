@@ -6,10 +6,12 @@ TeamChallengeService.$inject = ['$http'];
 
 function TeamChallengeService($http) {
 	
+	var service = this;
+	
 	// Default Headers
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
 	
-	this.createChallenge = function(challengerId, challengeeId) {
+	service.createChallenge = function(challengerId, challengeeId) {
 		var request = $http({
 			method: "post",
 			url: "api/challenge/team",
@@ -21,7 +23,7 @@ function TeamChallengeService($http) {
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.getChallenges = function(playerId) {
+	service.getChallenges = function(playerId) {
 		var request = $http({
 			method: "get",
 			url: "api/challenge/team/"+playerId
@@ -29,7 +31,7 @@ function TeamChallengeService($http) {
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.revokeChallenge = function(challengerId, challengeeId) {
+	service.revokeChallenge = function(challengerId, challengeeId) {
 		var request = $http({
 			method: "delete",
 			url: "api/challenge/team/revoke/",
@@ -41,7 +43,7 @@ function TeamChallengeService($http) {
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.resolveChallenge = function(challengeId, challengerScore, challengeeScore) {
+	service.resolveChallenge = function(challengeId, challengerScore, challengeeScore) {
 		var request = $http({
 			method: "post",
 			url: "api/challenge/team/resolve/",
@@ -54,7 +56,7 @@ function TeamChallengeService($http) {
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.forfeitChallenge = function(challengeId) {
+	service.forfeitChallenge = function(challengeId) {
 		var request = $http({
 			method: "post",
 			url: "api/challenge/team/forfeit/",

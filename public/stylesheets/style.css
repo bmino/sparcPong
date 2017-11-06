@@ -23,20 +23,23 @@ a:hover {
 	color: orange;
 }
 
-
-li div.initiateButton {
+button.challengeButton {
 	float: right;
-	cursor: pointer;
-	color: white;
-	font-size: 15px;
-	background-color: grey;
-	border-radius: 3px;
-	line-height: 100%;
-	padding: 4px 9px;
+	display: inline-block;
 }
-li div.initiateButton:hover {
-	background-color: orange;
+
+
+report-player-challenge, report-team-challenge {
+	float: right;
 }
+
+li .sp-button {
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+	font-size: 14px !important;
+	vertical-align: top !important;
+}
+
 
 footer {
 	margin-top: 45px;

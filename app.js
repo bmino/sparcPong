@@ -1,3 +1,4 @@
+require('dotenv').config({path: 'config/local.env'});
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
@@ -8,12 +9,13 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
-require('dotenv').config({path: 'config/local.env'});
+var auth = require('express-jwt-token');
 
 // Mongo
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
+require('./models/Authorization');
 require('./models/Player');
 require('./models/Team');
 require('./models/Challenge');
@@ -39,8 +41,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Include scripts
 app.use('/bower', express.static(path.join(__dirname, 'bower_components')));
+app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
+
+// JWT Security
+app.use(['/api/team/*', '/api/challenge/*', '/api/playerAlerts/*', '/api/envBridge/*'], auth.jwtAuthProtected);
 
 app.use('/',								require('./routes/basic'));
+app.use('/auth',							require('./routes/authorization'));
 app.use('/api/player',						require('./routes/player'));
 app.use('/api/team',						require('./routes/team'));
 app.use('/api/challenge/player',			require('./routes/challenges/playerChallenge'));
@@ -66,66 +73,30 @@ app.use(function(err, req, res, next) {
 });
 
 
-// Active Sockets
-var activeSockets = {};
-var USER_KEY = 'userId';
 
-// Helper functions
-function activeClients() {
-    var size = 0, key;
-    for (key in activeSockets) {
-        if (activeSockets.hasOwnProperty(key)) size++;
-    }
-    return size;
-}
-function onlineUsers() {
-	var ids = [], key;
-    for (key in activeSockets) {
-        if (activeSockets.hasOwnProperty(key) && activeSockets[key][USER_KEY] != null) {
-			ids.push(activeSockets[key][USER_KEY]);
-		}
-    }
-    var uniqueIds = [];
-    for ( i = 0; i < ids.length; i++ ) {
-        var current = ids[i];
-        if (uniqueIds.indexOf(current) < 0) uniqueIds.push(current);
-    }
-    return uniqueIds;
-}
+var SocketBank = require('./singletons/SocketBank');
 
 // Socket Events
 io.on('connection', function(socket) {
 	console.log('New client socket connection...');
-	activeSockets[socket.id] = {};
-	activeSockets[socket.id]['socket'] = socket;
-	activeSockets[socket.id][USER_KEY] = null;
-	
+	SocketBank.addSocket(socket);
+
 	// Notify all clients of presence
-	io.sockets.emit('client:enter', activeClients());
-	
+	io.sockets.emit('client:enter', SocketBank.getClientCount());
+
 	// Give initial list of online users
-	socket.emit('client:online', onlineUsers());
-	
+	socket.emit('client:online', SocketBank.getOnlineClientIds());
+
 	socket.on('disconnect', function() {
 		console.log('Disconnected socket connection...');
-		var userId = activeSockets[socket.id][USER_KEY];
-		delete activeSockets[socket.id];
-		if (userId) {
-			io.sockets.emit('client:online', onlineUsers());
-		}
-		io.sockets.emit('client:leave', activeClients());
+		SocketBank.removeSocket(socket);
+		io.sockets.emit('client:online', SocketBank.getOnlineClientIds());
+		io.sockets.emit('client:leave', SocketBank.getClientCount());
 	});
-	
-	socket.on('login', function(userId) {
-		console.log('Login from userId: '+ userId);
-		activeSockets[socket.id][USER_KEY] = userId;
-		io.sockets.emit('client:online', onlineUsers());
-	});
-	
+
 	socket.on('logout', function(userId) {
-		console.log('Logout from userId: '+ userId);
-		activeSockets[socket.id][USER_KEY] = null;
-		io.sockets.emit('client:online', onlineUsers());
+		SocketBank.logoffUser(userId);
+		io.sockets.emit('client:online', SocketBank.getOnlineClientIds());
 	});
 });
 

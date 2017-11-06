@@ -66,7 +66,7 @@ router.post('/change/username', function(req, res, next) {
 			return Team.findById(teamId).exec();
 		})
 		.then(function(team) {
-            if (!team) return next(new Error('Could not find team.'));
+            if (!team) return Promise.reject(new Error('Could not find team.'));
 
             console.log('Changing team username.');
             team.username = newUsername;

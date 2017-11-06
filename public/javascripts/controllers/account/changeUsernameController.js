@@ -2,31 +2,28 @@ angular
 	.module('controllers')
 	.controller('changeUsernameController', ChangeUsernameController);
 
-ChangeUsernameController.$inject = ['$scope', '$rootScope', 'modalService', 'playerService'];
+ChangeUsernameController.$inject = ['$scope', 'jwtService', 'modalService', 'playerService'];
 
-function ChangeUsernameController($scope, $rootScope, modalService, playerService) {
+function ChangeUsernameController($scope, jwtService, modalService, playerService) {
 	
 	$scope.newUsername = '';
 
 	function init() {
-		var playerId = $rootScope.myClient.playerId;
-		if (playerId) {
-			playerService.getPlayer(playerId)
-				.then(applyUsernameChange)
-				.catch(function(err) {
-					console.log(err);
-				});
-		}
+		var playerId = jwtService.getDecodedToken().playerId;
+
+		playerService.getPlayer(playerId)
+			.then(populateUsernameField)
+			.catch(console.log);
 	}
 
-	function applyUsernameChange(player) {
-		if (player) $scope.newUsername = player.username;
+	function populateUsernameField(player) {
+		if (!player) console.log('Error fetching player.');
+		else $scope.newUsername = player.username;
 	}
 	
 	$scope.validateUsername = function() {
-		var playerId = $rootScope.myClient.playerId;
 		var modalOptions;
-		playerService.changeUsername(playerId, $scope.newUsername)
+		playerService.changeUsername($scope.newUsername)
 			.then(function(success) {
 				modalOptions = {
 					headerText: 'Change Username',

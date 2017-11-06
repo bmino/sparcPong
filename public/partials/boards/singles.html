@@ -10,8 +10,7 @@
 			<li class="list-group-item" ng-repeat="player in players | tier: t">
 				<div class="rank" ng-class="{'online': isOnline(player._id)}" ng-bind="player.rank"></div>
 				<a class="username" ng-href="#!/profile/player/{{player._id}}" ng-bind="player.username"></a>
-				<!--<time-gap type="since" date="player.lastGame" ng-show="player.lastGame" ng-class="dangerLevel(player.lastGame)"></time-gap>-->
-				<div class="initiateButton" ng-click="challenge(player._id)">Challenge</div>
+				<button class="btn btn-primary sp-button challengeButton" ng-click="challenge(player._id)">Challenge</button>
 			</li>
 		</ul>
 	</div>

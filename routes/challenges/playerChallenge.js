@@ -6,20 +6,21 @@ var Player = mongoose.model('Player');
 var MailerService = require('../../services/MailerService');
 var ChallengeService = require('../../services/ChallengeService');
 var PlayerChallengeService = require('../../services/PlayerChallengeService');
+var AuthService = require('../../services/AuthService');
+
 
 /**
  * Issue new challenge.
- * @param: challengerId
  * @param: challengeeId
  */
 router.post('/', function(req, res, next) {
-    var challengerId = req.body.challengerId;
     var challengeeId = req.body.challengeeId;
+	var clientId = AuthService.verifyToken(req.auth[1]).playerId;
 
-	if (!challengerId || !challengeeId) return next(new Error('Two players are required for a challenge.'));
-    if (challengerId === challengeeId) return next(new Error('Players cannot challenge themselves.'));
+	if (!clientId || !challengeeId) return next(new Error('Two players are required for a challenge.'));
+    if (clientId === challengeeId) return next(new Error('Players cannot challenge themselves.'));
 
-	var challengerPromise = Player.findById(challengerId).exec();
+	var challengerPromise = Player.findById(clientId).exec();
 	var challengeePromise = Player.findById(challengeeId).exec();
 
     Promise.all([challengerPromise, challengeePromise])
@@ -36,7 +37,6 @@ router.post('/', function(req, res, next) {
 
 /**
  * Get all challenges involving a player.
- * @param: playerId
  * @return: message.resolved
  * @return: message.outgoing
  * @return: message.incoming
@@ -71,23 +71,20 @@ router.get('/:playerId', function(req, res, next) {
 
 /**
  * Revoke wrongly issued challenge.
- * @param: challengerId
- * @param: challengeeId
+ * @param: challengeId
  */
 router.delete('/revoke', function(req, res, next) {
-	var challengerId = req.body.challengerId;
-	var challengeeId = req.body.challengeeId;
-	var challengeId = null;
-	
-	if (!challengerId || !challengeeId) return next(new Error('Both players are required to revoke a challenge.'));
+	var challengeId = req.body.challengeId;
+    var clientId = AuthService.verifyToken(req.auth[1]).playerId;
 
-	Challenge.findOne({challenger: challengerId, challengee: challengeeId, winner: null}).exec()
+	Challenge.findById(challengeId).exec()
 		.then(function(challenge) {
-            if (!challenge) return next(new Error('Could not find the challenge.'));
-            challengeId = challenge._id;
-            return ChallengeService.verifyForfeit(challenge);
+            if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
+            return ChallengeService.verifyChallengerByPlayerId(challenge, clientId, 'Only the challenger can revoke this challenge.');
         })
+		.then(ChallengeService.verifyForfeit)
 		.then(function() {
+			// Mailer must execute first or it will attempt to pull deleted data
             MailerService.revokedChallenge(challengeId);
             Challenge.findByIdAndRemove(challengeId).exec();
             req.app.io.sockets.emit('challenge:revoked');
@@ -106,10 +103,14 @@ router.post('/resolve', function(req, res, next) {
 	var challengeId = req.body.challengeId;
 	var challengerScore = req.body.challengerScore;
 	var challengeeScore = req.body.challengeeScore;
+    var clientId = AuthService.verifyToken(req.auth[1]).playerId;
 	
 	if (!challengeId) return next(new Error('This is not a valid challenge.'));
 
 	Challenge.findById(challengeId).exec()
+		.then(function(challenge) {
+            return ChallengeService.verifyInvolvedByPlayerId(challenge, clientId, 'Only an involved player can resolve this challenge.');
+        })
 		.then(ChallengeService.verifyForfeit)
         .then(function(challenge) {
 			return ChallengeService.setScore(challenge, challengerScore, challengeeScore);
@@ -132,9 +133,13 @@ router.post('/resolve', function(req, res, next) {
  */
 router.post('/forfeit', function(req, res, next) {
 	var challengeId = req.body.challengeId;
-	if (!challengeId) return next(new Error('This is not a valid challenge id.'));
+    var clientId = AuthService.verifyToken(req.auth[1]).playerId;
 
 	Challenge.findById(challengeId).exec()
+		.then(function(challenge) {
+            if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
+            return ChallengeService.verifyChallengeeByPlayerId(challenge, clientId, 'Only the challengee can forfeit this challenge.');
+        })
         .then(ChallengeService.setForfeit)
 		.then(PlayerChallengeService.updateLastGames)
 		.then(ChallengeService.swapRanks)

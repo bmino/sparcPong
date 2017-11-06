@@ -94,7 +94,7 @@ router.delete('/revoke', function(req, res, next) {
 
 	TeamChallenge.findOne({challenger: challengerId, challengee: challengeeId, winner: null}).exec()
 		.then(function(challenge) {
-            if (!challenge) return next(new Error('Could not find the challenge.'));
+            if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
             return ChallengeService.verifyForfeit(challenge);
         })
 		.then(function() {
