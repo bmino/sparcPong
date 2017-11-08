@@ -7,7 +7,7 @@ var AuthService = require('../services/AuthService');
 
 /* Get player alerts */
 router.get('/', function(req, res, next) {
-    var clientId = AuthService.verifyToken(req.auth[1]).playerId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 
 	if (!clientId) return next(new Error('You must provide a valid player id.'));
 
@@ -31,7 +31,7 @@ router.get('/', function(req, res, next) {
 /* Update player alerts */
 router.post('/', function(req, res, next) {
     var newAlerts = req.body.alerts;
-    var clientId = AuthService.verifyToken(req.auth[1]).playerId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 
     if (!clientId) return next(new Error('You must provide a valid player id.'));
 	if (!newAlerts) return next(new Error('Uh oh, the alert preferences got lost along the way.'));

@@ -15,7 +15,7 @@ var AuthService = require('../../services/AuthService');
  */
 router.post('/', function(req, res, next) {
     var challengeeId = req.body.challengeeId;
-	var clientId = AuthService.verifyToken(req.auth[1]).playerId;
+	var clientId = AuthService.verifyToken(req.token).playerId;
 
 	if (!clientId || !challengeeId) return next(new Error('Two players are required for a challenge.'));
     if (clientId === challengeeId) return next(new Error('Players cannot challenge themselves.'));
@@ -75,7 +75,7 @@ router.get('/:playerId', function(req, res, next) {
  */
 router.delete('/revoke', function(req, res, next) {
 	var challengeId = req.body.challengeId;
-    var clientId = AuthService.verifyToken(req.auth[1]).playerId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 
 	Challenge.findById(challengeId).exec()
 		.then(function(challenge) {
@@ -103,7 +103,7 @@ router.post('/resolve', function(req, res, next) {
 	var challengeId = req.body.challengeId;
 	var challengerScore = req.body.challengerScore;
 	var challengeeScore = req.body.challengeeScore;
-    var clientId = AuthService.verifyToken(req.auth[1]).playerId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 	
 	if (!challengeId) return next(new Error('This is not a valid challenge.'));
 
@@ -133,7 +133,7 @@ router.post('/resolve', function(req, res, next) {
  */
 router.post('/forfeit', function(req, res, next) {
 	var challengeId = req.body.challengeId;
-    var clientId = AuthService.verifyToken(req.auth[1]).playerId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 
 	Challenge.findById(challengeId).exec()
 		.then(function(challenge) {

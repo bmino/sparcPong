@@ -45,17 +45,23 @@ exports.validateJWT = function (req, res, next) {
     }
 
     if (payload.iat < jwtValidBeginningTime) {
-        console.log(payload.iat + '<' + jwtValidBeginningTime);
-        return res.status(401).send('Jwt security token is too old.');
+        return res.status(401).send('Jwt security token is outdated.');
     }
 
     next();
 };
+
+function makeTokenAvailable (req, res, next) {
+    var authHeader = req.headers.authorization.split(' ');
+    req.token = authHeader[1];
+    next();
+}
 
 
 
 
 exports.jwtAuthProtected = [
     exports.authorizationHeaderExists,
-    exports.validateJWT
+    exports.validateJWT,
+    makeTokenAvailable
 ];

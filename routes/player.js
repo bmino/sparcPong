@@ -78,7 +78,7 @@ router.post('/', function(req, res, next) {
  */
 router.post('/change/username', auth.jwtAuthProtected, function(req, res, next) {
 	var newUsername = req.body.newUsername ? req.body.newUsername.trim() : null;
-    var clientId = AuthService.verifyToken(req.auth[1]).playerId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 
 	if (!clientId) return next(new Error('You must provide a valid player id.'));
 
@@ -108,7 +108,7 @@ router.post('/change/username', auth.jwtAuthProtected, function(req, res, next) 
 router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) {
 	var oldPassword = req.body.oldPassword ? req.body.oldPassword.trim() : null;
     var newPassword = req.body.newPassword ? req.body.newPassword.trim() : null;
-    var clientId = AuthService.verifyToken(req.auth[1]).playerId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 
     console.log('Req body: ' + req.body.oldPassword);
     if (!clientId) return next(new Error('You must provide a valid player id.'));
@@ -139,7 +139,7 @@ router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) 
  */
 router.post('/change/email', auth.jwtAuthProtected, function(req, res, next) {
 	var newEmail = req.body.newEmail ? req.body.newEmail.replace(/\s+/g, '') : null;
-    var clientId = AuthService.verifyToken(req.auth[1]).playerId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 
 
     if (!clientId) return next(new Error('You must provide a valid player id.'));
@@ -167,7 +167,7 @@ router.post('/change/email', auth.jwtAuthProtected, function(req, res, next) {
 /* 
  * POST removes player email */
 router.post('/change/email/remove', auth.jwtAuthProtected, function(req, res, next) {
-    var clientId = AuthService.verifyToken(req.auth[1]).playerId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 
 	if (!clientId) return next(new Error('You must provide a valid player id.'));
 	
