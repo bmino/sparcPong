@@ -9,7 +9,6 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
-var auth = require('express-jwt-token');
 
 // Mongo
 var mongoose = require('mongoose');
@@ -44,6 +43,7 @@ app.use('/bower', express.static(path.join(__dirname, 'bower_components')));
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
 // JWT Security
+var auth = require('./middleware/jwtMiddleware');
 app.use(['/api/team/*', '/api/challenge/*', '/api/playerAlerts/*', '/api/envBridge/*'], auth.jwtAuthProtected);
 
 app.use('/',								require('./routes/basic'));

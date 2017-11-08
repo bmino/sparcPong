@@ -27,7 +27,8 @@ function createToken(playerId) {
 
     return new Promise(function(resolve, reject) {
         var payload = {
-            playerId: playerId
+            playerId: playerId,
+            iat: new Date().getTime()
         };
         var options = {
             algorithm: AuthService.JWT_ALGORITHM,

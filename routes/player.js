@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var auth = require('express-jwt-token');
+var auth = require('../middleware/jwtMiddleware');
 var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
 var Authorization = mongoose.model('Authorization');
