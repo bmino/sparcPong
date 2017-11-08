@@ -2,9 +2,9 @@ angular
 	.module('controllers')
 	.controller('teamProfileController', TeamProfileController);
 
-TeamProfileController.$inject = ['$scope', '$rootScope', '$routeParams', '$location', 'socket', 'modalService', 'teamService', 'teamChallengeService'];
+TeamProfileController.$inject = ['$scope', '$rootScope', '$routeParams', '$location', 'socket', 'modalService', 'jwtService', 'teamService', 'teamChallengeService'];
 
-function TeamProfileController($scope, $rootScope, $routeParams, $location, socket, modalService, teamService, teamChallengeService) {
+function TeamProfileController($scope, $rootScope, $routeParams, $location, socket, modalService, jwtService, teamService, teamChallengeService) {
 	
 	var profileId;
 	$scope.challenges = {
@@ -20,17 +20,15 @@ function TeamProfileController($scope, $rootScope, $routeParams, $location, sock
 	function init() {
 		profileId = $routeParams.id;
 		
-		if (profileId && profileId != 'FIND') {
+		if (profileId) {
 			loadTeam();
 			fetchChallenges();
 			getRecord();
-		} else if (!$rootScope.myClient.playerId) {
-			$location.path('/');
 		} else {
 			console.log('Profile id not given. Looking up teams.');
-			teamService.lookupTeams($rootScope.myClient.playerId).then(function(teams) {
-				if (!teams || teams.length == 0) {
-					// Found no teams
+			var clientId = jwtService.getDecodedToken().playerId;
+			teamService.lookupTeams(clientId).then(function(teams) {
+				if (!teams || teams.length === 0) {
 					$location.path('signUp/team');
 				} else {
 					console.log('Found team [' + teams[0].username + ']');
