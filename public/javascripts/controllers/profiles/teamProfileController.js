@@ -2,9 +2,9 @@ angular
 	.module('controllers')
 	.controller('teamProfileController', TeamProfileController);
 
-TeamProfileController.$inject = ['$scope', '$rootScope', '$routeParams', '$location', 'socket', 'modalService', 'jwtService', 'teamService', 'teamChallengeService'];
+TeamProfileController.$inject = ['$scope', '$routeParams', '$location', 'socket', 'jwtService', 'teamService', 'teamChallengeService'];
 
-function TeamProfileController($scope, $rootScope, $routeParams, $location, socket, modalService, jwtService, teamService, teamChallengeService) {
+function TeamProfileController($scope, $routeParams, $location, socket, jwtService, teamService, teamChallengeService) {
 	
 	var profileId;
 	$scope.challenges = {
@@ -73,152 +73,7 @@ function TeamProfileController($scope, $rootScope, $routeParams, $location, sock
 			$scope.loadingRecord = false;
 		});
 	}
-	
-	$scope.expandChallenge = function(challenge) {
-		var modalOptions = {
-			challenge: challenge
-		};
-		modalService.showTeamChallengeOptions({}, modalOptions).then(function(result) {
-			if (!result) return;
-			switch (result) {
-				case 'resolve':
-					resolveChallenge(challenge);
-					break;
-				case 'revoke':
-					revokeChallenge(challenge);
-					break;
-				case 'forfeit':
-					forfeitChallenge(challenge);
-					break;
-			}
-		});		
-	};
-	
-	function resolveChallenge(challenge) {
-		var playerId = $rootScope.myClient.playerId;
-		var modalOptions;
-		if (playerId != challenge.challengee.leader._id &&
-			playerId != challenge.challengee.partner._id &&
-			playerId != challenge.challenger.leader._id &&
-			playerId != challenge.challenger.partner._id) {
-			modalOptions = {
-				headerText: 'Resolve Challenge',
-				bodyText: 'Only '+ challenge.challenger.username +' or '+ challenge.challengee.username +' can resolve this challenge.'
-			};
-			modalService.showAlertModal({}, modalOptions);
-			return;
-		}
-		modalOptions = {
-			headerText: 'Resolve Challenge',
-			challenge: challenge
-		};
-		modalService.showScoreModal({}, modalOptions).then(function(result) {
-			if (!result) return;
-			var challengerScore = result.challenge.challengerScore;
-			var challengeeScore = result.challenge.challengeeScore;
-			
-			teamChallengeService.resolveChallenge(challenge._id, challengerScore, challengeeScore).then(
-				function(success) {
-					var modalOptions = {
-						headerText: 'Resolve Challenge',
-						bodyText: success
-					};
-					modalService.showAlertModal({}, modalOptions);
-				},
-				function(error) {
-					console.log(error);
-					var modalOptions = {
-						headerText: 'Resolve Challenge',
-						bodyText: error
-					};
-					modalService.showAlertModal({}, modalOptions);
-				}
-			);
-		});		
-	}
-	
-	function revokeChallenge(challenge) {
-		var playerId = $rootScope.myClient.playerId;
-		var modalOptions;
-		if (playerId != challenge.challenger.leader._id && playerId != challenge.challenger.partner._id) {
-			modalOptions = {
-				headerText: 'Revoke Challenge',
-				bodyText: 'Only '+ challenge.challenger.username +' can revoke this challenge.'
-			};
-			modalService.showAlertModal({}, modalOptions);
-			return;
-		}
-		
-		modalOptions = {
-            closeButtonText: 'Cancel',
-            actionButtonText: 'Revoke Challenge',
-            headerText: 'Revoke',
-            bodyText: 'Are you sure you wish to revoke this challenge?'
-        };
-        modalService.showModal({}, modalOptions).then(function (okay) {
-			if (!okay) return;
-			teamChallengeService.revokeChallenge(challenge.challenger._id, challenge.challengee._id).then(
-				function(success) {
-					var modalOptions = {
-						headerText: 'Revoke Challenge',
-						bodyText: success
-					};
-					modalService.showAlertModal({}, modalOptions);
-				},
-				function(error) {
-					console.log(error);
-					var modalOptions = {
-						headerText: 'Revoke Challenge',
-						bodyText: error
-					};
-					modalService.showAlertModal({}, modalOptions);
-				}
-			);
-		});
-	}
-	function forfeitChallenge(challenge) {
-		var playerId = $rootScope.myClient.playerId;
-		var modalOptions;
-		if (playerId != challenge.challengee.leader._id && playerId != challenge.challengee.partner._id) {
-			modalOptions = {
-				headerText: 'Forfeit Challenge',
-				bodyText: 'Only '+ challenge.challengee.username +' can forfeit this challenge.'
-			};
-			modalService.showAlertModal({}, modalOptions);
-			return;
-		}
-		
-		modalOptions = {
-            closeButtonText: 'Cancel',
-            actionButtonText: 'Forfeit Challenge',
-            headerText: 'Forfeit',
-            bodyText: 'Are you sure you wish to forfeit to '+ challenge.challenger.username +'?'
-        };
-        modalService.showModal({}, modalOptions).then(function (okay) {
-			if (!okay) return;
-			teamChallengeService.forfeitChallenge(challenge._id).then(
-				function(success) {
-					var modalOptions = {
-						headerText: 'Forfeit Challenge',
-						bodyText: success
-					};
-					modalService.showAlertModal({}, modalOptions);
-				},
-				function(error) {
-					console.log(error);
-					var modalOptions = {
-						headerText: 'Forfeit Challenge',
-						bodyText: error
-					};
-					modalService.showAlertModal({}, modalOptions);
-				}
-			);
-        });
-	}
-	
-	$scope.hadForfeit = function(challenge) {
-		return !challenge.challengerScore && !challenge.challengeeScore;
-	};
+
 	
 	socket.on('player:change:username', function() {
 		loadTeam();
