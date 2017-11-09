@@ -94,12 +94,11 @@ router.get('/:teamId', function(req, res, next) {
  * @param: challengeeId
  */
 router.delete('/revoke', function(req, res, next) {
-	var challengerId = req.body.challengerId;
-	var challengeeId = req.body.challengeeId;
+	var challengeId = req.body.challengeId;
 	
-	if (!challengerId || !challengeeId) return next(new Error('Both teams must be provided to revoke a challenge.'));
+	if (!challengeId) return next(new Error('This is not a valid challenge id.'));
 
-	TeamChallenge.findOne({challenger: challengerId, challengee: challengeeId, winner: null}).exec()
+	TeamChallenge.findById(challengeId).exec()
 		.then(function(challenge) {
             if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
             return ChallengeService.verifyForfeit(challenge);

@@ -31,13 +31,12 @@ function TeamChallengeService($http) {
 		return request.then( handleSuccess, handleError );
 	};
 	
-	service.revokeChallenge = function(challengerId, challengeeId) {
+	service.revokeChallenge = function(challengeId) {
 		var request = $http({
 			method: "delete",
 			url: "api/challenge/team/revoke/",
 			data: {
-				challengerId: challengerId,
-				challengeeId: challengeeId
+                challengeId: challengeId
 			}
 		});
 		return request.then( handleSuccess, handleError );
