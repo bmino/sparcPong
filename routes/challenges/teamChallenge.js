@@ -95,14 +95,16 @@ router.get('/:teamId', function(req, res, next) {
  */
 router.delete('/revoke', function(req, res, next) {
 	var challengeId = req.body.challengeId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 	
 	if (!challengeId) return next(new Error('This is not a valid challenge id.'));
 
 	TeamChallenge.findById(challengeId).exec()
 		.then(function(challenge) {
             if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
-            return ChallengeService.verifyForfeit(challenge);
+            return TeamChallengeService.verifyAllowedToRevoke(challenge, clientId);
         })
+		.then(ChallengeService.verifyForfeit)
 		.then(TeamChallenge.removeByDocument)
 		.then(function(challenge) {
             MailerService.revokedTeamChallenge(challenge.challenger, challenge.challengee);
