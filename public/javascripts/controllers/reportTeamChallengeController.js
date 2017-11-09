@@ -83,7 +83,6 @@ function ReportTeamChallengeController($scope, teamChallengeService, modalServic
                         modalService.showAlertModal({}, modalOptions);
                     })
                     .catch(function (error) {
-                        console.log(error);
                         modalOptions = {
                             headerText: 'Forfeit Challenge',
                             bodyText: error

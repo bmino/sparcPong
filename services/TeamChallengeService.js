@@ -7,6 +7,7 @@ var TeamChallengeService = {
 
     verifyAllowedToChallenge : verifyAllowedToChallenge,
     verifyChallengesBetweenTeams : verifyChallengesBetweenTeams,
+    verifyAllowedToForfeit : verifyAllowedToForfeit,
     updateLastGames : updateLastGames
 
 };
@@ -53,6 +54,19 @@ function verifyAllowedToChallenge(teams) {
 
         return Promise.all([existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
             .then(function() {return resolve(teams);})
+            .catch(reject);
+    });
+}
+
+function verifyAllowedToForfeit(teamChallenge, playerId) {
+    return new Promise(function(resolve, reject) {
+        TeamChallenge.populate(teamChallenge, 'challengee')
+            .then(function(populatedTeamChallenge) {
+                if (populatedTeamChallenge.challengee.hasMemberByPlayerId(playerId)) {
+                    return resolve(teamChallenge);
+                }
+                return reject(new Error('Only the challengee can forfeit a challenge.'));
+            })
             .catch(reject);
     });
 }
