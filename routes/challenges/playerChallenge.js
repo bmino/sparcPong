@@ -83,10 +83,9 @@ router.delete('/revoke', function(req, res, next) {
             return ChallengeService.verifyChallengerByPlayerId(challenge, clientId, 'Only the challenger can revoke this challenge.');
         })
 		.then(ChallengeService.verifyForfeit)
-		.then(function() {
-			// Mailer must execute first or it will attempt to pull deleted data
-            MailerService.revokedChallenge(challengeId);
-            Challenge.findByIdAndRemove(challengeId).exec();
+		.then(Challenge.removeByDocument)
+		.then(function(challenge) {
+            MailerService.revokedChallenge(challenge.challenger, challenge.challengee);
             req.app.io.sockets.emit('challenge:revoked');
             res.json({message: 'Successfully revoked challenge.'});
 		})

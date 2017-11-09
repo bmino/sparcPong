@@ -82,6 +82,10 @@ challengeSchema.statics.populateById = function(challengeId, populateAlerts) {
     return Challenge.findById(challengeId).populate(population).exec();
 };
 
+challengeSchema.statics.removeByDocument = function(challenge) {
+    return challenge.remove();
+};
+
 var Challenge = mongoose.model('Challenge', challengeSchema);
 
 module.exports = Challenge;
