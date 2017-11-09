@@ -7,6 +7,7 @@ var TeamChallengeService = {
 
     verifyAllowedToChallenge : verifyAllowedToChallenge,
     verifyChallengesBetweenTeams : verifyChallengesBetweenTeams,
+    verifyAllowedToResolve : verifyAllowedToResolve,
     verifyAllowedToForfeit : verifyAllowedToForfeit,
     verifyAllowedToRevoke : verifyAllowedToRevoke,
 
@@ -56,6 +57,22 @@ function verifyAllowedToChallenge(teams) {
 
         return Promise.all([existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
             .then(function() {return resolve(teams);})
+            .catch(reject);
+    });
+}
+
+function verifyAllowedToResolve(teamChallenge, playerId) {
+    return new Promise(function(resolve, reject) {
+        TeamChallenge.populate(teamChallenge, 'challenger challengee')
+            .then(function(populatedTeamChallenge) {
+                if (populatedTeamChallenge.challenger.hasMemberByPlayerId(playerId)) {
+                    return resolve(teamChallenge);
+                }
+                if (populatedTeamChallenge.challengee.hasMemberByPlayerId(playerId)) {
+                    return resolve(teamChallenge);
+                }
+                return reject(new Error('Only players involved in the challenge can resolve it.'));
+            })
             .catch(reject);
     });
 }

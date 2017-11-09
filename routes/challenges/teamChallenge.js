@@ -124,10 +124,14 @@ router.post('/resolve', function(req, res, next) {
 	var challengeId = req.body.challengeId;
 	var challengerScore = req.body.challengerScore;
 	var challengeeScore = req.body.challengeeScore;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 	
 	if (!challengeId) return next(new Error('This is not a valid challenge.'));
 
 	TeamChallenge.findById(challengeId).exec()
+		.then(function(teamChallenge) {
+            return TeamChallengeService.verifyAllowedToResolve(teamChallenge, clientId);
+		})
 		.then(ChallengeService.verifyForfeit)
 		.then(function(teamChallenge) {
 			return ChallengeService.setScore(teamChallenge, challengerScore, challengeeScore);
