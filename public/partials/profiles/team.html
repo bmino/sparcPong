@@ -1,6 +1,6 @@
 <div class="partial-profile">
 	<div class="page-header" ng-show="profile">
-		<h1><span class="username" ng-bind="profile.username"></span> <span class="score">({{wins}} - {{losses}})</span></h1>
+		<h1><span class="username" ng-bind="profile.username"></span> <span class="score" ng-bind-template="({{wins}} - {{losses}})"></span></h1>
 		
 		<div class="userLabel">Leader:</div> <a ng-href="#!/profile/player/{{profile.leader._id}}">{{profile.leader.firstName}} {{profile.leader.lastName}}</a>
 		<br />
