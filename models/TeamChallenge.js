@@ -84,6 +84,10 @@ teamChallengeSchema.statics.populateById = function(teamChallengeId, populateAle
     return TeamChallenge.findById(teamChallengeId).populate(population).exec();
 };
 
+teamChallengeSchema.statics.removeByDocument = function(teamChallenge) {
+    return teamChallenge.remove();
+};
+
 var TeamChallenge = mongoose.model('TeamChallenge', teamChallengeSchema);
 
 module.exports = TeamChallenge;

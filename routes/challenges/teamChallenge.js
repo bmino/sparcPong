@@ -104,9 +104,9 @@ router.delete('/revoke', function(req, res, next) {
             if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
             return ChallengeService.verifyForfeit(challenge);
         })
-		.then(function() {
-            MailerService.revokedTeamChallenge(challengerId, challengeeId);
-            TeamChallenge.remove({challenger: challengerId, challengee: challengeeId, winner: null}).exec();
+		.then(TeamChallenge.removeByDocument)
+		.then(function(challenge) {
+            MailerService.revokedTeamChallenge(challenge.challenger, challenge.challengee);
             req.app.io.sockets.emit('challenge:team:revoked');
             res.json({message: 'Successfully revoked challenge.'});
 		})

@@ -121,13 +121,18 @@ module.exports.newChallenge = function (challengeId) {
         .catch(console.log);
 };
 
-module.exports.revokedChallenge = function (challengeId) {
+module.exports.revokedChallenge = function (challengerId, challengeeId) {
     console.log('Checking email permission for a revoked challenge');
 
-    Challenge.populateById(challengeId, true)
-        .then(function(challenge) {
-            if (challenge.challengee.email && challenge.challengee.alerts.revoked) {
-                sendEmail('Revoked Challenge', challenge.challenger.username + ' got scared and revoked a challenge against you.', challenge.challengee.email);
+    Promise.all([
+        Player.findById(challengerId).populate('alerts').exec(),
+        Player.findById(challengeeId).populate('alerts').exec()
+    ])
+        .then(function(players) {
+            var challenger = players[0];
+            var challengee = players[1];
+            if (challengee.email && challengee.alerts.revoked) {
+                sendEmail('Revoked Challenge', challenger.username + ' got scared and revoked a challenge against you.', challengee.email);
             }
         })
         .catch(console.log);
