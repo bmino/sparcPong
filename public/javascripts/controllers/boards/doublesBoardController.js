@@ -2,10 +2,12 @@ angular
 	.module('controllers')
 	.controller('doublesBoardController', DoublesBoardController);
 
-DoublesBoardController.$inject = ['$scope', '$rootScope', 'socket', 'modalService', 'timeService', 'teamService', 'teamChallengeService'];
+DoublesBoardController.$inject = ['$scope', 'jwtService', 'socket', 'modalService', 'timeService', 'teamService', 'teamChallengeService'];
 
 
-function DoublesBoardController($scope, $rootScope, socket, modalService, timeService, teamService, teamChallengeService) {
+function DoublesBoardController($scope, jwtService, socket, modalService, timeService, teamService, teamChallengeService) {
+
+    $scope.teams = [];
 
     function init() {
         // TODO: implement a better solution than guessing big at 16 tiers
@@ -50,49 +52,48 @@ function DoublesBoardController($scope, $rootScope, socket, modalService, timeSe
     };
 
     $scope.challengeTeam = function (challengeeId) {
-        var challengerId = $rootScope.myClient.playerId;
-        var challengerTeams = playerTeams(challengerId);
+        var challengerTeams = $scope.playerTeams();
         var modalOptions;
-        if (!challengerId || challengerTeams.length == 0) {
+
+        if (challengerTeams.length === 0) {
             modalOptions = {
                 headerText: 'Team Challenge',
-                bodyText: challengerId ? 'You are not a member of any team.' : 'You must log in before issuing challenges.'
+                bodyText: 'You must join a team before issuing challenges.'
             };
-            modalService.showAlertModal({}, modalOptions);
-            return;
+            return modalService.showAlertModal({}, modalOptions);
         }
 
-        if (challengerTeams.length > 1) {
-            // More than 1 team... prompt for which one
-            modalOptions = {
-                headerText: 'Team Challenge',
-                actionButtonText: 'Challenge',
-                closeButtonText: 'Cancel',
-                bodyText: 'Which team would you like to challenge with?',
-                teams: challengerTeams
-            };
-            modalService.showSelectTeamModal({}, modalOptions).then(function (data) {
-                if (!data || !data.challengeTeam) return;
-                teamChallengeService.createChallenge(data.challengeTeam._id, challengeeId).then(goodChallenge, badChallenge);
-            });
-        } else {
-            // Only a member of 1 team... create challenge
-            teamChallengeService.createChallenge(challengerTeams[0]._id, challengeeId).then(goodChallenge, badChallenge);
+        if (challengerTeams.length === 1) {
+            return teamChallengeService.createChallenge(challengerTeams[0]._id, challengeeId).then(goodChallenge, badChallenge);
         }
+
+        // Which team are we challenging with?
+        modalOptions = {
+            headerText: 'Team Challenge',
+            actionButtonText: 'Challenge',
+            closeButtonText: 'Cancel',
+            bodyText: 'Which team would you like to challenge with?',
+            teams: challengerTeams
+        };
+        modalService.showSelectTeamModal({}, modalOptions).then(function (data) {
+            if (!data || !data.challengeTeam) return;
+            teamChallengeService.createChallenge(data.challengeTeam._id, challengeeId).then(goodChallenge, badChallenge);
+        });
     };
 
-    function playerTeams(playerId) {
+    $scope.playerTeams = function() {
+        var playerId = jwtService.getDecodedToken().playerId;
         if (!playerId) return [];
         var teams = [];
         $scope.teams.forEach(function (team) {
-            if (team.leader == playerId || team.partner == playerId) teams.push(team);
+            if (team.leader === playerId || team.partner === playerId) teams.push(team);
         });
         return teams;
-    }
+    };
 
     function goodChallenge(success) {
         var modalOptions = {
-            headerText: 'Challenge',
+            headerText: 'Team Challenge',
             bodyText: success
         };
         modalService.showAlertModal({}, modalOptions);
@@ -101,7 +102,7 @@ function DoublesBoardController($scope, $rootScope, socket, modalService, timeSe
     function badChallenge(error) {
         console.log(error);
         var modalOptions = {
-            headerText: 'Challenge',
+            headerText: 'Team Challenge',
             bodyText: error
         };
         modalService.showAlertModal({}, modalOptions);
