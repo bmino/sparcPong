@@ -6,7 +6,7 @@ PlayerProfileController.$inject = ['$scope', '$routeParams', 'jwtService', 'sock
 
 function PlayerProfileController($scope, $routeParams, jwtService, socket, playerService, playerChallengeService) {
 	
-	var profileId;
+	$scope.profileId = null;
 	$scope.challenges = {
 		incoming: [],
 		outgoing: [],
@@ -18,10 +18,10 @@ function PlayerProfileController($scope, $routeParams, jwtService, socket, playe
 	$scope.loadingRecord = true;
 
 	function init() {
-		profileId = $routeParams.id;
-		if (!profileId) {
+        $scope.profileId = $routeParams.id;
+		if (!$scope.profileId) {
 			console.log('No profile id detected.');
-			profileId = jwtService.getDecodedToken().playerId;
+            $scope.profileId = jwtService.getDecodedToken().playerId;
 		}
 		
 		loadPlayer();
@@ -30,7 +30,7 @@ function PlayerProfileController($scope, $routeParams, jwtService, socket, playe
 	}
 	
 	function loadPlayer() {
-		playerService.getPlayer(profileId).then(function(player) {
+		playerService.getPlayer($scope.profileId).then(function(player) {
 			if (!player) {
 				console.log('Could not fetch profile');
 				$scope.loadingProfile = false;
@@ -42,7 +42,7 @@ function PlayerProfileController($scope, $routeParams, jwtService, socket, playe
 	}
 	
 	function fetchChallenges() {
-		playerChallengeService.getChallenges(profileId).then( sortChallenges );
+		playerChallengeService.getChallenges($scope.profileId).then( sortChallenges );
 	}
 	function sortChallenges(challenges) {
 		$scope.challenges.resolved = challenges.resolved;
@@ -52,7 +52,7 @@ function PlayerProfileController($scope, $routeParams, jwtService, socket, playe
 	}
 	
 	function getRecord() {
-		playerService.getRecord(profileId)
+		playerService.getRecord($scope.profileId)
 			.then(function(data) {
 				if (data) {
 					$scope.wins = data.wins;

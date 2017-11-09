@@ -6,7 +6,7 @@ TeamProfileController.$inject = ['$scope', '$routeParams', '$location', 'socket'
 
 function TeamProfileController($scope, $routeParams, $location, socket, jwtService, teamService, teamChallengeService) {
 	
-	var profileId;
+	$scope.profileId = null;
 	$scope.challenges = {
 		incoming: [],
 		outgoing: [],
@@ -18,9 +18,9 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
 	$scope.loadingRecord = true;
 	
 	function init() {
-		profileId = $routeParams.id;
+        $scope.profileId = $routeParams.id;
 		
-		if (profileId) {
+		if ($scope.profileId) {
 			loadTeam();
 			fetchChallenges();
 			getRecord();
@@ -32,7 +32,7 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
 					$location.path('signUp/team');
 				} else {
 					console.log('Found team [' + teams[0].username + ']');
-					profileId = teams[0]._id;
+                    $scope.profileId = teams[0]._id;
 					
 					loadTeam();
 					fetchChallenges();
@@ -43,7 +43,7 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
 	}
 	
 	function loadTeam() {
-		teamService.getTeam(profileId).then(function(team) {
+		teamService.getTeam($scope.profileId).then(function(team) {
 			if (!team) {
 				console.log('Could not fetch profile');
 				$scope.loadingProfile = false;
@@ -55,7 +55,7 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
 	}
 	
 	function fetchChallenges() {
-		teamChallengeService.getChallenges(profileId).then( sortChallenges );
+		teamChallengeService.getChallenges($scope.profileId).then( sortChallenges );
 	}
 	function sortChallenges(challenges) {
 		$scope.challenges.resolved = challenges.resolved;
@@ -65,7 +65,7 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
 	}
 	
 	function getRecord() {
-		teamService.getRecord(profileId).then(function(data) {
+		teamService.getRecord($scope.profileId).then(function(data) {
 			if (data) {
 				$scope.wins = data.wins;
 				$scope.losses = data.losses;
