@@ -46,6 +46,7 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
 		teamService.getTeam($scope.profileId).then(function(team) {
 			if (!team) {
 				console.log('Could not fetch profile');
+				// TODO: Error message
 				$scope.loadingProfile = false;
 			} else {
 				$scope.profile = team;

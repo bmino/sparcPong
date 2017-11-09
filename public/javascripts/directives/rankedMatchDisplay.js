@@ -9,11 +9,12 @@ function RankedMatchDisplay() {
 	return {
 		scope: {
 			challenge: '=',
-			playerId: '='
+			playerId: '=',
+			type: '@'
 		},
 		template:
 			'<span ng-bind="playerWon() ? \'Won vs\' : \'Lost vs\'"></span> ' +
-			'<a ng-href="#!/profile/team/{{challenge.challengee._id}}"><span ng-bind="getOpponent().username"></span></a> ' +
+			'<a ng-href="#!/profile/{{type}}/{{getOpponent()._id}}"><span ng-bind="getOpponent().username"></span></a> ' +
 			'<span ng-bind="getScore()"></span>' +
 			'<br />' +
 			'<span ng-bind="challenge.updatedAt | mongoDate"></span>',

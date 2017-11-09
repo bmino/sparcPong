@@ -33,6 +33,7 @@ function PlayerProfileController($scope, $routeParams, jwtService, socket, playe
 		playerService.getPlayer($scope.profileId).then(function(player) {
 			if (!player) {
 				console.log('Could not fetch profile');
+				// TODO: Error message
 				$scope.loadingProfile = false;
 			} else {
 				$scope.profile = player;
