@@ -9,6 +9,13 @@ var teamSchema = new Schema({
 	lastGame: { type: Date, default: null }
 });
 
+teamSchema.methods.hasMemberByPlayerId = function(playerId) {
+    console.log('Checking if player id ' + playerId + ' is on team ' + this.username);
+    if (this.leader.toString() === playerId) return true;
+    if (this.partner.toString() === playerId) return true;
+    return false;
+};
+
 teamSchema.statics.getTeamsByPlayerId = function(playerId) {
 	return Team.find({$or: [{leader: playerId}, {partner: playerId}]}).exec();
 };

@@ -6,6 +6,7 @@ var Team = mongoose.model('Team');
 var MailerService = require('../../services/MailerService');
 var ChallengeService = require('../../services/ChallengeService');
 var TeamChallengeService = require('../../services/TeamChallengeService');
+var AuthService = require('../../services/AuthService');
 
 /**
  * Issue new challenge.
@@ -15,6 +16,7 @@ var TeamChallengeService = require('../../services/TeamChallengeService');
 router.post('/', function(req, res, next) {
 	var challengerId = req.body.challengerId;
 	var challengeeId = req.body.challengeeId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 	
 	if (!challengerId || !challengeeId) return next(new Error('Two teams are required for a challenge.'));
 	if (challengerId === challengeeId) return next(new Error('Teams cannot challenge themselves.'));
@@ -30,7 +32,12 @@ router.post('/', function(req, res, next) {
 
 	Promise.all([challengerPromise, challengeePromise])
 		.then(TeamChallengeService.verifyAllowedToChallenge)
-		.then(TeamChallenge.createByTeams)
+		.then(function(teams) {
+            if (!teams[0].hasMemberByPlayerId(clientId)) {
+                return Promise.reject(new Error('You must be a member of the challenging team, "' + teams[0].username + '"'));
+            }
+            return TeamChallenge.createByTeams(teams);
+        })
 		.then(function(challenge) {
             MailerService.newTeamChallenge(challenge._id);
             req.app.io.sockets.emit('challenge:team:issued');
