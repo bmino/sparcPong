@@ -5,7 +5,9 @@ var Player = mongoose.model('Player');
 var AuthService = require('../services/AuthService');
 
 
-/* Get player alerts */
+/**
+ * Get player alerts
+ */
 router.get('/', function(req, res, next) {
     var clientId = AuthService.verifyToken(req.token).playerId;
 
@@ -28,7 +30,10 @@ router.get('/', function(req, res, next) {
 		.catch(next);
 });
 
-/* Update player alerts */
+/**
+ * Update player alerts
+ * @param: alerts
+ */
 router.post('/', function(req, res, next) {
     var newAlerts = req.body.alerts;
     var clientId = AuthService.verifyToken(req.token).playerId;

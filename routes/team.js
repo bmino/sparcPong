@@ -7,7 +7,7 @@ var TeamChallenge = mongoose.model('TeamChallenge');
 var NameService = require('../services/NameService');
 var TeamService = require('../services/TeamService');
 
-/* 
+/**
  * Create new team
  *
  * @param: username
@@ -49,7 +49,7 @@ router.post('/', function(req, res, next) {
 		.catch(next);
 });
 
-/* 
+/**
  * Change team username
  *
  * @param: teamId
@@ -80,7 +80,9 @@ router.post('/change/username', function(req, res, next) {
 });
 
 
-/* Get teams */
+/**
+ * Get all teams
+ */
 router.get('/', function(req, res, next) {
 	Team.find({})
 		.then(function(teams) {
@@ -89,7 +91,11 @@ router.get('/', function(req, res, next) {
 		.catch(next);
 });
 
-/* Get team by id */
+/**
+ * Get team by id
+ *
+ * @param: teamId
+ */
 router.get('/fetch/:teamId', function(req, res, next) {
 	var teamId = req.params.teamId;
 	if (!teamId) return next(new Error('You must specify a team id.'));
@@ -101,8 +107,8 @@ router.get('/fetch/:teamId', function(req, res, next) {
 		.catch(next);
 });
 
-/*
- * GET teams by playerId
+/**
+ * Get teams by playerId
  *
  * @param: playerId
  */
@@ -118,7 +124,7 @@ router.get('/fetch/lookup/:playerId', function(req, res, next) {
 });
 
 
-/*
+/**
  * Get wins and losses for a team
  *
  * @param: teamId

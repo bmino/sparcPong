@@ -37,9 +37,6 @@ router.post('/', function(req, res, next) {
 
 /**
  * Get all challenges involving a player.
- * @return: message.resolved
- * @return: message.outgoing
- * @return: message.incoming
  */
 router.get('/:playerId', function(req, res, next) {
 	var playerId = req.params.playerId;

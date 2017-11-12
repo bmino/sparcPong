@@ -50,9 +50,6 @@ router.post('/', function(req, res, next) {
 /**
  * Get all challenges involving a team.
  * @param: teamId
- * @return: message.resolved
- * @return: message.outgoing
- * @return: message.incoming
  */
 router.get('/:teamId', function(req, res, next) {
 	var teamId = req.params.teamId;
@@ -90,8 +87,7 @@ router.get('/:teamId', function(req, res, next) {
 
 /**
  * Revoke wrongly issued challenge.
- * @param: challengerId
- * @param: challengeeId
+ * @param: challengeId
  */
 router.delete('/revoke', function(req, res, next) {
 	var challengeId = req.body.challengeId;

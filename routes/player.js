@@ -10,8 +10,8 @@ var NameService = require('../services/NameService');
 var EmailService = require('../services/EmailService');
 var AuthService = require('../services/AuthService');
 
-/* 
- * POST new player
+/**
+ * Creates new player
  *
  * @param: username
  * @param: password
@@ -71,8 +71,8 @@ router.post('/', function(req, res, next) {
 		.catch(next);
 });
 
-/* 
- * POST changes player username
+/**
+ * Changes player username
  *
  * @param: newName
  */
@@ -99,8 +99,8 @@ router.post('/change/username', auth.jwtAuthProtected, function(req, res, next) 
 		.catch(next);
 });
 
-/*
- * POST changes player password
+/**
+ * Changes player password
  *
  * @param: oldPassword
  * @param: newPassword
@@ -110,7 +110,6 @@ router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) 
     var newPassword = req.body.newPassword ? req.body.newPassword.trim() : null;
     var clientId = AuthService.verifyToken(req.token).playerId;
 
-    console.log('Req body: ' + req.body.oldPassword);
     if (!clientId) return next(new Error('You must provide a valid player id.'));
 
     AuthService.validatePasswordStrength(newPassword)
@@ -118,8 +117,6 @@ router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) 
             return Authorization.findByPlayerId(clientId);
 		})
 		.then(function(authorization) {
-			console.log('Old password: ' + oldPassword);
-			console.log('Auth passwrd: ' + authorization.password);
 			if (authorization.password !== oldPassword) return Promise.reject(new Error('Incorrect current password.'));
             authorization.password = newPassword;
 			return authorization.save();
@@ -132,8 +129,8 @@ router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) 
 });
 
 
-/* 
- * POST changes player email
+/**
+ * Changes player email
  *
  * @param: newEmail
  */
@@ -164,8 +161,9 @@ router.post('/change/email', auth.jwtAuthProtected, function(req, res, next) {
 		.catch(next);
 });
 
-/* 
- * POST removes player email */
+/**
+ * Removes player email
+ */
 router.post('/change/email/remove', auth.jwtAuthProtected, function(req, res, next) {
     var clientId = AuthService.verifyToken(req.token).playerId;
 
@@ -186,7 +184,9 @@ router.post('/change/email/remove', auth.jwtAuthProtected, function(req, res, ne
 });
 
 
-/* GET player listing */
+/**
+ * Get player listing
+ */
 router.get('/', auth.jwtAuthProtected, function(req, res, next) {
 	Player.find({}).exec()
 		.then(function(players) {
@@ -195,7 +195,11 @@ router.get('/', auth.jwtAuthProtected, function(req, res, next) {
 		.catch(next);
 });
 
-/* GET player by id */
+/**
+ * Get player by id
+ *
+ * @param: playerId
+ */
 router.get('/fetch/:playerId', auth.jwtAuthProtected, function(req, res, next) {
 	var playerId = req.params.playerId;
 	if (!playerId) return next(new Error('You must specify a player id.'));
@@ -209,7 +213,11 @@ router.get('/fetch/:playerId', auth.jwtAuthProtected, function(req, res, next) {
 });
 
 
-/* GET the wins and losses for a player */
+/**
+ * Get the wins and losses for a player
+ *
+ * @param: playerId
+ */
 router.get('/record/:playerId', auth.jwtAuthProtected, function(req, res, next) {
 	var playerId = req.params.playerId;
 	if (!playerId) return next(new Error('You must specify a player id.'));
