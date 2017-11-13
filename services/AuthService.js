@@ -5,7 +5,7 @@ var jwt = require('jsonwebtoken');
 
 var AuthService = {
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
-    JWT_AUTH_HEADER_PREFIX: 'JWT',
+    JWT_AUTH_HEADER_PREFIX: process.env.JWT_AUTH_HEADER_PREFIX || 'JWT',
     JWT_ALGORITHM: process.env.JWT_ALGORITHM || 'HS256',
     JWT_EXPIRATION_DAYS: process.env.JWT_EXPIRATION_DAYS || 5,
     JWT_REJECT_IAT_BEFORE: process.env.JWT_REJECT_IAT_BEFORE || new Date(2017, 0).getTime(),
