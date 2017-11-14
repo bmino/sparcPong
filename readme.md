@@ -1,6 +1,6 @@
 # Sparc Pong
 
-This ladder manages the semi-competitive ping pong scene at Sparc.
+This ladder currently manages the semi-competitive ping pong scene at Sparc.
 
 
 ## Getting Started
@@ -33,8 +33,6 @@ Setup Mongodb root directory
 sudo mkdir -p /data/db
 sudo chmod -R a+w /data
 ```
-
-End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the tests
 
