@@ -38,7 +38,7 @@ function SinglesBoardController($scope, socket, modalService, playerService, pla
 	}
 	
 	$scope.isOnline = function(playerId) {
-		return userBankService.isOnlineByPlayerId(playerId);
+		return userBankService.isOnlineByPlayerIds(playerId);
 	};
 	
 	$scope.challenge = function(challengeeId) {

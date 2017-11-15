@@ -28,8 +28,12 @@ function UserBankService() {
         service.USER_COUNT = userCount;
     };
 
-    service.isOnlineByPlayerId = function(playerId) {
-        return service.LOGGED_IN_USERS.indexOf(playerId) !== -1;
+    service.isOnlineByPlayerIds = function() {
+        var found = false;
+        angular.forEach(arguments, function(pid) {
+            if (service.LOGGED_IN_USERS.indexOf(pid) >= 0) return found = true;
+        });
+        return found;
     }
 
 }
