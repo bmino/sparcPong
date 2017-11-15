@@ -60,9 +60,9 @@ router.post('/', function(req, res, next) {
 			return player.save();
 		})
 		.then(Alert.attachToPlayer)
-		.then(function(player) {
-            return Authorization.authorizePlayerWithPassword(player, playerPassword);
-		})
+		.then(function(createdPlayer) {
+			return Authorization.attachToPlayerWithPassword(createdPlayer, playerPassword)
+        })
 		.then(function() {
             req.app.io.sockets.emit('player:new', playerUsername);
             console.log('Successfully created a new player.');
@@ -117,9 +117,8 @@ router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) 
             return Authorization.findByPlayerId(clientId);
 		})
 		.then(function(authorization) {
-			if (authorization.password !== oldPassword) return Promise.reject(new Error('Incorrect current password.'));
-            authorization.password = newPassword;
-			return authorization.save();
+			if (!authorization.isPasswordEqualTo(oldPassword)) return Promise.reject(new Error('Incorrect current password.'));
+			return authorization.setPassword(newPassword);
 		})
         .then(function() {
             req.app.io.sockets.emit('player:change:password');

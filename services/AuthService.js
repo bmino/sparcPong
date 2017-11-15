@@ -57,12 +57,15 @@ function verifyToken(token) {
 function validateCredentials(playerId, password) {
     console.log('Validating credentials.');
     return new Promise(function(resolve, reject) {
-        Authorization.countByPlayerIdAndPassword(playerId, password)
-            .then(function(count) {
-                if (count !== 1) return reject(new Error('Invalid credentials.'));
-                return resolve(playerId);
+        Authorization.findByPlayerId(playerId)
+            .then(function(authorization) {
+                if (authorization.isPasswordEqualTo(password)) return resolve(playerId);
+                return reject(new Error('Incorrect password'));
             })
-            .catch(reject);
+            .catch(function(error) {
+                console.log(error);
+                return reject('Invalid credentials.');
+            });
     });
 }
 
