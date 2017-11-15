@@ -43,15 +43,6 @@
 	display: inline;
 }
 
-.partial-board .doubles-signUp {
-	float: right;
-	display: inline-block;
-    padding: 8px 8px;
-    border-radius: 10px;
-	background-color: grey;
-	color: white;
-}
-
-.partial-board .doubles-signUp:hover {
-	background-color: orange;
+.partial-board a.btn {
+	color: inherit;
 }
