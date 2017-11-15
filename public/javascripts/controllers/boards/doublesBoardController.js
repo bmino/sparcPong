@@ -92,7 +92,7 @@ function DoublesBoardController($scope, jwtService, socket, modalService, timeSe
     };
 
     $scope.isOnline = function(team) {
-        return userBankService.isOnlineByPlayerIds(team.leader._id, team.partner._id);
+        return userBankService.isOnlineByPlayerIds(team.leader, team.partner);
     };
 
 
