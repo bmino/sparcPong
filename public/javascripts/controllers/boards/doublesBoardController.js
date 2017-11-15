@@ -2,10 +2,10 @@ angular
 	.module('controllers')
 	.controller('doublesBoardController', DoublesBoardController);
 
-DoublesBoardController.$inject = ['$scope', 'jwtService', 'socket', 'modalService', 'timeService', 'teamService', 'teamChallengeService'];
+DoublesBoardController.$inject = ['$scope', 'jwtService', 'socket', 'modalService', 'timeService', 'teamService', 'teamChallengeService', 'userBankService'];
 
 
-function DoublesBoardController($scope, jwtService, socket, modalService, timeService, teamService, teamChallengeService) {
+function DoublesBoardController($scope, jwtService, socket, modalService, timeService, teamService, teamChallengeService, userBankService) {
 
     $scope.teams = [];
 
