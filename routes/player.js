@@ -47,12 +47,11 @@ router.post('/', function(req, res, next) {
 
 	Promise.all([
         AuthService.validatePasswordStrength(playerPassword),
-		NameService.verifyRealName(player),
-		NameService.verifyUsername(player.username),
-		Player.usernameExists(player.username),
-        EmailService.verifyEmail(player.email),
-		Player.emailExists(player.email),
 		NameService.verifyRealName(playerFirstName, playerLastName),
+		NameService.verifyUsername(playerUsername),
+		Player.usernameExists(playerUsername),
+        EmailService.verifyEmail(playerEmail),
+		Player.emailExists(playerEmail),
 		Player.lowestRank()
 	])
 		.then(function(values) {
