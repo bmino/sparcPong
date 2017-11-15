@@ -52,6 +52,7 @@ router.post('/', function(req, res, next) {
 		Player.usernameExists(player.username),
         EmailService.verifyEmail(player.email),
 		Player.emailExists(player.email),
+		NameService.verifyRealName(playerFirstName, playerLastName),
 		Player.lowestRank()
 	])
 		.then(function(values) {
