@@ -12,6 +12,7 @@
 			<!-- Each Team -->
 			<li class="list-group-item" ng-repeat="team in teams | tier: t">
 				<div class="rank" ng-bind="team.rank"></div>
+				<span ng-show="isOnline(team)" class="online-indicator"></span>
 				<a class="username" ng-href="#!/profile/team/{{team._id}}" ng-bind="team.username"></a>
 				<button class="btn btn-primary sp-button challengeButton" ng-click="challengeTeam(team._id)">Challenge</button>
 			</li>

@@ -91,6 +91,11 @@ function DoublesBoardController($scope, jwtService, socket, modalService, timeSe
         return teams;
     };
 
+    $scope.isOnline = function(team) {
+        return userBankService.isOnlineByPlayerIds(team.leader._id, team.partner._id);
+    };
+
+
     function goodChallenge(success) {
         var modalOptions = {
             headerText: 'Team Challenge',
