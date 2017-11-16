@@ -1,3 +1,3 @@
-<button class="btn btn-primary sp-button" logged-in="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolve(challenge)">Resolve</button>
-<button class="btn btn-danger sp-button" logged-in="challenge.challenger._id" ng-click="revoke(challenge)">Revoke</button>
-<button class="btn btn-danger sp-button" logged-in="challenge.challengee._id" ng-click="forfeit(challenge)">Forfeit</button>
+<button class="btn btn-primary sp-button" if-client-online="[challenge.challenger._id, challenge.challengee._id]" ng-click="resolve(challenge)">Resolve</button>
+<button class="btn btn-danger sp-button" if-client-online="challenge.challenger._id" ng-click="revoke(challenge)">Revoke</button>
+<button class="btn btn-danger sp-button" if-client-online="challenge.challengee._id" ng-click="forfeit(challenge)">Forfeit</button>

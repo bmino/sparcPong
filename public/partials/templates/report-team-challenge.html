@@ -1,11 +1,11 @@
 <button class="btn btn-primary sp-button"
-        logged-in="[challenge.challenger.leader._id, challenge.challenger.partner._id, challenge.challengee.leader._id, challenge.challengee.partner._id]"
+        if-client-online="[challenge.challenger.leader._id, challenge.challenger.partner._id, challenge.challengee.leader._id, challenge.challengee.partner._id]"
         ng-click="resolve(challenge)">Resolve</button>
 
 <button class="btn btn-danger sp-button"
-        logged-in="[challenge.challenger.leader._id, challenge.challenger.partner._id]"
+        if-client-online="[challenge.challenger.leader._id, challenge.challenger.partner._id]"
         ng-click="revoke(challenge)">Revoke</button>
 
 <button class="btn btn-danger sp-button"
-        logged-in="[challenge.challengee.leader._id, challenge.challengee.partner._id]"
+        if-client-online="[challenge.challengee.leader._id, challenge.challengee.partner._id]"
         ng-click="forfeit(challenge)">Forfeit</button>

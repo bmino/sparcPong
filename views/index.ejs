@@ -19,7 +19,7 @@
 <body ng-app="sparcPongApp" ng-cloak>
     <div class="wrapper">
         <nav class="navbar navbar-default navbar-fixed-top" ng-controller="headerController">
-            <div class="container-fluid" logged-in>
+            <div class="container-fluid" if-client-online>
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar" aria-expanded="false">
                         <span class="sr-only">Toggle navigation</span>
@@ -126,7 +126,7 @@
 
     <!-- Angular: Directives -->
     <script src='/javascripts/directives/timeGap.js'></script>
-    <script src='/javascripts/directives/loggedIn.js'></script>
+    <script src='/javascripts/directives/ifClientOnline.js'></script>
     <script src='/javascripts/directives/untilForfeit.js'></script>
     <script src='/javascripts/directives/focusFirst.js'></script>
     <script src='/javascripts/directives/onlineUsersDisplay.js'></script>
