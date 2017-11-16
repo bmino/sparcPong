@@ -79,7 +79,7 @@ router.delete('/revoke', function(req, res, next) {
             if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
             return ChallengeService.verifyChallengerByPlayerId(challenge, clientId, 'Only the challenger can revoke this challenge.');
         })
-		.then(ChallengeService.verifyForfeit)
+		.then(PlayerChallengeService.verifyForfeitIsNotRequired)
 		.then(Challenge.removeByDocument)
 		.then(function(challenge) {
             MailerService.revokedChallenge(challenge.challenger, challenge.challengee);
@@ -107,7 +107,7 @@ router.post('/resolve', function(req, res, next) {
 		.then(function(challenge) {
             return ChallengeService.verifyInvolvedByPlayerId(challenge, clientId, 'Only an involved player can resolve this challenge.');
         })
-		.then(ChallengeService.verifyForfeit)
+		.then(PlayerChallengeService.verifyForfeitIsNotRequired)
         .then(function(challenge) {
 			return ChallengeService.setScore(challenge, challengerScore, challengeeScore);
         })

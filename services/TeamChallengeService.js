@@ -4,15 +4,16 @@ var TeamChallenge = mongoose.model('TeamChallenge');
 var ChallengeService = require('./ChallengeService');
 
 var TeamChallengeService = {
+    ALLOWED_CHALLENGE_DAYS_TEAM: process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5,
 
     verifyAllowedToChallenge : verifyAllowedToChallenge,
     verifyChallengesBetweenTeams : verifyChallengesBetweenTeams,
     verifyAllowedToResolve : verifyAllowedToResolve,
     verifyAllowedToForfeit : verifyAllowedToForfeit,
     verifyAllowedToRevoke : verifyAllowedToRevoke,
+    verifyForfeitIsNotRequired : verifyForfeitIsNotRequired,
 
     updateLastGames : updateLastGames
-
 };
 
 module.exports = TeamChallengeService;
@@ -100,6 +101,16 @@ function verifyAllowedToRevoke(teamChallenge, playerId) {
                 return reject(new Error('Only the challenger can revoke a challenge.'));
             })
             .catch(reject);
+    });
+}
+
+function verifyForfeitIsNotRequired(challenge) {
+    console.log('Verifying team challenge forfeit');
+    return new Promise(function(resolve, reject) {
+        var dateIssued = challenge.createdAt;
+        var expires = Util.addBusinessDays(dateIssued, TeamChallengeService.ALLOWED_CHALLENGE_DAYS_TEAM);
+        if (expires < new Date()) return reject(new Error('This challenge has expired. It must be forfeited.'));
+        return resolve(challenge);
     });
 }
 

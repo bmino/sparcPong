@@ -4,11 +4,13 @@ var Challenge = mongoose.model('Challenge');
 var ChallengeService = require('./ChallengeService');
 
 var PlayerChallengeService = {
+    ALLOWED_CHALLENGE_DAYS: process.env.ALLOWED_CHALLENGE_DAYS || 4,
 
     verifyAllowedToChallenge : verifyAllowedToChallenge,
     verifyChallengesBetweenPlayers : verifyChallengesBetweenPlayers,
-    updateLastGames : updateLastGames
+    verifyForfeitIsNotRequired : verifyForfeitIsNotRequired,
 
+    updateLastGames : updateLastGames
 };
 
 module.exports = PlayerChallengeService;
@@ -54,6 +56,16 @@ function verifyAllowedToChallenge(players) {
         return Promise.all([existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
             .then(function() {return resolve(players);})
             .catch(reject);
+    });
+}
+
+function verifyForfeitIsNotRequired(challenge) {
+    console.log('Verifying player challenge forfeit');
+    return new Promise(function(resolve, reject) {
+        var dateIssued = challenge.createdAt;
+        var expires = Util.addBusinessDays(dateIssued, PlayerChallengeService.ALLOWED_CHALLENGE_DAYS);
+        if (expires < new Date()) return reject(new Error('This challenge has expired. It must be forfeited.'));
+        return resolve(challenge);
     });
 }
 

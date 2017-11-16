@@ -100,7 +100,7 @@ router.delete('/revoke', function(req, res, next) {
             if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
             return TeamChallengeService.verifyAllowedToRevoke(challenge, clientId);
         })
-		.then(ChallengeService.verifyForfeit)
+		.then(TeamChallengeService.verifyForfeitIsNotRequired)
 		.then(TeamChallenge.removeByDocument)
 		.then(function(challenge) {
             MailerService.revokedTeamChallenge(challenge.challenger, challenge.challengee);
@@ -128,7 +128,7 @@ router.post('/resolve', function(req, res, next) {
 		.then(function(teamChallenge) {
             return TeamChallengeService.verifyAllowedToResolve(teamChallenge, clientId);
 		})
-		.then(ChallengeService.verifyForfeit)
+		.then(TeamChallengeService.verifyForfeitIsNotRequired)
 		.then(function(teamChallenge) {
 			return ChallengeService.setScore(teamChallenge, challengerScore, challengeeScore);
 		})

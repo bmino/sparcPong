@@ -8,8 +8,6 @@ var ChallengeService = {
     TEMP_RANK: -1,
     CHALLENGE_ANYTIME: process.env.CHALLENGE_ANYTIME || false,
     CHALLENGE_BACK_DELAY_HOURS: process.env.CHALLENGE_BACK_DELAY_HOURS || 12,
-    ALLOWED_CHALLENGE_DAYS: process.env.ALLOWED_CHALLENGE_DAYS || 4,
-    ALLOWED_CHALLENGE_DAYS_TEAM : process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5,
     ALLOWED_OUTGOING: process.env.ALLOWED_OUTGOING || 1,
     ALLOWED_INCOMING: process.env.ALLOWED_INCOMING || 1,
 
@@ -17,7 +15,6 @@ var ChallengeService = {
     verifyReissueTime : verifyReissueTime,
     verifyRank : verifyRank,
     verifyTier : verifyTier,
-    verifyForfeit : verifyForfeit,
 
     verifyInvolvedByPlayerId : verifyInvolvedByPlayerId,
     verifyChallengerByPlayerId : verifyChallengerByPlayerId,
@@ -28,7 +25,6 @@ var ChallengeService = {
 
     setScore : setScore,
     setForfeit : setForfeit
-
 };
 
 module.exports = ChallengeService;
@@ -73,16 +69,6 @@ function verifyTier(challenger, challengee) {
         if (Math.abs(Util.getTier(challenger.rank) - Util.getTier(challengee.rank)) > 1)
             return reject(new Error('You cannot challenge an opponent beyond 1 tier.'));
         return resolve();
-    });
-}
-
-function verifyForfeit(challenge) {
-    console.log('Verifying forfeit');
-    return new Promise(function(resolve, reject) {
-        var dateIssued = challenge.createdAt;
-        var expires = Util.addBusinessDays(dateIssued, ChallengeService.ALLOWED_CHALLENGE_DAYS);
-        if (expires < new Date()) return reject(new Error('This challenge has expired. It must be forfeited.'));
-        return resolve(challenge);
     });
 }
 
