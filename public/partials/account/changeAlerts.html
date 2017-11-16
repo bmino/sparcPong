@@ -2,18 +2,25 @@
 	<h1>Alerts</h1>
 </div>
 <div class="account-changeAlerts">
-	<form class="form-horizontal" ng-submit="updateAlerts()" autocomplete="off">
-		<div class="form-group">
-			<div class="alert-buttons-title">Singles</div>
-			<div class="alert-buttons">
-				<button type="button" class="btn btn-default" ng-repeat="(key, alert) in alerts" ng-if="key != 'team'" ng-bind="alert.name" ng-click="toggle(key)" ng-class="{'btn-success' : alert.status}"></button>
+	<form ng-submit="updateAlerts()" autocomplete="off">
+
+		<ul class="nav nav-tabs nav-justified">
+			<li class="active"><a data-toggle="tab" data-target="#singles">Singles Challenge</a></li>
+			<li><a data-toggle="tab" data-target="#doubles">Doubles Challenge</a></li>
+		</ul>
+
+		<div class="tab-content">
+			<div id="singles" class="tab-pane fade in active">
+				<div class="alert-buttons">
+					<button type="button" class="btn btn-default" ng-repeat="(key, alert) in alerts" ng-if="key != 'team'" ng-bind="alert.name" ng-click="toggle(key)" ng-class="{'btn-success' : alert.status}"></button>
+				</div>
+			</div>
+			<div id="doubles" class="tab-pane fade">
+				<div class="alert-buttons">
+					<button type="button" class="btn btn-default" ng-repeat="(key, alert) in alerts.team" ng-bind="alert.name" ng-click="toggle(key, 'team')" ng-class="{'btn-success' : alert.status}"></button>
+				</div>
 			</div>
 		</div>
-		<div class="form-group">
-			<div class="alert-buttons-title">Doubles</div>
-			<div class="alert-buttons">
-				<button type="button" class="btn btn-default" ng-repeat="(key, alert) in alerts.team" ng-bind="alert.name" ng-click="toggle(key, 'team')" ng-class="{'btn-success' : alert.status}"></button>
-			</div>
-		</div>
+
 	</form>
 </div>
