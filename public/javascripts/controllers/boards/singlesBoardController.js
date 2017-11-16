@@ -2,9 +2,9 @@ angular
 	.module('controllers')
 	.controller('singlesBoardController', SinglesBoardController);
 
-SinglesBoardController.$inject = ['$scope', 'socket', 'modalService', 'playerService', 'playerChallengeService', 'userBankService'];
+SinglesBoardController.$inject = ['$scope', 'socket', 'modalService', 'playerService', 'playerChallengeService'];
 
-function SinglesBoardController($scope, socket, modalService, playerService, playerChallengeService, userBankService) {
+function SinglesBoardController($scope, socket, modalService, playerService, playerChallengeService) {
 	
 	function init() {
 		// TODO: implement a better solution than guessing big at 16 tiers
@@ -36,10 +36,6 @@ function SinglesBoardController($scope, socket, modalService, playerService, pla
 								.replace(/"/g, '&quot;');
 		}
 	}
-	
-	$scope.isOnline = function(playerId) {
-		return userBankService.isOnlineByPlayerIds(playerId);
-	};
 	
 	$scope.challenge = function(challengeeId) {
 		playerChallengeService.createChallenge(challengeeId).then( goodChallenge, badChallenge );

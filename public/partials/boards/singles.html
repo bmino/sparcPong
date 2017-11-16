@@ -9,7 +9,7 @@
 			<!-- Each Player -->
 			<li class="list-group-item" ng-repeat="player in players | tier: t">
 				<div class="rank" ng-bind="player.rank"></div>
-				<span ng-show="isOnline(player._id)" class="online-indicator"></span>
+				<span if-online="player._id" class="online-indicator"></span>
 				<a class="username" ng-href="#!/profile/player/{{player._id}}" ng-bind="player.username"></a>
 				<button class="btn btn-primary sp-button challengeButton" ng-click="challenge(player._id)">Challenge</button>
 			</li>

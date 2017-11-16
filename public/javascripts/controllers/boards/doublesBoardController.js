@@ -2,10 +2,10 @@ angular
 	.module('controllers')
 	.controller('doublesBoardController', DoublesBoardController);
 
-DoublesBoardController.$inject = ['$scope', 'jwtService', 'socket', 'modalService', 'timeService', 'teamService', 'teamChallengeService', 'userBankService'];
+DoublesBoardController.$inject = ['$scope', 'jwtService', 'socket', 'modalService', 'timeService', 'teamService', 'teamChallengeService'];
 
 
-function DoublesBoardController($scope, jwtService, socket, modalService, timeService, teamService, teamChallengeService, userBankService) {
+function DoublesBoardController($scope, jwtService, socket, modalService, timeService, teamService, teamChallengeService) {
 
     $scope.teams = [];
 
@@ -89,10 +89,6 @@ function DoublesBoardController($scope, jwtService, socket, modalService, timeSe
             if (team.leader === playerId || team.partner === playerId) teams.push(team);
         });
         return teams;
-    };
-
-    $scope.isOnline = function(team) {
-        return userBankService.isOnlineByPlayerIds(team.leader, team.partner);
     };
 
 

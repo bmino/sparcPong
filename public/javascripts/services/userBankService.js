@@ -34,6 +34,6 @@ function UserBankService() {
             if (service.LOGGED_IN_USERS.indexOf(pid) >= 0) return found = true;
         });
         return found;
-    }
+    };
 
 }
