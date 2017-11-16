@@ -7,8 +7,11 @@ ResolvePlayerChallengeController.$inject = ['$scope', 'playerChallengeService', 
 function ResolvePlayerChallengeController($scope, playerChallengeService, modalService) {
 
     $scope.resolve = function(challenge) {
+        challenge.challengerScore = challenge.challengeeScore = 0;
+
         var modalOptions = {
             headerText: 'Resolve Challenge',
+            bodyText: 'Report how many games each player won.',
             challenge: challenge
         };
         modalService.showScoreModal({}, modalOptions)
