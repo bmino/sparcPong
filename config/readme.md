@@ -32,7 +32,8 @@ Authentication Properties
 | JWT_ALGORITHM | HS256 | Algorithm used to encode and decode a JWT |
 | JWT_EXPIRATION_DAYS | 5 | Days before a JWT is considered expired |
 | JWT_REJECT_IAT_BEFORE | 1483246800000 | A JWT before this time (in milliseconds) is considered invalid |
-| PASSWORD_RESET_WINDOW_HOURS | 2 | Hours after a password reset key is issued until it expires |
+| PASSWORD_RESET_WINDOW_MINUTES | 20 | Minutes after a password reset key is issued until it expires |
+| PASSWORD_RESET_REPEAT_HOURS | 1 | Hours after a password reset is enabled before it can be reset again |
 
 Email Properties
 ----------------
@@ -67,3 +68,4 @@ Application Properties
 | PORT | 3000 | Port the node server runs on |
 | MONGODB_URI | mongodb://127.0.0.1/sparcPongDb | Mongo connection uri |
 | MORGAN_FORMAT | tiny | Morgan logging predefined type |
+| LADDER_URL | *none* | Root url where the ladder is hosted. Defaults to localhost when MONGODB_URL is not defined. |

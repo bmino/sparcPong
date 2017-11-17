@@ -17,6 +17,10 @@ playerSchema.methods.attachAlert = function(alert) {
 	return this.save();
 };
 
+playerSchema.statics.findByAuthorization = function(authorization) {
+    return Player.findById(authorization.user).exec();
+};
+
 playerSchema.statics.usernameExists = function(username) {
     console.log('Checking if player username, ' + username + ', exists.');
     return new Promise(function (resolve, reject) {

@@ -7,7 +7,7 @@
 module.exports.getTier = function(rank) {
     var tier = 1;
     var tierRanks = [];
-    while (tierRanks.indexOf(rank) == -1) {
+    while (tierRanks.indexOf(rank) === -1) {
         tierRanks = module.exports.getRanks(tier++);
     }
     return tier;
@@ -36,7 +36,7 @@ module.exports.getRanks = function(tier) {
  */
 module.exports.addBusinessDays = function(date, days) {
     // Bad Inputs
-    if (!days || days == 0) return date;
+    if (!days) return date;
     var newDate = new Date(date.getTime());
     var added = 0;
     while (added < days) {
@@ -57,9 +57,9 @@ module.exports.addBusinessDays = function(date, days) {
  */
 module.exports.addDays = function(date, days) {
     // Bad Inputs
-    if (!days || days == 0) return date;
+    if (!days) return date;
     var newDate = new Date(date.getTime());
-    newDate.setDate(newDate.getDate()+days);
+    newDate.setDate(newDate.getDate()+parseInt(days));
     return newDate;
 };
 
@@ -71,9 +71,23 @@ module.exports.addDays = function(date, days) {
  */
 module.exports.addHours = function(date, hours) {
     // Bad Inputs
-    if (!hours || hours == 0) return date;
+    if (!hours) return date;
     var newDate = new Date(date.getTime());
-    newDate.setHours(newDate.getHours()+hours);
+    newDate.setHours(newDate.getHours()+parseInt(hours));
+    return newDate;
+};
+
+/*
+ * Adds minutes to a date.
+ *
+ * @param: date - the starting date
+ * @param: minutes - number of minutes to add
+ */
+module.exports.addMinutes = function(date, minutes) {
+    // Bad Inputs
+    if (!minutes) return date;
+    var newDate = new Date(date.getTime());
+    newDate.setMinutes(newDate.getMinutes()+parseInt(minutes));
     return newDate;
 };
 
@@ -83,5 +97,5 @@ module.exports.addHours = function(date, hours) {
  * @param: date
  */
 module.exports.isBusinessDay = function(date) {
-    return date.getDay() != 0 && date.getDay() != 6;
+    return date.getDay() !== 0 && date.getDay() !== 6;
 };

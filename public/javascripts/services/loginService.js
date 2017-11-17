@@ -42,6 +42,33 @@ function LoginService($http, socket, jwtService) {
         return request.then(processSuccessToken, processError);
     };
 
+    /**
+     * Allows a user to reset their password via reset key.
+     * @param playerId
+     */
+    service.enablePasswordReset = function(playerId) {
+        var request = $http({
+            method: "post",
+            url: "auth/password/reset/enable",
+            data: {
+                playerId: playerId
+            }
+        });
+        return request.then(processSuccess, processError);
+    };
+
+    service.changePasswordWithResetKey = function(newPassword, resetKey) {
+        var request = $http({
+            method: "post",
+            url: "auth/password/reset/change",
+            data: {
+                password: newPassword,
+                resetKey: resetKey
+            }
+        });
+        return request.then(processSuccess, processError);
+    };
+
     service.getLogins = function () {
         var request = $http({
             method: 'get',
@@ -86,7 +113,9 @@ function LoginService($http, socket, jwtService) {
     }
 
     function processError(response) {
-        throw response.data.errmsg;
+        var dummy = document.createElement('body');
+        dummy.innerHTML = response.data;
+        throw dummy.getElementsByTagName("h1")[0].innerHTML;
     }
 
 }

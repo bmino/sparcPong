@@ -2,14 +2,23 @@
 	<div class="page-header">
 		<h1>Log In</h1>
 	</div>
+
+	<label for="user-select">Username: </label>
 	<select class="form-control"
+			id="user-select"
 			ng-model="player"
 			ng-options="player as player.username for player in players"
 			focus-first>
 		<option value=""> -- Select your user name -- </option>
 	</select>
-	<input type="password" class="form-control" ng-model="password">
+
+	<label for="password-input">Password: </label>
+	<input type="password" class="form-control" id="password-input" ng-model="password">
+
 	<br />
+
 	<input type="submit" class="btn btn-primary" value="Login">
 	<input type="button" class="btn btn-default" value="Sign Up" ng-click="signUp()">
+	<input type="button" class="btn btn-default pull-right" value="Forgot Password" ng-click="forgotPassword()">
+
 </form>

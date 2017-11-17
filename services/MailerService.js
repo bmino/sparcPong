@@ -3,6 +3,7 @@ var Challenge = mongoose.model('Challenge');
 var TeamChallenge = mongoose.model('TeamChallenge');
 var Player = mongoose.model('Player');
 var Team = mongoose.model('Team');
+var Authorization = mongoose.model('Authorization');
 
 var nodemailer = require('nodemailer');
 var xoauth2 = require('xoauth2');
@@ -18,6 +19,8 @@ var MailerService = {
     revokedChallenge : revokedChallenge,
     resolvedChallenge : resolvedChallenge,
     forfeitedChallenge : forfeitedChallenge,
+
+    resetPassword : resetPassword,
 
     transporter : nodemailer.createTransport("SMTP", {
         service: 'gmail',
@@ -183,19 +186,43 @@ function forfeitedChallenge(challengeId) {
         .catch(console.log);
 }
 
+function resetPassword(resetKey) {
+    console.log('Checking email for password reset.');
+
+    return new Promise(function(resolve, reject) {
+        Authorization.findByResetKey(resetKey)
+            .then(Player.findByAuthorization)
+            .then(function(player) {
+                if (!player) return reject(new Error('Player could not be found'));
+                if (!player.email) return reject(new Error('Could not find an email for this player.'));
+                return sendEmail('Password Reset', 'Your reset key is: ' + resetKey +
+                    "\n" +
+                    'You may reset your password at ' + process.env.LADDER_URL + '/#!/resetPassword/' + encodeURIComponent(resetKey), player.email);
+            })
+            .then(resolve)
+            .catch(function(err) {
+                console.log(err);
+                return reject(new Error('Error sending password reset email'));
+            });
+    });
+}
+
 
 function sendEmail(subject, message, address) {
     console.log('Trying to send email to '+ address);
 
-    var mailOptions = {
-        to: address,
-        from: process.env.EMAIL_TITLE +' <'+ process.env.EMAIL_ADDRESS +'>',
-        subject: subject,
-        text: message
-    };
+    return new Promise(function(resolve, reject) {
+        var mailOptions = {
+            to: address,
+            from: process.env.EMAIL_TITLE +' <'+ process.env.EMAIL_ADDRESS +'>',
+            subject: subject,
+            text: message
+        };
 
-    MailerService.transporter.sendMail(mailOptions, function(error, response) {
-        if (error) return console.log(error);
-        console.log('Message sent to ' + address);
+        MailerService.transporter.sendMail(mailOptions, function(error, response) {
+            if (error) return reject(error);
+            return resolve('Message sent to ' + address);
+        });
     });
+
 }

@@ -1,27 +1,55 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt');
+var uuid = require('uuid');
 
 var authorizationSchema = new Schema({
-	user: { type: Schema.ObjectId, ref: 'Player' },
-	password: { type: String, required: true }
+	user: { type: Schema.ObjectId, ref: 'Player', required: true },
+	password: { type: String, required: true },
+    reset: {
+	    key: { type: String },
+        date: { type: Date }
+	}
 });
 
 authorizationSchema.methods.setPassword = function(password) {
     var self = this;
-    return bcrypt.genSalt()
-        .then(function(salt) {
-            return bcrypt.hash(password, salt);
-        })
+    var salt = bcrypt.genSaltSync();
+    return bcrypt.hash(password, salt)
         .then(function(passwordHash) {
             self.password = passwordHash;
             return self.save();
+        })
+        .catch(function(error) {
+            console.log(error);
+            return error;
         });
 };
 
 authorizationSchema.methods.isPasswordEqualTo = function(password) {
     var self = this;
     return bcrypt.compareSync(password, self.password);
+};
+
+authorizationSchema.methods.enablePasswordReset = function() {
+    var self = this;
+    self.reset.key = uuid();
+    self.reset.date = new Date();
+    return self.save();
+};
+
+authorizationSchema.methods.getResetKey = function() {
+    var self = this;
+    return self.reset.key;
+};
+
+authorizationSchema.methods.getResetDate = function() {
+    var self = this;
+    return self.reset.date;
+};
+
+authorizationSchema.statics.findByResetKey = function(resetKey) {
+    return Authorization.findOne({'reset.key': resetKey}).exec();
 };
 
 authorizationSchema.statics.attachToPlayerWithPassword = function(player, password) {

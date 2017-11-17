@@ -66,11 +66,15 @@ function routes($routeProvider) {
 			controller: 'signUpTeamController'
 		})
 
-		/* Log In Routes */
+		/* Authentication Routes */
 		.when('/login', {
 			templateUrl: '/partials/login.html',
 			controller: 'loginController'
 		})
+        .when('/resetPassword/:resetKey?', {
+            templateUrl: '/partials/resetPassword.html',
+            controller: 'resetPasswordController'
+        })
 		
 		.otherwise({
 			redirectTo: '/board/singles'

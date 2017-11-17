@@ -32,6 +32,27 @@ function LoginController($scope, $location, loginService, modalService, socket) 
         $location.path('/signUp/player');
     };
 
+    $scope.forgotPassword = function() {
+        var modalOptions = {
+            headerText: 'Password Reset',
+            bodyText: 'You must first select a username.'
+        };
+
+        if (!$scope.player._id) {
+            return modalService.showAlertModal({}, modalOptions);
+        }
+
+        loginService.enablePasswordReset($scope.player._id)
+            .then(function(response) {
+                modalOptions.bodyText = response;
+                modalService.showAlertModal({}, modalOptions);
+            })
+            .catch(function(error) {
+                modalOptions.bodyText = error;
+                modalService.showAlertModal({}, modalOptions);
+            });
+    };
+
     $scope.login = function() {
         console.log('logging in');
         $scope.authenticating = true;

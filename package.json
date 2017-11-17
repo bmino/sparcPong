@@ -26,6 +26,7 @@
     "nodemailer": "^0.7.1",
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.4.8",
+    "uuid": "^3.1.0",
     "xoauth2": "^1.2.0"
   }
 }
