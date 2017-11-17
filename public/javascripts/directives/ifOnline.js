@@ -7,18 +7,21 @@ ifOnline.$inject = ['userBankService'];
 function ifOnline(userBankService) {
 
 	return {
-		link: link
+		link: link,
+        scope: {
+		    ifOnline: '='
+        }
 	};
 
     function link(scope, elem, attrs) {
 
-        scope.$watch(userBankService.getLoggedInUsers, function(onlineUserIds) {
-            var idsToCheck = scope.$eval(attrs.ifOnline);
+        scope.$watchGroup([userBankService.getLoggedInUsers, 'ifOnline'], function(watched) {
+            var onlineUserIds = watched[0];
 
-            if (!idsToCheck) return elem.hide();
+            if (!scope.ifOnline) return elem.hide();
             if (!onlineUserIds) return elem.hide();
 
-            if (inArray(idsToCheck, onlineUserIds)) return elem.show();
+            if (inArray(scope.ifOnline, onlineUserIds)) return elem.show();
             return elem.hide();
         });
     }

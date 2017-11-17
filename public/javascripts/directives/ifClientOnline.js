@@ -7,14 +7,19 @@ ifClientOnline.$inject = ['loginService', 'jwtService'];
 function ifClientOnline(loginService, jwtService) {
 
 	return {
-		link: link
+		link: link,
+        scope: {
+		    ifClientOnline: '='
+        }
 	};
 
     function link(scope, elem, attrs) {
-        scope.$watch(loginService.isLoggedIn, function(isLogged) {
-            if (!isLogged) return elem.hide();
+        scope.$watchGroup([loginService.isLoggedIn, 'ifClientOnline'], function(watched) {
+            var isLogged = watched[0];
+            var idsToCheck = scope.ifClientOnline;
 
-            var idsToCheck = scope.$eval(attrs.ifClientOnline);
+            // Nobody is logged in
+            if (!isLogged) return elem.hide();
 
             // Any user will do
             if (!idsToCheck) return elem.show();
