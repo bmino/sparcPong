@@ -32,7 +32,7 @@ Authentication Properties
 | JWT_ALGORITHM | HS256 | Algorithm used to encode and decode a JWT |
 | JWT_EXPIRATION_DAYS | 5 | Days before a JWT is considered expired |
 | JWT_REJECT_IAT_BEFORE | 1483246800000 | A JWT before this time (in milliseconds) is considered invalid |
-
+| PASSWORD_RESET_WINDOW_HOURS | 2 | Hours after a password reset key is issued until it expires |
 
 Email Properties
 ----------------

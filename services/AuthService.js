@@ -9,6 +9,7 @@ var AuthService = {
     JWT_ALGORITHM: process.env.JWT_ALGORITHM || 'HS256',
     JWT_EXPIRATION_DAYS: process.env.JWT_EXPIRATION_DAYS || 5,
     JWT_REJECT_IAT_BEFORE: process.env.JWT_REJECT_IAT_BEFORE || new Date(2017, 0).getTime(),
+    PASSWORD_RESET_WINDOW_HOURS: process.env.PASSWORD_RESET_WINDOW_HOURS || 2,
 
     createToken : createToken,
     verifyToken: verifyToken,
