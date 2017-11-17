@@ -7,15 +7,6 @@
 	margin-right: 8px;
 }
 
-.online-indicator {
-	display: inline-block;
-	vertical-align: middle;
-	background-color: green;
-	width: 10px;
-	height: 10px;
-	border-radius: 10px;
-}
-
 .partial-board li .username {
 	white-space: nowrap;
 	overflow: hidden;

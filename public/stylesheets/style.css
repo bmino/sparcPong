@@ -33,6 +33,15 @@ report-player-challenge, report-team-challenge {
 	float: right;
 }
 
+
+.online-indicator {
+	display: inline-block;
+	background-color: green;
+	width: 10px;
+	height: 10px;
+	border-radius: 10px;
+}
+
 li .sp-button {
 	padding-top: 0 !important;
 	padding-bottom: 0 !important;
