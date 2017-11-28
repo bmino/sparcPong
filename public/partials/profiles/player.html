@@ -5,6 +5,7 @@
 			<span class="score" ng-bind-template="({{wins}} - {{losses}})"></span>
 		</h1>
 
+		<span if-online="profile._id" class="online-indicator"></span>
 		<span ng-bind="profile.firstName"></span>
 		<span ng-bind="profile.lastName"></span>
 	</div>
