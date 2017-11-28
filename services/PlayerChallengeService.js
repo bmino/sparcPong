@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
 var Challenge = mongoose.model('Challenge');
 var ChallengeService = require('./ChallengeService');
+var Util = require('./Util');
 
 var PlayerChallengeService = {
     ALLOWED_CHALLENGE_DAYS: process.env.ALLOWED_CHALLENGE_DAYS || 4,
