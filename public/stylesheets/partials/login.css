@@ -1,0 +1,21 @@
+.partial-login .login-box {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 125px;
+    max-width: 400px;
+}
+
+.partial-login .login-box h1 {
+    text-align: center;
+}
+
+.partial-login .login-box input[type="password"] {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.partial-login .login-box .forgot-password {
+    display: inline-block;
+    padding-left: 2px;
+    margin-bottom: 15px;
+}
