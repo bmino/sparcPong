@@ -17,9 +17,9 @@
 
 </head>
 <body ng-app="sparcPongApp" ng-cloak>
-    <div class="wrapper">
-        <nav class="navbar navbar-default navbar-fixed-top" ng-controller="headerController">
-            <div class="container-fluid" if-client-online>
+    <div class="wrapper" ng-controller="headerController">
+        <nav class="navbar navbar-default navbar-fixed-top" if-client-online>
+            <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar" aria-expanded="false">
                         <span class="sr-only">Toggle navigation</span>
