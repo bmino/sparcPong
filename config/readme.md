@@ -56,8 +56,6 @@ Challenge Properties
 | CHALLENGE_BACK_DELAY_HOURS | 12 | Hours before a challenger may re-challenge the same opponent |
 | ALLOWED_CHALLENGE_DAYS | 4 | Business days until a singles challenge expires |
 | ALLOWED_CHALLENGE_DAYS_TEAM | 5 | Business days until a doubles challenge expires |
-| ALLOWED_OUTGOING | 1 | Maximum number of outgoing challenges allowed |
-| ALLOWED_INCOMING | 1 | Maximum number of incoming challenges allowed |
 
 
 Application Properties

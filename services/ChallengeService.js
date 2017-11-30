@@ -8,8 +8,8 @@ var ChallengeService = {
     TEMP_RANK: -1,
     CHALLENGE_ANYTIME: process.env.CHALLENGE_ANYTIME || false,
     CHALLENGE_BACK_DELAY_HOURS: process.env.CHALLENGE_BACK_DELAY_HOURS || 12,
-    ALLOWED_OUTGOING: process.env.ALLOWED_OUTGOING || 1,
-    ALLOWED_INCOMING: process.env.ALLOWED_INCOMING || 1,
+    ALLOWED_OUTGOING: 1,
+    ALLOWED_INCOMING: 1,
 
     verifyBusinessDay : verifyBusinessDay,
     verifyReissueTime : verifyReissueTime,
