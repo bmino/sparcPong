@@ -5,7 +5,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 app.io = io;
 var port = process.env.PORT || 3000;
-server.listen(3000);
+server.listen(port);
 var path = require('path');
 var favicon = require('serve-favicon');
 var morgan = require('morgan');
