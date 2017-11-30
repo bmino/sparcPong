@@ -3,22 +3,26 @@
   "version": "0.8.0",
   "private": true,
   "engines": {
-    "node": "7.10.1",
-    "npm": "4.0.5"
+    "node": "8.9.1",
+    "npm": "5.5.1"
   },
   "scripts": {
-    "start": "node app.js",
-    "postinstall": "bower install"
+    "start": "node app.js"
   },
   "dependencies": {
+    "angular": "^1.6.1",
+    "angular-cookies": "^1.6.1",
     "angular-jwt": "^0.1.9",
+    "angular-route": "^1.6.1",
+    "angular-ui-bootstrap": "^2.4.0",
     "bcrypt": "^1.0.3",
     "body-parser": "~1.15.1",
-    "bower": "^1.8.0",
+    "bootstrap": "^3.3.7",
     "debug": "~2.2.0",
     "dotenv": "^2.0.0",
     "ejs": "^2.5.7",
     "express": "^4.13.4",
+    "jquery": "^3.1.1",
     "jsonwebtoken": "^8.1.0",
     "mongodb": "^2.1.18",
     "mongoose": "^4.5.2",
