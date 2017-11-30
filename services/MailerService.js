@@ -10,6 +10,8 @@ var xoauth2 = require('xoauth2');
 
 
 var MailerService = {
+    EMAIL_TITLE: process.env.EMAIL_TITLE || 'Sparc Pong',
+
     newTeamChallenge : newTeamChallenge,
     revokedTeamChallenge : revokedTeamChallenge,
     resolvedTeamChallenge : resolvedTeamChallenge,
@@ -214,14 +216,15 @@ function sendEmail(subject, message, address) {
     return new Promise(function(resolve, reject) {
         var mailOptions = {
             to: address,
-            from: process.env.EMAIL_TITLE +' <'+ process.env.EMAIL_ADDRESS +'>',
+            from: MailerService.EMAIL_TITLE +' <'+ process.env.EMAIL_ADDRESS +'>',
             subject: subject,
             text: message
         };
 
         MailerService.transporter.sendMail(mailOptions, function(error, response) {
             if (error) return reject(error);
-            return resolve('Message sent to ' + address);
+            console.log('Message sent to ' + address);
+            return resolve('Message sent successfully');
         });
     });
 
