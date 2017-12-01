@@ -45,7 +45,7 @@ function createToken(playerId) {
             console.log('Successfully created a token');
             return resolve(token);
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return reject(err);
         }
     });
@@ -55,7 +55,7 @@ function verifyToken(token) {
     try {
         return jwt.verify(token, AuthService.JWT_SECRET_KEY);
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return false;
     }
 }
@@ -108,7 +108,7 @@ function validateCredentials(playerId, password) {
                 return Promise.reject(new Error('Incorrect password'));
             })
             .catch(function(error) {
-                console.log(error);
+                console.error(error);
                 return reject(new Error('Invalid credentials.'));
             });
     });

@@ -36,7 +36,7 @@ exports.validateJWT = function (req, res, next) {
         var jwtToken = authHeader[1];
         var payload = jwt.verify(jwtToken, jwtSecret);
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return res.status(401).send('Could not validate jwt security token.');
     }
 

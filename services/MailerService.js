@@ -203,7 +203,7 @@ function resetPassword(resetKey) {
             })
             .then(resolve)
             .catch(function(err) {
-                console.log(err);
+                console.error(err);
                 return reject(new Error('Error sending password reset email'));
             });
     });
@@ -223,7 +223,7 @@ function sendEmail(subject, message, address) {
 
         MailerService.transporter.sendMail(mailOptions, function(error, response) {
             if (error) return reject(error);
-            console.log('Message sent to ' + address);
+            console.error('Message sent to ' + address);
             return resolve('Message sent successfully');
         });
     });
