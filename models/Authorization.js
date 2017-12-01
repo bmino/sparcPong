@@ -19,10 +19,6 @@ authorizationSchema.methods.setPassword = function(password) {
         .then(function(passwordHash) {
             self.password = passwordHash;
             return self.save();
-        })
-        .catch(function(error) {
-            console.log(error);
-            return error;
         });
 };
 

@@ -48,7 +48,6 @@ function SinglesBoardController($scope, socket, modalService, playerService, pla
         modalService.showAlertModal({}, modalOptions);
 	}
 	function badChallenge(error) {
-		console.log(error);
 		var modalOptions = {
             headerText: 'Challenge',
             bodyText: error

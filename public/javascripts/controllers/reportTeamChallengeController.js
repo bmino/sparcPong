@@ -28,7 +28,6 @@ function ReportTeamChallengeController($scope, teamChallengeService, modalServic
                         modalService.showAlertModal({}, modalOptions);
                     })
                     .catch(function (error) {
-                        console.log(error);
                         modalOptions = {
                             headerText: 'Resolve Challenge',
                             bodyText: error
@@ -57,7 +56,6 @@ function ReportTeamChallengeController($scope, teamChallengeService, modalServic
                         modalService.showAlertModal({}, modalOptions);
                     })
                     .catch(function (error) {
-                        console.log(error);
                         var modalOptions = {
                             headerText: 'Revoke Challenge',
                             bodyText: error

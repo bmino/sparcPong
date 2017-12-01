@@ -101,7 +101,6 @@ function DoublesBoardController($scope, jwtService, socket, modalService, timeSe
     }
 
     function badChallenge(error) {
-        console.log(error);
         var modalOptions = {
             headerText: 'Team Challenge',
             bodyText: error

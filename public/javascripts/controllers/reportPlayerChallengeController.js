@@ -28,7 +28,6 @@ function ResolvePlayerChallengeController($scope, playerChallengeService, modalS
                         modalService.showAlertModal({}, modalOptions);
                     })
                     .catch(function (error) {
-                        console.log(error);
                         modalOptions = {
                             headerText: 'Resolve Challenge',
                             bodyText: error
@@ -57,7 +56,6 @@ function ResolvePlayerChallengeController($scope, playerChallengeService, modalS
                         modalService.showAlertModal({}, modalOptions);
                     })
                     .catch(function (error) {
-                        console.log(error);
                         var modalOptions = {
                             headerText: 'Revoke Challenge',
                             bodyText: error
@@ -86,7 +84,6 @@ function ResolvePlayerChallengeController($scope, playerChallengeService, modalS
                         modalService.showAlertModal({}, modalOptions);
                     })
                     .catch(function (error) {
-                        console.log(error);
                         modalOptions = {
                             headerText: 'Forfeit Challenge',
                             bodyText: error
