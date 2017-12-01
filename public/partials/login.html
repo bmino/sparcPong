@@ -1,29 +1,24 @@
 <form class="partial-login" ng-submit="login()">
 	<div class="login-box">
-		<div class="container-fluid">
 
-			<h1>Sparc Pong</h1>
+		<h1>Sparc Pong</h1>
 
-			<div class="row">
-				<select class="form-control form-group"
-						ng-model="player"
-						ng-options="player as player.username for player in players"
-						focus-first>
-					<option value="">Username</option>
-				</select>
-			</div>
+		<select class="form-control form-group"
+				ng-model="player"
+				ng-options="player as player.username for player in players"
+				focus-first>
+			<option value="">Username</option>
+		</select>
 
-			<div class="row">
-				<input type="password" class="form-control form-group" placeholder="Password" ng-model="password">
-				<a href="" class="forgot-password" ng-click="forgotPassword()">Forgot Password</a>
-			</div>
+		<input type="password" class="form-control form-group" placeholder="Password" ng-model="password">
+		<a href="" class="forgot-password" ng-click="forgotPassword()">Forgot Password</a>
 
 
-			<div class="row">
-				<input type="submit" class="btn btn-primary col-xs-6" value="Login">
-				<input type="button" class="btn btn-default col-xs-6" value="Sign Up" ng-click="signUp()">
-			</div>
+		<input type="submit" class="btn btn-primary form-control form-group" value="Login">
 
+		<div class="sign-up">
+			Don't have an account? <a href="" ng-click="signUp()">Sign up</a>
 		</div>
+
 	</div>
 </form>
