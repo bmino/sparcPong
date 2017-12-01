@@ -88,9 +88,7 @@ function TimeService($http, $filter) {
 	}
 
 	function handleError(response) {
-        var dummy = document.createElement('body');
-        dummy.innerHTML = response.data;
-        throw dummy.getElementsByTagName("h1")[0].innerHTML;
+        throw response.data;
 	}
 
 }
