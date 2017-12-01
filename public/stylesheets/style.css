@@ -51,9 +51,8 @@ li .sp-button {
 
 
 footer {
-	margin-top: 45px;
-	margin-left: auto;
-	margin-right: auto;
+	margin-top: 55px;
+	width: 100%;
 	text-align: center;
 	font-size: 12px;
 }
