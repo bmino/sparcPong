@@ -49,6 +49,10 @@ li .sp-button {
 	vertical-align: top !important;
 }
 
+.navbar .navbar-brand img {
+	height: 20px;
+	width: 20px;
+}
 
 footer {
 	margin-top: 55px;
