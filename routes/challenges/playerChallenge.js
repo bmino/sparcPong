@@ -79,7 +79,6 @@ router.delete('/revoke', function(req, res, next) {
             if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
             return ChallengeService.verifyChallengerByPlayerId(challenge, clientId, 'Only the challenger can revoke this challenge.');
         })
-		.then(PlayerChallengeService.verifyForfeitIsNotRequired)
 		.then(Challenge.removeByDocument)
 		.then(function(challenge) {
             MailerService.revokedChallenge(challenge.challenger, challenge.challengee);
