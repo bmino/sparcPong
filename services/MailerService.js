@@ -223,7 +223,7 @@ function sendEmail(subject, message, address) {
 
         MailerService.transporter.sendMail(mailOptions, function(error, response) {
             if (error) return reject(error);
-            console.error('Message sent to ' + address);
+            console.log('Message sent to ' + address);
             return resolve('Message sent successfully');
         });
     });
