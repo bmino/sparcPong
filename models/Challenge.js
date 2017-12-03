@@ -82,6 +82,10 @@ challengeSchema.statics.populateById = function(challengeId, populateAlerts) {
     return Challenge.findById(challengeId).populate(population).exec();
 };
 
+challengeSchema.statics.populatePlayers = function(challenges) {
+    return Challenge.populate(challenges, 'challenger challengee');
+};
+
 challengeSchema.statics.removeByDocument = function(challenge) {
     return challenge.remove();
 };

@@ -43,19 +43,13 @@ router.get('/:playerId', function(req, res, next) {
 	if (!playerId) return next(new Error('This is not a valid player.'));
 
 	var resolvedChallenges = Challenge.getResolved(playerId)
-		.then(function(challenges) {
-			return Challenge.populate(challenges, 'challenger challengee');
-		});
+		.then(Challenge.populatePlayers);
 
 	var outgoingChallenges = Challenge.getOutgoing(playerId)
-		.then(function(challenges) {
-			return Challenge.populate(challenges, 'challenger challengee');
-		});
+		.then(Challenge.populatePlayers);
 
 	var incomingChallenges = Challenge.getIncoming(playerId)
-		.then(function(challenges) {
-			return Challenge.populate(challenges, 'challenger challengee');
-		});
+		.then(Challenge.populatePlayers);
 
     Promise.all([resolvedChallenges, outgoingChallenges, incomingChallenges])
         .then(function(challenges) {

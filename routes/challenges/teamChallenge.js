@@ -14,24 +14,20 @@ var AuthService = require('../../services/AuthService');
  * @param: challengeeId
  */
 router.post('/', function(req, res, next) {
-	var challengerId = req.body.challengerId;
 	var challengeeId = req.body.challengeeId;
     var clientId = AuthService.verifyToken(req.token).playerId;
-	
-	if (!challengerId || !challengeeId) return next(new Error('Two teams are required for a challenge.'));
-	if (challengerId === challengeeId) return next(new Error('Teams cannot challenge themselves.'));
-	
-	// Not allowed to issue challenges on weekends
-	var todayDay = new Date().getDay();
-	var CHALLENGE_ANYTIME = process.env.CHALLENGE_ANYTIME || false;
-	if ((todayDay === 0 || todayDay === 6) && !CHALLENGE_ANYTIME) return next(new Error('You can only issue challenges on business days.'));
 
 	// Grabs team info on both challenge participants
-	var challengerPromise = Team.findById(challengerId).exec();
-	var challengeePromise =	Team.findById(challengeeId).exec();
+	var challengerTeamsPromise = Team.getTeamsByPlayerId(clientId);
+	var challengeeTeamPromise =	Team.findById(challengeeId).exec();
 
-	Promise.all([challengerPromise, challengeePromise])
-		.then(TeamChallengeService.verifyAllowedToChallenge)
+	Promise.all([challengerTeamsPromise, challengeeTeamPromise])
+		.then(function(results) {
+			var playerTeams = results[0];
+			var challengeeTeam = results[1];
+			if (!playerTeams || playerTeams.length === 0) return Promise.reject(new Error('Player must be a member of a team.'));
+			return TeamChallengeService.verifyAllowedToChallenge([playerTeams[0], challengeeTeam]);
+		})
 		.then(function(teams) {
             if (!teams[0].hasMemberByPlayerId(clientId)) {
                 return Promise.reject(new Error('You must be a member of the challenging team, "' + teams[0].username + '"'));
@@ -56,25 +52,14 @@ router.get('/:teamId', function(req, res, next) {
 
 	if (!teamId) return next(new Error('This is not a valid team.'));
 
-	var populateTeamMembers = {
-        path: 'challenger challengee',
-        populate: {path: 'leader partner'}
-    };
-
 	var resolvedChallenges = TeamChallenge.getResolved(teamId)
-		.then(function(challenges) {
-			return TeamChallenge.populate(challenges, 'challenger challengee');
-		});
+		.then(TeamChallenge.populateTeams);
 
 	var outgoingChallenges = TeamChallenge.getOutgoing(teamId)
-		.then(function(challenges) {
-			return TeamChallenge.populate(challenges, populateTeamMembers);
-		});
+		.then(TeamChallenge.populateTeamsAndTeamMembers);
 
 	var incomingChallenges = TeamChallenge.getIncoming(teamId)
-		.then(function(challenges) {
-            return TeamChallenge.populate(challenges, populateTeamMembers);
-        });
+		.then(TeamChallenge.populateTeamsAndTeamMembers);
 
 	Promise.all([resolvedChallenges, outgoingChallenges, incomingChallenges])
 		.then(function(challenges) {

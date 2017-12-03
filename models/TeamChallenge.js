@@ -84,6 +84,17 @@ teamChallengeSchema.statics.populateById = function(teamChallengeId, populateAle
     return TeamChallenge.findById(teamChallengeId).populate(population).exec();
 };
 
+teamChallengeSchema.statics.populateTeams = function(challenges) {
+    return TeamChallenge.populate(challenges, 'challenger challengee');
+};
+
+teamChallengeSchema.statics.populateTeamsAndTeamMembers = function(challenges) {
+    return TeamChallenge.populate(challenges, {
+        path: 'challenger challengee',
+        populate: {path: 'leader partner'}
+    });
+};
+
 teamChallengeSchema.statics.removeByDocument = function(teamChallenge) {
     return teamChallenge.remove();
 };
