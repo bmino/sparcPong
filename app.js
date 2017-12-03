@@ -49,14 +49,14 @@ app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 var auth = require('./middleware/jwtMiddleware');
 app.use(['/api/team/*', '/api/challenge/*', '/api/playerAlerts/*', '/api/envBridge/*'], auth.jwtAuthProtected);
 
-app.use('/',								require('./routes/basic'));
-app.use('/auth',							require('./routes/authorization'));
-app.use('/api/player',						require('./routes/player'));
-app.use('/api/team',						require('./routes/team'));
-app.use('/api/challenge/player',			require('./routes/challenges/playerChallenge'));
-app.use('/api/challenge/team',				require('./routes/challenges/teamChallenge'));
-app.use('/api/playerAlerts',				require('./routes/alert'));
-app.use('/api/envBridge',					require('./routes/envBridge'));
+app.use('/',								require('./routes/EjsViewController'));
+app.use('/auth',							require('./routes/AuthorizationController'));
+app.use('/api/player',						require('./routes/PlayerController'));
+app.use('/api/team',						require('./routes/TeamController'));
+app.use('/api/challenge/player',			require('./routes/challenges/PlayerChallengeController'));
+app.use('/api/challenge/team',				require('./routes/challenges/TeamChallengeController'));
+app.use('/api/playerAlerts',				require('./routes/AlertController'));
+app.use('/api/envBridge',					require('./routes/EnvironmentBridgeController'));
 
 
 // catch 404 and forward to error handler
