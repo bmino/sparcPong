@@ -22,11 +22,6 @@ function ModalService($uibModal) {
 		bodyText: 'Perform this action?'
 	};
 
-
-	service.showSelectTeamModal = function(customModalDefaults, customModalOptions) {
-		customModalDefaults.templateUrl = '/partials/modals/selectTeam.html';
-		return service.showModal(customModalDefaults, customModalOptions);
-	};
 	
 	service.showAlertModal = function(customModalDefaults, customModalOptions) {
 		customModalDefaults.templateUrl = '/partials/modals/alert.html';

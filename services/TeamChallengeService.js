@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
 var TeamChallenge = mongoose.model('TeamChallenge');
 var ChallengeService = require('./ChallengeService');
+var Util = require('./Util');
 
 var TeamChallengeService = {
     ALLOWED_CHALLENGE_DAYS_TEAM: process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5,
@@ -24,6 +25,7 @@ function verifyChallengesBetweenTeams(teams) {
     var challengee = teams[1];
     return new Promise(function(resolve, reject) {
 
+        if (challenger._id.toString() === challengee._id.toString()) return reject(new Error('Teams can not challenge themselves.'));
         var challengerIncoming = TeamChallenge.count({challengee: challenger._id, winner: null}).exec();
         var challengerOutgoing = TeamChallenge.count({challenger: challenger._id, winner: null}).exec();
         var challengeeIncoming = TeamChallenge.count({challengee: challengee._id, winner: null}).exec();

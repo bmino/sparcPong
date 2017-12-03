@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Team = mongoose.model('Team');
 
 var TeamService = {
-    PLAYER_TEAMS_MAX: process.env.PLAYER_TEAM_MAX || 1,
+    PLAYER_TEAMS_MAX: 1,
 
     verifyPlayerCanJoinById : verifyPlayerCanJoinById
 };

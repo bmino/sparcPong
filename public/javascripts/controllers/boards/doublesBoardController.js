@@ -52,43 +52,8 @@ function DoublesBoardController($scope, jwtService, socket, modalService, timeSe
     };
 
     $scope.challengeTeam = function (challengeeId) {
-        var challengerTeams = $scope.playerTeams();
-        var modalOptions;
-
-        if (challengerTeams.length === 0) {
-            modalOptions = {
-                headerText: 'Team Challenge',
-                bodyText: 'You must join a team before issuing challenges.'
-            };
-            return modalService.showAlertModal({}, modalOptions);
-        }
-
-        if (challengerTeams.length === 1) {
-            return teamChallengeService.createChallenge(challengerTeams[0]._id, challengeeId).then(goodChallenge, badChallenge);
-        }
-
-        // Which team are we challenging with?
-        modalOptions = {
-            headerText: 'Team Challenge',
-            actionButtonText: 'Challenge',
-            closeButtonText: 'Cancel',
-            bodyText: 'Which team would you like to challenge with?',
-            teams: challengerTeams
-        };
-        modalService.showSelectTeamModal({}, modalOptions).then(function (data) {
-            if (!data || !data.challengeTeam) return;
-            teamChallengeService.createChallenge(data.challengeTeam._id, challengeeId).then(goodChallenge, badChallenge);
-        });
-    };
-
-    $scope.playerTeams = function() {
-        var playerId = jwtService.getDecodedToken().playerId;
-        if (!playerId) return [];
-        var teams = [];
-        $scope.teams.forEach(function (team) {
-            if (team.leader === playerId || team.partner === playerId) teams.push(team);
-        });
-        return teams;
+        return teamChallengeService.createChallenge(challengeeId)
+            .then(goodChallenge, badChallenge);
     };
 
 

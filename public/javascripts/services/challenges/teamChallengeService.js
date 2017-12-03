@@ -11,12 +11,11 @@ function TeamChallengeService($http) {
 	// Default Headers
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
 	
-	service.createChallenge = function(challengerId, challengeeId) {
+	service.createChallenge = function(challengeeId) {
 		var request = $http({
 			method: "post",
 			url: "api/challenge/team",
 			data: {
-				challengerId: challengerId,
 				challengeeId: challengeeId
 			}
 		});
