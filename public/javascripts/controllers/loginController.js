@@ -9,7 +9,6 @@ function LoginController($scope, $location, loginService, modalService, socket) 
     $scope.player = {};
     $scope.password = '';
     $scope.players = [];
-    $scope.rememberMe = false;
 
     function init() {
         $scope.authenticating = false;
