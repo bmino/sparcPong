@@ -33,6 +33,7 @@ function ResetPasswordController($scope, $routeParams, $location, modalService, 
 					bodyText: success
 				};
 				modalService.showAlertModal({}, modalOptions);
+				clearInputs();
 			})
 			.catch(function(error) {
 				modalOptions = {
@@ -46,6 +47,12 @@ function ResetPasswordController($scope, $routeParams, $location, modalService, 
 	$scope.goToLogin = function() {
 		$location.path('/login');
 	};
+
+	function clearInputs() {
+        $scope.resetKey = '';
+        $scope.newPassword = '';
+        $scope.newPasswordConfirm = '';
+	}
 
     init();
 

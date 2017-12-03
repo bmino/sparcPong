@@ -11,7 +11,6 @@ function LoginController($scope, $location, loginService, modalService, socket) 
     $scope.players = [];
 
     function init() {
-        $scope.authenticating = false;
         populatePlayerList();
         loginService.logout();
     }
@@ -41,6 +40,7 @@ function LoginController($scope, $location, loginService, modalService, socket) 
             return modalService.showAlertModal({}, modalOptions);
         }
 
+        $scope.resettingPassword = true;
         loginService.enablePasswordReset($scope.player._id)
             .then(function(response) {
                 modalOptions.bodyText = response;
@@ -49,6 +49,9 @@ function LoginController($scope, $location, loginService, modalService, socket) 
             .catch(function(error) {
                 modalOptions.bodyText = error;
                 modalService.showAlertModal({}, modalOptions);
+            })
+            .finally(function() {
+                $scope.resettingPassword = false;
             });
     };
 

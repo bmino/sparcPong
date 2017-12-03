@@ -10,10 +10,12 @@
 		</select>
 
 		<input type="password" class="form-control form-group" placeholder="Password" ng-model="password">
-		<a href="" class="forgot-password" ng-click="forgotPassword()">Forgot Password</a>
+		<div class="forgot-password">
+			<span ng-show="resettingPassword">Loading...</span>
+			<a href="" ng-hide="resettingPassword" ng-click="forgotPassword()">Forgot Password</a>
+		</div>
 
-
-		<input type="submit" class="btn btn-primary form-control form-group" value="Login">
+		<input type="submit" class="btn btn-primary form-control form-group" value="{{authenticating ? 'Loading...' : 'Login'}}">
 
 		<div class="sign-up">
 			Don't have an account? <a href="" ng-click="signUp()">Sign up</a>
