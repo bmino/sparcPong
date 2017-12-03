@@ -7,8 +7,8 @@ var authorizationSchema = new Schema({
 	user: { type: Schema.ObjectId, ref: 'Player', required: true },
 	password: { type: String, required: true },
     reset: {
-	    key: { type: String },
-        date: { type: Date }
+	    key: { type: String, default: null },
+        date: { type: Date, default: null }
 	}
 });
 
@@ -18,6 +18,7 @@ authorizationSchema.methods.setPassword = function(password) {
     return bcrypt.hash(password, salt)
         .then(function(passwordHash) {
             self.password = passwordHash;
+            self.reset.key = null;
             return self.save();
         });
 };

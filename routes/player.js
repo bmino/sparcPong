@@ -112,14 +112,7 @@ router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) 
 
     if (!clientId) return next(new Error('You must provide a valid player id.'));
 
-    AuthService.validatePasswordStrength(newPassword)
-		.then(function() {
-            return Authorization.findByPlayerId(clientId);
-		})
-		.then(function(authorization) {
-			if (!authorization.isPasswordEqualTo(oldPassword)) return Promise.reject(new Error('Incorrect current password.'));
-			return authorization.setPassword(newPassword);
-		})
+    AuthService.resetPasswordByExistingPassword(newPassword, oldPassword, clientId)
         .then(function() {
             req.app.io.sockets.emit('player:change:password');
             res.json({message: 'Successfully changed your password'});

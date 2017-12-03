@@ -18,6 +18,7 @@ var AuthService = {
 
     enablePasswordResetByPlayerId : enablePasswordResetByPlayerId,
     resetPasswordByResetKey: resetPasswordByResetKey,
+    resetPasswordByExistingPassword : resetPasswordByExistingPassword,
 
     validateCredentials : validateCredentials,
     validateTokenCredentials : validateTokenCredentials,
@@ -65,12 +66,12 @@ function enablePasswordResetByPlayerId(playerId) {
     return new Promise(function(resolve, reject) {
         Authorization.findByPlayerId(playerId)
             .then(function(auth) {
-                if (!auth) return Promise.reject('Invalid player id');
+                if (!auth) return reject(new Error('Invalid player id'));
                 if (!auth.getResetDate()) return auth.enablePasswordReset();
-                console.log(typeof AuthService.PASSWORD_RESET_REPEAT_HOURS);
+
                 var previousResetExpiration = Util.addHours(new Date(auth.getResetDate()), AuthService.PASSWORD_RESET_REPEAT_HOURS);
                 if (previousResetExpiration > new Date()) {
-                    return Promise.reject(new Error('Cannot reset passwords multiple times within ' + AuthService.PASSWORD_RESET_REPEAT_HOURS + ' hours.'));
+                    return reject(new Error('Cannot reset passwords multiple times within ' + AuthService.PASSWORD_RESET_REPEAT_HOURS + ' hours.'));
                 }
                 return auth.enablePasswordReset();
             })
@@ -80,18 +81,40 @@ function enablePasswordResetByPlayerId(playerId) {
 }
 
 function resetPasswordByResetKey(password, resetKey) {
-    console.log('Attempting to reset a password.');
+    console.log('Attempting to reset a password by reset key.');
     return new Promise(function(resolve, reject) {
-        Authorization.findByResetKey(resetKey)
+        AuthService.validatePasswordStrength(password)
+            .then(function () {
+                return Authorization.findByResetKey(resetKey);
+            })
             .then(function (auth) {
-                if (!auth) return Promise.reject('Invalid player id');
-                if (!auth.getResetKey()) return auth.setPassword(password);
+                if (!auth) return reject(new Error('Invalid reset key.'));
+                if (!auth.getResetKey()) return reject(new Error('Cannot reset this password.'));
                 if (auth.getResetKey() !== resetKey) return reject(new Error('Invalid password reset key.'));
+                if (!auth.getResetDate()) return auth.setPassword(password);
+
                 var resetWindowExpiration = Util.addMinutes(auth.getResetDate(), AuthService.PASSWORD_RESET_WINDOW_MINUTES);
                 if (resetWindowExpiration < new Date()) {
-                    return Promise.reject(new Error('Passwords can only be reset within a ' + AuthService.PASSWORD_RESET_WINDOW_MINUTES + ' minute window.'));
+                    return reject(new Error('Passwords can only be reset within a ' + AuthService.PASSWORD_RESET_WINDOW_MINUTES + ' minute window.'));
                 }
                 return auth.setPassword(password);
+            })
+            .then(resolve)
+            .catch(reject);
+    });
+}
+
+function resetPasswordByExistingPassword(newPassword, existingPassword, playerId) {
+    console.log('Attempting to reset password by existing password.');
+    return new Promise(function(resolve, reject) {
+        AuthService.validatePasswordStrength(newPassword)
+            .then(function () {
+                return Authorization.findByPlayerId(playerId);
+            })
+            .then(function (authorization) {
+                if (!authorization) return reject(new Error('Could not find this player.'));
+                if (!authorization.isPasswordEqualTo(existingPassword)) return reject(new Error('Incorrect current password.'));
+                return authorization.setPassword(newPassword);
             })
             .then(resolve)
             .catch(reject);
@@ -103,9 +126,9 @@ function validateCredentials(playerId, password) {
     return new Promise(function(resolve, reject) {
         Authorization.findByPlayerId(playerId)
             .then(function(authorization) {
-                if (!authorization) return Promise.reject('Invalid player id');
+                if (!authorization) return reject(new Error('Invalid player id'));
                 if (authorization.isPasswordEqualTo(password)) return resolve(playerId);
-                return Promise.reject(new Error('Incorrect password'));
+                return reject(new Error('Incorrect password'));
             })
             .catch(function(error) {
                 console.error(error);
