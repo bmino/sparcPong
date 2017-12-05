@@ -55,18 +55,10 @@ function SinglesBoardController($scope, socket, modalService, playerService, pla
         modalService.showAlertModal({}, modalOptions);
 	}
 	
-	socket.on('player:new', function(username) {
-		populatePlayers();
-	});
-	socket.on('player:change:username', function() {
-		populatePlayers();
-	});
-	socket.on('challenge:resolved', function() {
-		populatePlayers();
-	});
-	socket.on('challenge:forfeited', function() {
-		populatePlayers();
-	});
+	socket.on('player:new', $scope, populatePlayers);
+	socket.on('player:change:username', $scope, populatePlayers);
+	socket.on('challenge:resolved', $scope, populatePlayers);
+	socket.on('challenge:forfeited', $scope, populatePlayers);
 
     init();
 

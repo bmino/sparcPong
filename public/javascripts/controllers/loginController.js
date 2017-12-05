@@ -79,8 +79,8 @@ function LoginController($scope, $location, loginService, modalService, socket) 
         modalService.showAlertModal({}, modalOptions);
     }
 
-    socket.on('player:new', populatePlayerList);
-    socket.on('player:change:username', populatePlayerList);
+    socket.on('player:new', $scope, populatePlayerList);
+    socket.on('player:change:username', $scope, populatePlayerList);
 
     init();
 

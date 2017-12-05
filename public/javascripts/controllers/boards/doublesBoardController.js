@@ -73,18 +73,10 @@ function DoublesBoardController($scope, jwtService, socket, modalService, timeSe
         modalService.showAlertModal({}, modalOptions);
     }
 
-    socket.on('team:new', function () {
-        populateTeams();
-    });
-    socket.on('team:change:username', function () {
-        populateTeams();
-    });
-    socket.on('challenge:team:resolved', function () {
-        populateTeams();
-    });
-    socket.on('challenge:team:forfeited', function () {
-        populateTeams();
-    });
+    socket.on('team:new', $scope, populateTeams);
+    socket.on('team:change:username', $scope, populateTeams);
+    socket.on('challenge:team:resolved', $scope, populateTeams);
+    socket.on('challenge:team:forfeited', $scope, populateTeams);
 
     init();
 

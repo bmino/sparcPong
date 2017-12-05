@@ -13,15 +13,9 @@ function HeaderController($scope, loginService, userBankService, socket) {
 		}
 	});
 
-	socket.on('client:enter', function(clients) {
-        userBankService.setUserCount(clients);
-	});
-	socket.on('client:leave', function(clients) {
-        userBankService.setUserCount(clients);
-	});
-	socket.on('client:online', function(users) {
-        userBankService.setLoggedInUsers(users);
-	});
-	socket.on('reconnect', loginService.attemptRelogin);
+	socket.on('client:enter', $scope, userBankService.setUserCount);
+	socket.on('client:leave', $scope, userBankService.setUserCount);
+	socket.on('client:online', $scope, userBankService.setLoggedInUsers);
+	socket.on('reconnect', $scope, loginService.attemptRelogin);
 
 }

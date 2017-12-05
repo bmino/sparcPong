@@ -76,27 +76,12 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
 	}
 
 	
-	socket.on('player:change:username', function() {
-		loadTeam();
-	});
-	socket.on('team:change:username', function() {
-		loadTeam();
-		fetchChallenges();
-	});
-	socket.on('challenge:team:issued', function() {
-		fetchChallenges();
-	});
-	socket.on('challenge:team:resolved', function() {
-		fetchChallenges();
-		getRecord();
-	});
-	socket.on('challenge:team:revoked', function() {
-		fetchChallenges();
-	});
-	socket.on('challenge:team:forfeited', function() {
-		fetchChallenges();
-		getRecord();
-	});
+	socket.on('player:change:username', $scope, loadTeam);
+	socket.on('team:change:username', $scope, loadTeam && fetchChallenges);
+	socket.on('challenge:team:issued', $scope, fetchChallenges);
+	socket.on('challenge:team:resolved', $scope, fetchChallenges && getRecord);
+	socket.on('challenge:team:revoked', $scope, fetchChallenges);
+	socket.on('challenge:team:forfeited', $scope, fetchChallenges && getRecord);
 
     init();
 

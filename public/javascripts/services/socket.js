@@ -7,25 +7,29 @@ Socket.$inject = ['$rootScope'];
 function Socket($rootScope) {
 
 	var socket = io().connect();
+
 	return {
-		on: function (eventName, callback) {
-			socket.on(eventName, function () {
-				var args = arguments;
-				$rootScope.$apply(function () {
-					callback.apply(socket, args);
-				});
-			});
-		},
-		emit: function (eventName, data, callback) {
-			socket.emit(eventName, data, function () {
-				var args = arguments;
-				$rootScope.$apply(function () {
-					if (callback) {
-						callback.apply(socket, args);
-					}
-				});
-			})
-		}
+		on: on,
+		emit: emit
 	};
+
+    function on(eventName, scope, callback) {
+        var appliedCallback = function () {
+            callback.apply(socket, arguments);
+            $rootScope.$evalAsync();
+        };
+        socket.on(eventName, appliedCallback);
+
+        scope.$on('$destroy', function() {
+            socket.removeListener(eventName, appliedCallback);
+        });
+    }
+
+    function emit(eventName, data, callback) {
+        socket.emit(eventName, data, function () {
+            if (callback) callback.apply(socket, arguments);
+            $rootScope.$evalAsync();
+        })
+    }
 
 }
