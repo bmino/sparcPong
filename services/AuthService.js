@@ -66,7 +66,7 @@ function enablePasswordResetByPlayerId(playerId) {
     return new Promise(function(resolve, reject) {
         Authorization.findByPlayerId(playerId)
             .then(function(auth) {
-                if (!auth) return reject(new Error('Invalid player id'));
+                if (!auth) return reject(new Error('Could not find an authentication record for this player.'));
                 if (!auth.getResetDate()) return auth.enablePasswordReset();
 
                 var previousResetExpiration = Util.addHours(new Date(auth.getResetDate()), AuthService.PASSWORD_RESET_REPEAT_HOURS);
@@ -88,8 +88,8 @@ function resetPasswordByResetKey(password, resetKey) {
                 return Authorization.findByResetKey(resetKey);
             })
             .then(function (auth) {
-                if (!auth) return reject(new Error('Invalid reset key.'));
-                if (!auth.getResetKey()) return reject(new Error('Cannot reset this password.'));
+                if (!auth) return reject(new Error('Invalid password reset key.'));
+                if (!resetKey) return reject(new Error('A password reset key was not provided.'));
                 if (auth.getResetKey() !== resetKey) return reject(new Error('Invalid password reset key.'));
                 if (!auth.getResetDate()) return auth.setPassword(password);
 
@@ -112,7 +112,7 @@ function resetPasswordByExistingPassword(newPassword, existingPassword, playerId
                 return Authorization.findByPlayerId(playerId);
             })
             .then(function (authorization) {
-                if (!authorization) return reject(new Error('Could not find this player.'));
+                if (!authorization) return reject(new Error('Could not find an authentication record for this player.'));
                 if (!authorization.isPasswordEqualTo(existingPassword)) return reject(new Error('Incorrect current password.'));
                 return authorization.setPassword(newPassword);
             })
@@ -126,14 +126,11 @@ function validateCredentials(playerId, password) {
     return new Promise(function(resolve, reject) {
         Authorization.findByPlayerId(playerId)
             .then(function(authorization) {
-                if (!authorization) return reject(new Error('Invalid player id'));
+                if (!authorization) return reject(new Error('Could not find an authentication record for this player.'));
                 if (authorization.isPasswordEqualTo(password)) return resolve(playerId);
                 return reject(new Error('Incorrect password'));
             })
-            .catch(function(error) {
-                console.error(error);
-                return reject(new Error('Invalid credentials.'));
-            });
+            .catch(reject);
     });
 }
 

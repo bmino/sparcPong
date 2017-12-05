@@ -143,10 +143,6 @@ function setScore(challenge, challengerScore, challengeeScore) {
 
 function setForfeit(challenge) {
     console.log('Setting forfeit for challenge id [' + challenge._id + ']');
-    return new Promise(function(resolve, reject) {
-        challenge.setScore(undefined, undefined);
-        return challenge.save()
-            .then(resolve)
-            .catch(reject);
-    });
+    challenge.setScore(undefined, undefined);
+    return challenge.save();
 }

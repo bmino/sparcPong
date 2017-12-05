@@ -36,9 +36,7 @@ function LoginController($scope, $location, loginService, modalService, socket) 
             bodyText: 'You must first select a username.'
         };
 
-        if (!$scope.player._id) {
-            return modalService.showAlertModal({}, modalOptions);
-        }
+        if (!$scope.player._id) return modalService.showAlertModal({}, modalOptions);
 
         $scope.resettingPassword = true;
         loginService.enablePasswordReset($scope.player._id)
@@ -56,6 +54,13 @@ function LoginController($scope, $location, loginService, modalService, socket) 
     };
 
     $scope.login = function() {
+        var modalOptions = {
+            headerText: 'Log In Error',
+            bodyText: 'You must first select a username.'
+        };
+
+        if (!$scope.player._id) return modalService.showAlertModal({}, modalOptions);
+
         console.log('logging in');
         $scope.authenticating = true;
         loginService.createToken($scope.player._id, $scope.password)
@@ -71,10 +76,10 @@ function LoginController($scope, $location, loginService, modalService, socket) 
         $location.path('/');
     }
 
-    function loginFailure() {
+    function loginFailure(reason) {
         var modalOptions = {
-            headerText: 'Log In',
-            bodyText: 'Error logging in'
+            headerText: 'Log In Error',
+            bodyText: reason
         };
         modalService.showAlertModal({}, modalOptions);
     }
