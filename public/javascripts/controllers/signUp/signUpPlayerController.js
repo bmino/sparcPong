@@ -14,12 +14,19 @@ function SignUpPlayerController($scope, $location, modalService, playerService) 
 		phone: null,
 		email: ''
 	};
+	$scope.confirmPassword = '';
 
 	$scope.goToLogin = function() {
 	    $location.path('/login');
     };
 
 	$scope.createPlayer = function() {
+        var modalOptions = {
+            headerText: 'New Player',
+            bodyText: 'Password confirmation does not match'
+        };
+        if ($scope.player.password !== $scope.confirmPassword) return modalService.showAlertModal({}, modalOptions);
+
 		playerService.createPlayer($scope.player.username, $scope.player.password, $scope.player.firstName, $scope.player.lastName, $scope.player.phone, $scope.player.email)
 			.then(creationSuccess, creationError);
 	};
@@ -50,6 +57,7 @@ function SignUpPlayerController($scope, $location, modalService, playerService) 
             phone: null,
             email: ''
         };
+        $scope.confirmPassword = '';
 	}
 
 }
