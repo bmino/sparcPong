@@ -8,6 +8,7 @@ This file should contain properties formatted like this:
 KEY=VALUE
 ```
 
+
 Possible Properties
 ===================
 Listed below are the available properties.
@@ -34,6 +35,8 @@ Authentication Properties
 | JWT_REJECT_IAT_BEFORE | 1483246800000 | A JWT before this time (in milliseconds) is considered invalid |
 | PASSWORD_RESET_WINDOW_MINUTES | 20 | Minutes after a password reset key is issued until it expires |
 | PASSWORD_RESET_REPEAT_HOURS | 1 | Hours after a password reset is enabled before it can be reset again |
+| PASSWORD_MIN_LENGTH | 6 | Minimum allowed length of a user password |
+
 
 Email Properties
 ----------------
