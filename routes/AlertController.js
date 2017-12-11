@@ -2,14 +2,20 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
+var AuthService = require('../services/AuthService');
 
-/* Get player alerts */
-router.get('/:playerId', function(req, res, next) {
-	var playerId = req.params.playerId;
-	if (!playerId) return next(new Error('You must provide a valid player id.'));
-	Player.findById(playerId).populate('alerts').exec()
+
+/**
+ * Get player alerts
+ */
+router.get('/', function(req, res, next) {
+    var clientId = AuthService.verifyToken(req.token).playerId;
+
+	if (!clientId) return next(new Error('You must provide a valid player id.'));
+
+	Player.findById(clientId).populate('alerts').exec()
 		.then(function(player) {
-			if (!player || !player.alerts) return next(new Error("Could not find the player's alert settings."));
+			if (!player || !player.alerts) return Promise.reject(new Error("Could not find the player's alert settings."));
 			var alerts = {};
 
             alerts.challenged = player.alerts.challenged;
@@ -24,16 +30,20 @@ router.get('/:playerId', function(req, res, next) {
 		.catch(next);
 });
 
-/* Update player alerts */
+/**
+ * Update player alerts
+ * @param: alerts
+ */
 router.post('/', function(req, res, next) {
-	var playerId = req.body.playerId;
-	var newAlerts = req.body.alerts;
-	if (!playerId) return next(new Error('You must provide a valid player id.'));
+    var newAlerts = req.body.alerts;
+    var clientId = AuthService.verifyToken(req.token).playerId;
+
+    if (!clientId) return next(new Error('You must provide a valid player id.'));
 	if (!newAlerts) return next(new Error('Uh oh, the alert preferences got lost along the way.'));
 	
-	Player.findById(playerId).populate('alerts').exec()
+	Player.findById(clientId).populate('alerts').exec()
 		.then(function(player) {
-            if (!player || !player.alerts) return next(new Error("Could not find the player's alert settings."));
+            if (!player || !player.alerts) return Promise.reject(new Error("Could not find the player's alert settings."));
 
             player.alerts.challenged = newAlerts.challenged ;
             player.alerts.revoked = newAlerts.revoked ;

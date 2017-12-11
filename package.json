@@ -1,28 +1,34 @@
 {
   "name": "sparcPong",
-  "version": "0.8.0",
+  "version": "3.0.0",
   "private": true,
   "engines": {
-    "node": "7.10.1",
-    "npm": "4.0.5"
+    "node": "8.9.1",
+    "npm": "5.5.1"
   },
   "scripts": {
-    "start": "node app.js",
-    "postinstall": "bower install"
+    "start": "node app.js"
   },
   "dependencies": {
+    "angular": "^1.6.7",
+    "angular-cookies": "^1.6.7",
+    "angular-jwt": "^0.1.9",
+    "angular-route": "^1.6.7",
+    "angular-ui-bootstrap": "^2.4.0",
+    "bcrypt": "^1.0.3",
     "body-parser": "~1.15.1",
-    "bower": "^1.8.0",
-    "debug": "~2.2.0",
-    "dotenv": "^2.0.0",
-    "ejs": "~2.4.1",
-    "express": "^4.13.4",
-    "mongodb": "^2.1.18",
-    "mongoose": "^4.5.2",
-    "morgan": "~1.7.0",
+    "bootstrap": "^3.3.7",
+    "dotenv": "^4.0.0",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2",
+    "jquery": "^3.2.1",
+    "jsonwebtoken": "^8.1.0",
+    "mongoose": "^4.13.6",
+    "morgan": "^1.9.0",
     "nodemailer": "^0.7.1",
-    "serve-favicon": "~2.3.0",
-    "socket.io": "^1.4.8",
+    "serve-favicon": "^2.4.5",
+    "socket.io": "^2.0.4",
+    "uuid": "^3.1.0",
     "xoauth2": "^1.2.0"
   }
 }

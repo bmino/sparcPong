@@ -10,30 +10,30 @@ var NameService = {
 module.exports = NameService;
 
 
-function verifyRealName(player) {
-    console.log('Verifying real name of '+ player.firstName +' '+ player.lastName);
+function verifyRealName(firstName, lastName) {
+    console.log('Verifying real name of '+ firstName +' '+ lastName);
 
     return new Promise(function(resolve, reject) {
 
-        if (!player.firstName || !player.lastName) return reject(new Error('You must give a first and last name.'));
+        if (!firstName || !lastName) return reject(new Error('You must give a first and last name.'));
 
         // Can only be 15 characters long
-        if (player.firstName.length > 15 || player.firstName.length < 1 || player.lastName.length > 15 || player.lastName.length < 1)
+        if (firstName.length > 15 || firstName.length < 1 || lastName.length > 15 || lastName.length < 1)
             return reject(new Error('First and last name must be between '+ 1 +' and '+ 15 +' characters.'));
 
         // No special characters
-        if (!/^[A-Za-z0-9_ ]*$/.test(player.firstName) || !/^[A-Za-z0-9_ ]*$/.test(player.lastName))
+        if (!/^[A-Za-z0-9_ ]*$/.test(firstName) || !/^[A-Za-z0-9_ ]*$/.test(lastName))
             return reject(new Error('First and last name can only include letters, numbers, underscores, and spaces.'));
 
         // Concurrent spaces
-        if (/\s{2,}/.test(player.firstName) || /\s{2,}/.test(player.lastName))
+        if (/\s{2,}/.test(firstName) || /\s{2,}/.test(lastName))
             return reject(new Error('First and last name cannot have concurrent spaces.'));
 
         // Concurrent underscores
-        if (/_{2,}/.test(player.firstName) || /_{2,}/.test(player.lastName))
+        if (/_{2,}/.test(firstName) || /_{2,}/.test(lastName))
             return reject(new Error('First and last name cannot have concurrent underscores.'));
 
-        return resolve(player);
+        return resolve([firstName, lastName]);
     });
 }
 

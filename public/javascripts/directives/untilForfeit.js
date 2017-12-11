@@ -15,24 +15,21 @@ function untilForfeit(timeService) {
 		},
 		link: function(scope, elem, attrs) {
 
-			var oDate, expireDate, getDaysMethod;
+			var initialDate, expireDate;
 
-			if (angular.isDefined(scope.doubles))
-				getDaysMethod = timeService.getAllowedChallengeDaysTeam;
-			else
-				getDaysMethod = timeService.getAllowedChallengeDays;
+			var daysPromise = angular.isDefined(scope.doubles) ?
+				timeService.getAllowedChallengeDaysTeam() :
+				timeService.getAllowedChallengeDays();
 
-            getDaysMethod().then(function(days) {
-				oDate = timeService.parseDate(scope.date);
-				expireDate = timeService.addBusinessDays(oDate, days);
+            daysPromise.then(function(days) {
+				initialDate = timeService.parseDate(scope.date);
+				expireDate = timeService.addBusinessDays(initialDate, days);
 				updateLater();
 			});
 
 			function updateLater() {
 				updateTime();
-				setTimeout(function() {
-					updateLater();
-				}, 1000);
+				setTimeout(updateLater, 1000);
 			}
 
             function updateTime() {

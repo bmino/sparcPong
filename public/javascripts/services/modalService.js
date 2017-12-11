@@ -5,6 +5,8 @@ angular
 ModalService.$inject = ['$uibModal'];
 
 function ModalService($uibModal) {
+	
+	var service = this;
 
 	var modalDefaults = {
 		backdrop: true,
@@ -19,47 +21,27 @@ function ModalService($uibModal) {
 		headerText: 'Proceed?',
 		bodyText: 'Perform this action?'
 	};
-	
-	
-	this.showPlayerChallengeOptions = function(customModalDefaults, customModalOptions) {
-		customModalDefaults.templateUrl = '/partials/modals/challengeOptions/playerChallengeOptions.html';
-		return this.showModal(customModalDefaults, customModalOptions);
-	};
-	
-	this.showTeamChallengeOptions = function(customModalDefaults, customModalOptions) {
-		customModalDefaults.templateUrl = '/partials/modals/challengeOptions/teamChallengeOptions.html';
-		return this.showModal(customModalDefaults, customModalOptions);
-	};
 
-	this.showSelectTeamModal = function(customModalDefaults, customModalOptions) {
-		customModalDefaults.templateUrl = '/partials/modals/selectTeam.html';
-		return this.showModal(customModalDefaults, customModalOptions);
-	};
 	
-	this.showAlertModal = function(customModalDefaults, customModalOptions) {
+	service.showAlertModal = function(customModalDefaults, customModalOptions) {
 		customModalDefaults.templateUrl = '/partials/modals/alert.html';
 		customModalOptions.actionButtonText = 'OK';
-		return this.showModal(customModalDefaults, customModalOptions);
+		return service.showModal(customModalDefaults, customModalOptions);
 	};
 	
-	this.showScoreModal = function(customModalDefaults, customModalOptions) {
+	service.showScoreModal = function(customModalDefaults, customModalOptions) {
 		customModalDefaults.templateUrl = '/partials/modals/score.html';
-		return this.showModal(customModalDefaults, customModalOptions);
+		return service.showModal(customModalDefaults, customModalOptions);
 	};
 	
-	this.showLogInModal = function(customModalDefaults, customModalOptions) {
-		customModalDefaults.templateUrl = '/partials/modals/logIn.html';
-		return this.showModal(customModalDefaults, customModalOptions);
-	};
-	
-	this.showModal = function (customModalDefaults, customModalOptions) {
+	service.showModal = function (customModalDefaults, customModalOptions) {
 		if (!customModalDefaults) customModalDefaults = {};
 		customModalDefaults.backdrop = 'static';
-		return this.show(customModalDefaults, customModalOptions);
+		return service.show(customModalDefaults, customModalOptions);
 	};
 	
 
-	this.show = function (customModalDefaults, customModalOptions) {
+	service.show = function (customModalDefaults, customModalOptions) {
 		
 		var tempModalDefaults = {};
 		var tempModalOptions = {};

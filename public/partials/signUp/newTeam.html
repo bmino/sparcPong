@@ -5,27 +5,27 @@
 	<form class="form-horizontal" ng-submit="createTeam()" autocomplete="off">
 		<div class="form-group">
 			<label class="control-label col-md-2" for="username">Team Name</label>
-			<div class="col-md-10"><input class="form-control" id="username" type="string" ng-model="team.username" focus-first required /></div>
+			<div class="col-md-10"><input class="form-control" id="username" type="text" ng-model="team.username" focus-first required /></div>
 		</div>
 		<div class="form-group">
 			<label class="control-label col-md-2" for="leader">Leader</label>
 			<div class="col-md-10">
-				<select class="form-control" id="leader" ng-model="team.leader" ng-options="player.username for player in players track by player._id" required>
-					<option>-- Select a Leader --</option>
+				<select class="form-control" id="leader" ng-model="team.leader"
+						ng-options="player.username for player in players track by player._id" required>
 				</select>
 			</div>
 		</div>
 		<div class="form-group">
 			<label class="control-label col-md-2" for="partner">Partner</label>
 			<div class="col-md-10">
-				<select class="form-control" id="partner" ng-model="team.partner" ng-options="player.username for player in players track by player._id" required>
-					<option>-- Select a Partner --</option>
+				<select class="form-control" id="partner" ng-model="team.partner"
+						ng-options="player.username for player in players track by player._id" required>
 				</select>
 			</div>
 		</div>
 		<div class="form-group"> 
 			<div class="col-md-offset-2 col-md-10">
-				<button type="submit" class="btn btn-primary">Create</button>
+				<button type="submit" class="btn btn-primary">Create Team</button>
 			</div>
 		</div>
 	</form>

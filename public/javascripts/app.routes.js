@@ -29,7 +29,7 @@ function routes($routeProvider) {
 		})
 		
 		/* Player Routes */
-		.when('/profile/player/:id', {
+		.when('/profile/player/:id?', {
 			templateUrl: '/partials/profiles/player.html',
 			controller: 'playerProfileController'
 		})
@@ -41,13 +41,17 @@ function routes($routeProvider) {
 			templateUrl: '/partials/account/changeUsername.html',
 			controller: 'changeUsernameController'
 		})
+        .when('/account/changePassword', {
+            templateUrl: '/partials/account/changePassword.html',
+            controller: 'changePasswordController'
+        })
 		.when('/account/changeEmail', {
 			templateUrl: '/partials/account/changeEmail.html',
 			controller: 'changeEmailController'
 		})
 		
 		/* Team Routes */
-		.when('/profile/team/:id', {
+		.when('/profile/team/:id?', {
 			templateUrl: '/partials/profiles/team.html',
 			controller: 'teamProfileController'
 		})
@@ -55,12 +59,22 @@ function routes($routeProvider) {
 		/* Sign Up Routes */
 		.when('/signUp/player', {
 			templateUrl: '/partials/signUp/newPlayer.html',
-			controller: 'signUpController'
+			controller: 'signUpPlayerController'
 		})
 		.when('/signUp/team', {
 			templateUrl: '/partials/signUp/newTeam.html',
-			controller: 'signUpController'
+			controller: 'signUpTeamController'
 		})
+
+		/* Authentication Routes */
+		.when('/login', {
+			templateUrl: '/partials/login.html',
+			controller: 'loginController'
+		})
+        .when('/resetPassword/:resetKey?', {
+            templateUrl: '/partials/resetPassword.html',
+            controller: 'resetPasswordController'
+        })
 		
 		.otherwise({
 			redirectTo: '/board/singles'

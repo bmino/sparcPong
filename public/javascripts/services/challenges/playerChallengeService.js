@@ -6,22 +6,23 @@ PlayerChallengeService.$inject = ['$http'];
 
 function PlayerChallengeService($http) {
 	
+	var service = this;
+	
 	// Default Headers
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
 	
-	this.createChallenge = function(challengerId, challengeeId) {
+	service.createChallenge = function(challengeeId) {
 		var request = $http({
 			method: "post",
 			url: "api/challenge/player/",
 			data: {
-				challengerId: challengerId,
 				challengeeId: challengeeId
 			}
 		});
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.getChallenges = function(playerId) {
+	service.getChallenges = function(playerId) {
 		var request = $http({
 			method: "get",
 			url: "api/challenge/player/"+playerId
@@ -29,19 +30,18 @@ function PlayerChallengeService($http) {
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.revokeChallenge = function(challengerId, challengeeId) {
+	service.revokeChallenge = function(challengeId) {
 		var request = $http({
 			method: "delete",
 			url: "api/challenge/player/revoke/",
 			data: {
-				challengerId: challengerId,
-				challengeeId: challengeeId
+				challengeId: challengeId
 			}
 		});
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.resolveChallenge = function(challengeId, challengerScore, challengeeScore) {
+	service.resolveChallenge = function(challengeId, challengerScore, challengeeScore) {
 		var request = $http({
 			method: "post",
 			url: "api/challenge/player/resolve/",
@@ -54,7 +54,7 @@ function PlayerChallengeService($http) {
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.forfeitChallenge = function(challengeId) {
+	service.forfeitChallenge = function(challengeId) {
 		var request = $http({
 			method: "post",
 			url: "api/challenge/player/forfeit/",
@@ -73,9 +73,7 @@ function PlayerChallengeService($http) {
 	}
 	
 	function handleError(response) {
-		var dummy = document.createElement('body');
-		dummy.innerHTML = response.data;
-		throw dummy.getElementsByTagName("h1")[0].innerHTML || 'Uh oh, something unexpected happened.';
+		throw response.data;
 	}
 	
 }

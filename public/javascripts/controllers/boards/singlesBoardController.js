@@ -2,9 +2,9 @@ angular
 	.module('controllers')
 	.controller('singlesBoardController', SinglesBoardController);
 
-SinglesBoardController.$inject = ['$scope', '$rootScope', 'socket', 'modalService', 'timeService', 'playerService', 'playerChallengeService'];
+SinglesBoardController.$inject = ['$scope', 'socket', 'modalService', 'playerService', 'playerChallengeService'];
 
-function SinglesBoardController($scope, $rootScope, socket, modalService, timeService, playerService, playerChallengeService) {
+function SinglesBoardController($scope, socket, modalService, playerService, playerChallengeService) {
 	
 	function init() {
 		// TODO: implement a better solution than guessing big at 16 tiers
@@ -37,33 +37,8 @@ function SinglesBoardController($scope, $rootScope, socket, modalService, timeSe
 		}
 	}
 	
-	$scope.isOnline = function(playerId) {
-		if (!$rootScope.onlineUsers) return false;
-		return $rootScope.onlineUsers.indexOf(playerId) !== -1;
-	};
-	
-	$scope.dangerLevel = function(gameTime) {
-		var hours = timeService.hoursBetween(new Date(gameTime), new Date());
-		if (hours <= 48)
-			return 'alert-success';
-		if (hours > 48 && hours <= 72)
-			return 'alert-warning';
-		if (hours > 72)
-			return 'alert-danger';
-	};
-	
 	$scope.challenge = function(challengeeId) {
-		var playerId = $rootScope.myClient.playerId;
-		if (!playerId) {
-			var modalOptions = {
-				actionButtonText: 'OK',
-				headerText: 'Challenge',
-				bodyText: 'You must log in first.'
-			};
-			modalService.showAlertModal({}, modalOptions);
-		} else {
-			playerChallengeService.createChallenge(playerId, challengeeId).then( goodChallenge, badChallenge );
-		}
+		playerChallengeService.createChallenge(challengeeId).then( goodChallenge, badChallenge );
 	};
 	function goodChallenge(success) {
 		var modalOptions = {
@@ -73,7 +48,6 @@ function SinglesBoardController($scope, $rootScope, socket, modalService, timeSe
         modalService.showAlertModal({}, modalOptions);
 	}
 	function badChallenge(error) {
-		console.log(error);
 		var modalOptions = {
             headerText: 'Challenge',
             bodyText: error
@@ -81,18 +55,10 @@ function SinglesBoardController($scope, $rootScope, socket, modalService, timeSe
         modalService.showAlertModal({}, modalOptions);
 	}
 	
-	socket.on('player:new', function(username) {
-		populatePlayers();
-	});
-	socket.on('player:change:username', function() {
-		populatePlayers();
-	});
-	socket.on('challenge:resolved', function() {
-		populatePlayers();
-	});
-	socket.on('challenge:forfeited', function() {
-		populatePlayers();
-	});
+	socket.on('player:new', $scope, populatePlayers);
+	socket.on('player:change:username', $scope, populatePlayers);
+	socket.on('challenge:resolved', $scope, populatePlayers);
+	socket.on('challenge:forfeited', $scope, populatePlayers);
 
     init();
 

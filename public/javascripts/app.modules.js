@@ -7,6 +7,7 @@ angular.module('sparcPongApp', [
     'ngRoute',
     'ngCookies',
     'ui.bootstrap',
+    'angular-jwt',
     'filters',
     'services',
     'directives',

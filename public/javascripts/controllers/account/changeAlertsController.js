@@ -2,9 +2,9 @@ angular
 	.module('controllers')
 	.controller('changeAlertsController', changeAlertsController);
 
-changeAlertsController.$inject = ['$scope', '$rootScope', 'modalService', 'playerService'];
+changeAlertsController.$inject = ['$scope', 'modalService', 'playerService'];
 
-function changeAlertsController($scope, $rootScope, modalService, playerService) {
+function changeAlertsController($scope, modalService, playerService) {
 
     $scope.alerts = {
         challenged: {name: 'Challenged Alert', status: false},
@@ -24,11 +24,10 @@ function changeAlertsController($scope, $rootScope, modalService, playerService)
     }
 
     function getAlerts() {
-        var playerId = $rootScope.myClient.playerId;
-        playerService.getAlerts(playerId)
+        playerService.getAlerts()
             .then(function (alerts) {
                 angular.forEach(alerts, function (alert, alertKey) {
-                    if (alertKey == 'team') {
+                    if (alertKey === 'team') {
                         angular.forEach(alerts.team, function (team, teamKey) {
                             $scope.alerts['team'][teamKey]['status'] = alerts['team'][teamKey];
                         });
@@ -37,15 +36,15 @@ function changeAlertsController($scope, $rootScope, modalService, playerService)
                     }
                 });
             })
-            .catch(function () {
-            });
+            .catch(angular.noop);
     }
 
     function minifiedAlerts() {
-        var minified = {};
-        minified.team = {};
+        var minified = {
+            team: {}
+        };
         angular.forEach($scope.alerts, function (value, alertKey) {
-            if (alertKey == 'team') {
+            if (alertKey === 'team') {
                 angular.forEach($scope.alerts.team, function (value, teamKey) {
                     minified['team'][teamKey] = $scope.alerts['team'][teamKey]['status'];
                 });
@@ -66,12 +65,8 @@ function changeAlertsController($scope, $rootScope, modalService, playerService)
     };
 
     function updateAlerts() {
-        var playerId = $rootScope.myClient.playerId;
-        playerService.updateAlerts(playerId, minifiedAlerts())
-            .then(function (success) {
-                // Do nothing
-                console.log(success);
-            })
+        playerService.updateAlerts(minifiedAlerts())
+            .then(console.log)
             .catch(function (error) {
                 var modalOptions = {
                     headerText: 'Change Alerts',

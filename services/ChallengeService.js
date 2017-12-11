@@ -8,22 +8,23 @@ var ChallengeService = {
     TEMP_RANK: -1,
     CHALLENGE_ANYTIME: process.env.CHALLENGE_ANYTIME || false,
     CHALLENGE_BACK_DELAY_HOURS: process.env.CHALLENGE_BACK_DELAY_HOURS || 12,
-    ALLOWED_CHALLENGE_DAYS: process.env.ALLOWED_CHALLENGE_DAYS || 4,
-    ALLOWED_OUTGOING: process.env.ALLOWED_OUTGOING || 1,
-    ALLOWED_INCOMING: process.env.ALLOWED_INCOMING || 1,
+    ALLOWED_OUTGOING: 1,
+    ALLOWED_INCOMING: 1,
 
     verifyBusinessDay : verifyBusinessDay,
     verifyReissueTime : verifyReissueTime,
     verifyRank : verifyRank,
     verifyTier : verifyTier,
-    verifyForfeit : verifyForfeit,
+
+    verifyInvolvedByPlayerId : verifyInvolvedByPlayerId,
+    verifyChallengerByPlayerId : verifyChallengerByPlayerId,
+    verifyChallengeeByPlayerId : verifyChallengeeByPlayerId,
 
     swapRanks : swapRanks,
     setRank : setRank,
 
     setScore : setScore,
     setForfeit : setForfeit
-
 };
 
 module.exports = ChallengeService;
@@ -71,13 +72,25 @@ function verifyTier(challenger, challengee) {
     });
 }
 
-function verifyForfeit(challenge) {
-    console.log('Verifying forfeit');
+function verifyInvolvedByPlayerId(entity, playerId, message) {
     return new Promise(function(resolve, reject) {
-        var dateIssued = challenge.createdAt;
-        var expires = Util.addBusinessDays(dateIssued, ChallengeService.ALLOWED_CHALLENGE_DAYS);
-        if (expires < new Date()) return reject(new Error('This challenge has expired. It must be forfeited.'));
-        return resolve(challenge);
+        if (entity.challenger.toString() === playerId ||
+            entity.challengee.toString() === playerId) return resolve(entity);
+        return reject(new Error(message || 'Expected the player to be the challenger or challengee.'));
+    });
+}
+
+function verifyChallengerByPlayerId(entity, playerId, message) {
+    return new Promise(function(resolve, reject) {
+        if (entity.challenger.toString() === playerId) return resolve(entity);
+        return reject(new Error(message || 'Expected the player to be the challenger.'));
+    });
+}
+
+function verifyChallengeeByPlayerId(entity, playerId, message) {
+    return new Promise(function(resolve, reject) {
+        if (entity.challengee.toString() === playerId) return resolve(entity);
+        return reject(new Error(message || 'Expected the player to be the challengee.'));
     });
 }
 
@@ -130,10 +143,6 @@ function setScore(challenge, challengerScore, challengeeScore) {
 
 function setForfeit(challenge) {
     console.log('Setting forfeit for challenge id [' + challenge._id + ']');
-    return new Promise(function(resolve, reject) {
-        challenge.setScore(undefined, undefined);
-        return challenge.save()
-            .then(resolve)
-            .catch(reject);
-    });
+    challenge.setScore(undefined, undefined);
+    return challenge.save();
 }

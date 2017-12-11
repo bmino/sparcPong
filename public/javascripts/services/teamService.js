@@ -6,11 +6,13 @@ TeamService.$inject = ['$http'];
 
 function TeamService($http) {
 	
+	var service = this;
+	
 	// Default Headers
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
 	
 	
-	this.createTeam = function(username, leaderId, partnerId) {
+	service.createTeam = function(username, leaderId, partnerId) {
 		var request = $http({
 			method: "post",
 			url: "api/team/",
@@ -23,7 +25,7 @@ function TeamService($http) {
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.changeTeamUsername = function(teamId, newUsername) {
+	service.changeTeamUsername = function(teamId, newUsername) {
 		var request = $http({
 			method: "post",
 			url: "api/team/change/username/",
@@ -36,7 +38,7 @@ function TeamService($http) {
 	};
 	
 	
-	this.getTeam = function(teamId) {
+	service.getTeam = function(teamId) {
 		var request = $http({
 			method: "get",
 			url: "api/team/fetch/"+teamId
@@ -44,7 +46,7 @@ function TeamService($http) {
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.getTeams = function() {
+	service.getTeams = function() {
 		var request = $http({
 			method: "get",
 			url: "api/team/"
@@ -52,7 +54,7 @@ function TeamService($http) {
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.lookupTeams = function(playerId) {
+	service.lookupTeams = function(playerId) {
 		var request = $http({
 			method: "get",
 			url: "api/team/fetch/lookup/"+playerId
@@ -60,7 +62,7 @@ function TeamService($http) {
 		return request.then( handleSuccess, handleError );
 	};
 	
-	this.getRecord = function(teamId) {
+	service.getRecord = function(teamId) {
 		var request = $http({
 			method: "get",
 			url: "api/team/record/"+teamId
@@ -76,9 +78,7 @@ function TeamService($http) {
 	}
 	
 	function handleError(response) {
-		var dummy = document.createElement('body');
-		dummy.innerHTML = response.data;
-		throw dummy.getElementsByTagName("h1")[0].innerHTML;
+        throw response.data;
 	}
 	
 }

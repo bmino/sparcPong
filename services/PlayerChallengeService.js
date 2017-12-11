@@ -2,13 +2,16 @@ var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
 var Challenge = mongoose.model('Challenge');
 var ChallengeService = require('./ChallengeService');
+var Util = require('./Util');
 
 var PlayerChallengeService = {
+    ALLOWED_CHALLENGE_DAYS: process.env.ALLOWED_CHALLENGE_DAYS || 4,
 
     verifyAllowedToChallenge : verifyAllowedToChallenge,
     verifyChallengesBetweenPlayers : verifyChallengesBetweenPlayers,
-    updateLastGames : updateLastGames
+    verifyForfeitIsNotRequired : verifyForfeitIsNotRequired,
 
+    updateLastGames : updateLastGames
 };
 
 module.exports = PlayerChallengeService;
@@ -57,13 +60,23 @@ function verifyAllowedToChallenge(players) {
     });
 }
 
+function verifyForfeitIsNotRequired(challenge) {
+    console.log('Verifying player challenge forfeit');
+    return new Promise(function(resolve, reject) {
+        var dateIssued = challenge.createdAt;
+        var expires = Util.addBusinessDays(dateIssued, PlayerChallengeService.ALLOWED_CHALLENGE_DAYS);
+        if (expires < new Date()) return reject(new Error('This challenge has expired. It must be forfeited.'));
+        return resolve(challenge);
+    });
+}
+
 function updateLastGames(challenge) {
     return new Promise(function(resolve, reject) {
         console.log('Updating last games for the challenge with id of ['+ challenge._id +']');
 
         var gameTime = challenge.updatedAt;
-        var challengerUpdate = Player.findByIdAndUpdate(challenge.challenger._id, {$set: {lastGame: gameTime}}).exec();
-        var challengeeUpdate = Player.findByIdAndUpdate(challenge.challengee._id, {$set: {lastGame: gameTime}}).exec();
+        var challengerUpdate = Player.findByIdAndUpdate(challenge.challenger, {$set: {lastGame: gameTime}});
+        var challengeeUpdate = Player.findByIdAndUpdate(challenge.challengee, {$set: {lastGame: gameTime}});
 
         return Promise.all([challengerUpdate, challengeeUpdate])
             .then(function() {return resolve(challenge);})

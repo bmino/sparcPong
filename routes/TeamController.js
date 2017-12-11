@@ -7,7 +7,7 @@ var TeamChallenge = mongoose.model('TeamChallenge');
 var NameService = require('../services/NameService');
 var TeamService = require('../services/TeamService');
 
-/* 
+/**
  * Create new team
  *
  * @param: username
@@ -49,7 +49,7 @@ router.post('/', function(req, res, next) {
 		.catch(next);
 });
 
-/* 
+/**
  * Change team username
  *
  * @param: teamId
@@ -66,7 +66,7 @@ router.post('/change/username', function(req, res, next) {
 			return Team.findById(teamId).exec();
 		})
 		.then(function(team) {
-            if (!team) return next(new Error('Could not find team.'));
+            if (!team) return Promise.reject(new Error('Could not find team.'));
 
             console.log('Changing team username.');
             team.username = newUsername;
@@ -80,7 +80,9 @@ router.post('/change/username', function(req, res, next) {
 });
 
 
-/* Get teams */
+/**
+ * Get all teams
+ */
 router.get('/', function(req, res, next) {
 	Team.find({})
 		.then(function(teams) {
@@ -89,7 +91,11 @@ router.get('/', function(req, res, next) {
 		.catch(next);
 });
 
-/* Get team by id */
+/**
+ * Get team by id
+ *
+ * @param: teamId
+ */
 router.get('/fetch/:teamId', function(req, res, next) {
 	var teamId = req.params.teamId;
 	if (!teamId) return next(new Error('You must specify a team id.'));
@@ -101,8 +107,8 @@ router.get('/fetch/:teamId', function(req, res, next) {
 		.catch(next);
 });
 
-/*
- * GET teams by playerId
+/**
+ * Get teams by playerId
  *
  * @param: playerId
  */
@@ -118,7 +124,7 @@ router.get('/fetch/lookup/:playerId', function(req, res, next) {
 });
 
 
-/*
+/**
  * Get wins and losses for a team
  *
  * @param: teamId
@@ -132,7 +138,7 @@ router.get('/record/:teamId', function(req, res, next) {
             var wins = 0;
             var losses = 0;
             challenges.forEach(function(challenge) {
-                if (challenge.winner === teamId) wins++;
+                if (challenge.winner.toString() === teamId) wins++;
                 else losses++;
             });
             res.json({message: {wins: wins, losses: losses}});

@@ -2,13 +2,19 @@ var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
 var TeamChallenge = mongoose.model('TeamChallenge');
 var ChallengeService = require('./ChallengeService');
+var Util = require('./Util');
 
 var TeamChallengeService = {
+    ALLOWED_CHALLENGE_DAYS_TEAM: process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5,
 
     verifyAllowedToChallenge : verifyAllowedToChallenge,
     verifyChallengesBetweenTeams : verifyChallengesBetweenTeams,
-    updateLastGames : updateLastGames
+    verifyAllowedToResolve : verifyAllowedToResolve,
+    verifyAllowedToForfeit : verifyAllowedToForfeit,
+    verifyAllowedToRevoke : verifyAllowedToRevoke,
+    verifyForfeitIsNotRequired : verifyForfeitIsNotRequired,
 
+    updateLastGames : updateLastGames
 };
 
 module.exports = TeamChallengeService;
@@ -19,6 +25,7 @@ function verifyChallengesBetweenTeams(teams) {
     var challengee = teams[1];
     return new Promise(function(resolve, reject) {
 
+        if (challenger._id.toString() === challengee._id.toString()) return reject(new Error('Teams can not challenge themselves.'));
         var challengerIncoming = TeamChallenge.count({challengee: challenger._id, winner: null}).exec();
         var challengerOutgoing = TeamChallenge.count({challenger: challenger._id, winner: null}).exec();
         var challengeeIncoming = TeamChallenge.count({challengee: challengee._id, winner: null}).exec();
@@ -54,6 +61,58 @@ function verifyAllowedToChallenge(teams) {
         return Promise.all([existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
             .then(function() {return resolve(teams);})
             .catch(reject);
+    });
+}
+
+function verifyAllowedToResolve(teamChallenge, playerId) {
+    return new Promise(function(resolve, reject) {
+        TeamChallenge.populate(teamChallenge, 'challenger challengee')
+            .then(function(populatedTeamChallenge) {
+                if (populatedTeamChallenge.challenger.hasMemberByPlayerId(playerId)) {
+                    return resolve(teamChallenge);
+                }
+                if (populatedTeamChallenge.challengee.hasMemberByPlayerId(playerId)) {
+                    return resolve(teamChallenge);
+                }
+                return reject(new Error('Only players involved in the challenge can resolve it.'));
+            })
+            .catch(reject);
+    });
+}
+
+function verifyAllowedToForfeit(teamChallenge, playerId) {
+    return new Promise(function(resolve, reject) {
+        TeamChallenge.populate(teamChallenge, 'challengee')
+            .then(function(populatedTeamChallenge) {
+                if (populatedTeamChallenge.challengee.hasMemberByPlayerId(playerId)) {
+                    return resolve(teamChallenge);
+                }
+                return reject(new Error('Only the challengee can forfeit a challenge.'));
+            })
+            .catch(reject);
+    });
+}
+
+function verifyAllowedToRevoke(teamChallenge, playerId) {
+    return new Promise(function(resolve, reject) {
+        TeamChallenge.populate(teamChallenge, 'challenger')
+            .then(function(populatedTeamChallenge) {
+                if (populatedTeamChallenge.challenger.hasMemberByPlayerId(playerId)) {
+                    return resolve(teamChallenge);
+                }
+                return reject(new Error('Only the challenger can revoke a challenge.'));
+            })
+            .catch(reject);
+    });
+}
+
+function verifyForfeitIsNotRequired(challenge) {
+    console.log('Verifying team challenge forfeit');
+    return new Promise(function(resolve, reject) {
+        var dateIssued = challenge.createdAt;
+        var expires = Util.addBusinessDays(dateIssued, TeamChallengeService.ALLOWED_CHALLENGE_DAYS_TEAM);
+        if (expires < new Date()) return reject(new Error('This challenge has expired. It must be forfeited.'));
+        return resolve(challenge);
     });
 }
 

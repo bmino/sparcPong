@@ -1,0 +1,25 @@
+<form class="partial-login" ng-submit="login()">
+	<div class="login-box">
+
+		<h1>Sparc Pong</h1>
+
+		<select class="form-control form-group"
+				ng-model="player"
+				ng-options="player as player.username for player in players"
+				focus-first>
+		</select>
+
+		<input type="password" class="form-control form-group" placeholder="Password" ng-model="password">
+		<div class="forgot-password">
+			<span ng-show="resettingPassword">Loading...</span>
+			<a href="" ng-hide="resettingPassword" ng-click="forgotPassword()">Forgot Password</a>
+		</div>
+
+		<input type="submit" class="btn btn-primary form-control form-group" value="{{authenticating ? 'Loading...' : 'Login'}}">
+
+		<div class="sign-up">
+			Don't have an account? <a href="" ng-click="signUp()">Sign up</a>
+		</div>
+
+	</div>
+</form>

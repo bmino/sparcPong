@@ -7,10 +7,6 @@
 	margin-right: 8px;
 }
 
-.partial-board .online {
-	background-color: green;
-}
-
 .partial-board li .username {
 	white-space: nowrap;
 	overflow: hidden;
@@ -19,7 +15,8 @@
     vertical-align: middle;
 	/* Remaining space without rank and challenge button */
 	/* Change this when an element is added to the board */
-    width: calc(100% - 150px);
+	width: auto;
+    max-width: calc(100% - 150px);
 }
 
 .partial-board li time-gap {
@@ -37,15 +34,6 @@
 	display: inline;
 }
 
-.partial-board .doubles-signUp {
-	float: right;
-	display: inline-block;
-    padding: 8px 8px;
-    border-radius: 10px;
-	background-color: grey;
-	color: white;
-}
-
-.partial-board .doubles-signUp:hover {
-	background-color: orange;
+.partial-board a.btn {
+	color: inherit;
 }

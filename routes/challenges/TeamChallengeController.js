@@ -6,6 +6,7 @@ var Team = mongoose.model('Team');
 var MailerService = require('../../services/MailerService');
 var ChallengeService = require('../../services/ChallengeService');
 var TeamChallengeService = require('../../services/TeamChallengeService');
+var AuthService = require('../../services/AuthService');
 
 /**
  * Issue new challenge.
@@ -13,24 +14,26 @@ var TeamChallengeService = require('../../services/TeamChallengeService');
  * @param: challengeeId
  */
 router.post('/', function(req, res, next) {
-	var challengerId = req.body.challengerId;
 	var challengeeId = req.body.challengeeId;
-	
-	if (!challengerId || !challengeeId) return next(new Error('Two teams are required for a challenge.'));
-	if (challengerId === challengeeId) return next(new Error('Teams cannot challenge themselves.'));
-	
-	// Not allowed to issue challenges on weekends
-	var todayDay = new Date().getDay();
-	var CHALLENGE_ANYTIME = process.env.CHALLENGE_ANYTIME || false;
-	if ((todayDay === 0 || todayDay === 6) && !CHALLENGE_ANYTIME) return next(new Error('You can only issue challenges on business days.'));
+    var clientId = AuthService.verifyToken(req.token).playerId;
 
 	// Grabs team info on both challenge participants
-	var challengerPromise = Team.findById(challengerId).exec();
-	var challengeePromise =	Team.findById(challengeeId).exec();
+	var challengerTeamsPromise = Team.getTeamsByPlayerId(clientId);
+	var challengeeTeamPromise =	Team.findById(challengeeId).exec();
 
-	Promise.all([challengerPromise, challengeePromise])
-		.then(TeamChallengeService.verifyAllowedToChallenge)
-		.then(TeamChallenge.createByTeams)
+	Promise.all([challengerTeamsPromise, challengeeTeamPromise])
+		.then(function(results) {
+			var playerTeams = results[0];
+			var challengeeTeam = results[1];
+			if (!playerTeams || playerTeams.length === 0) return Promise.reject(new Error('Player must be a member of a team.'));
+			return TeamChallengeService.verifyAllowedToChallenge([playerTeams[0], challengeeTeam]);
+		})
+		.then(function(teams) {
+            if (!teams[0].hasMemberByPlayerId(clientId)) {
+                return Promise.reject(new Error('You must be a member of the challenging team, "' + teams[0].username + '"'));
+            }
+            return TeamChallenge.createByTeams(teams);
+        })
 		.then(function(challenge) {
             MailerService.newTeamChallenge(challenge._id);
             req.app.io.sockets.emit('challenge:team:issued');
@@ -43,34 +46,20 @@ router.post('/', function(req, res, next) {
 /**
  * Get all challenges involving a team.
  * @param: teamId
- * @return: message.resolved
- * @return: message.outgoing
- * @return: message.incoming
  */
 router.get('/:teamId', function(req, res, next) {
 	var teamId = req.params.teamId;
 
 	if (!teamId) return next(new Error('This is not a valid team.'));
 
-	var populateTeamMembers = {
-        path: 'challenger challengee',
-        populate: {path: 'leader partner'}
-    };
-
 	var resolvedChallenges = TeamChallenge.getResolved(teamId)
-		.then(function(challenges) {
-			return TeamChallenge.populate(challenges, 'challenger challengee');
-		});
+		.then(TeamChallenge.populateTeams);
 
 	var outgoingChallenges = TeamChallenge.getOutgoing(teamId)
-		.then(function(challenges) {
-			return TeamChallenge.populate(challenges, populateTeamMembers);
-		});
+		.then(TeamChallenge.populateTeamsAndTeamMembers);
 
 	var incomingChallenges = TeamChallenge.getIncoming(teamId)
-		.then(function(challenges) {
-            return TeamChallenge.populate(challenges, populateTeamMembers);
-        });
+		.then(TeamChallenge.populateTeamsAndTeamMembers);
 
 	Promise.all([resolvedChallenges, outgoingChallenges, incomingChallenges])
 		.then(function(challenges) {
@@ -83,23 +72,22 @@ router.get('/:teamId', function(req, res, next) {
 
 /**
  * Revoke wrongly issued challenge.
- * @param: challengerId
- * @param: challengeeId
+ * @param: challengeId
  */
 router.delete('/revoke', function(req, res, next) {
-	var challengerId = req.body.challengerId;
-	var challengeeId = req.body.challengeeId;
+	var challengeId = req.body.challengeId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 	
-	if (!challengerId || !challengeeId) return next(new Error('Both teams must be provided to revoke a challenge.'));
+	if (!challengeId) return next(new Error('This is not a valid challenge id.'));
 
-	TeamChallenge.findOne({challenger: challengerId, challengee: challengeeId, winner: null}).exec()
+	TeamChallenge.findById(challengeId).exec()
 		.then(function(challenge) {
-            if (!challenge) return next(new Error('Could not find the challenge.'));
-            return ChallengeService.verifyForfeit(challenge);
+            if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
+            return TeamChallengeService.verifyAllowedToRevoke(challenge, clientId);
         })
-		.then(function() {
-            MailerService.revokedTeamChallenge(challengerId, challengeeId);
-            TeamChallenge.remove({challenger: challengerId, challengee: challengeeId, winner: null}).exec();
+		.then(TeamChallenge.removeByDocument)
+		.then(function(challenge) {
+            MailerService.revokedTeamChallenge(challenge.challenger, challenge.challengee);
             req.app.io.sockets.emit('challenge:team:revoked');
             res.json({message: 'Successfully revoked challenge.'});
 		})
@@ -116,11 +104,15 @@ router.post('/resolve', function(req, res, next) {
 	var challengeId = req.body.challengeId;
 	var challengerScore = req.body.challengerScore;
 	var challengeeScore = req.body.challengeeScore;
+    var clientId = AuthService.verifyToken(req.token).playerId;
 	
 	if (!challengeId) return next(new Error('This is not a valid challenge.'));
 
 	TeamChallenge.findById(challengeId).exec()
-		.then(ChallengeService.verifyForfeit)
+		.then(function(teamChallenge) {
+            return TeamChallengeService.verifyAllowedToResolve(teamChallenge, clientId);
+		})
+		.then(TeamChallengeService.verifyForfeitIsNotRequired)
 		.then(function(teamChallenge) {
 			return ChallengeService.setScore(teamChallenge, challengerScore, challengeeScore);
 		})
@@ -142,10 +134,16 @@ router.post('/resolve', function(req, res, next) {
  */
 router.post('/forfeit', function(req, res, next) {
 	var challengeId = req.body.challengeId;
+    var clientId = AuthService.verifyToken(req.token).playerId;
+
 	if (!challengeId) return next(new Error('This is not a valid challenge id.'));
+
     console.log('Forfeiting challenge id [' + challengeId + ']');
 
 	TeamChallenge.findById(challengeId).exec()
+		.then(function(teamChallenge) {
+			return TeamChallengeService.verifyAllowedToForfeit(teamChallenge, clientId);
+		})
 		.then(ChallengeService.setForfeit)
 		.then(TeamChallengeService.updateLastGames)
 		.then(ChallengeService.swapRanks)

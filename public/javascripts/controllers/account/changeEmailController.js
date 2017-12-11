@@ -2,20 +2,20 @@ angular
 	.module('controllers')
 	.controller('changeEmailController', ChangeEmailController);
 
-ChangeEmailController.$inject = ['$scope', '$rootScope', 'modalService', 'playerService'];
+ChangeEmailController.$inject = ['$scope', 'jwtService', 'modalService', 'playerService'];
 
 
-function ChangeEmailController($scope, $rootScope, modalService, playerService) {
+function ChangeEmailController($scope, jwtService, modalService, playerService) {
 	
 	$scope.email = '';
 
 	function init() {
-		$rootScope.pageTitle = 'Change Email';
 		getEmail();
 	}
 	
 	function getEmail() {
-		var playerId = $rootScope.myClient.playerId;
+        var playerId = jwtService.getDecodedToken().playerId;
+
 		playerService.getPlayer(playerId).then(function(player) {
 			if (!player) console.log('Uh oh, this player could not be found.');
 			else $scope.email = player.email;
@@ -23,9 +23,8 @@ function ChangeEmailController($scope, $rootScope, modalService, playerService) 
 	}
 	
 	$scope.validateEmail = function() {
-		var playerId = $rootScope.myClient.playerId;
 		var modalOptions;
-		playerService.changeEmail(playerId, $scope.email).then(
+		playerService.changeEmail($scope.email).then(
 			// Success
 			function(success) {
 				modalOptions = {
@@ -46,9 +45,8 @@ function ChangeEmailController($scope, $rootScope, modalService, playerService) 
 	};
 	
 	$scope.removeEmail = function() {
-		var playerId = $rootScope.myClient.playerId;
 		var modalOptions;
-		playerService.removeEmail(playerId).then(
+		playerService.removeEmail().then(
 			// Success
 			function(success) {
 				getEmail();
