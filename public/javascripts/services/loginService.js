@@ -80,18 +80,17 @@ function LoginService($http, socket, jwtService) {
     service.attemptRelogin = function () {
         if (!service.isLoggedIn()) return;
 
-        console.log('Attempting to flash token from previous session.');
         service.flashToken(jwtService.getToken())
             .then(service.setHeaders)
-            .then(function() {
-                console.log('Successfully flashed token from previous session.');
-            })
             .catch(angular.noop);
     };
 
     service.logout = function () {
         console.log('Removing token and headers');
-        if (service.isLoggedIn()) socket.emit('logout', jwtService.getDecodedToken().playerId);
+        if (service.isLoggedIn()) {
+            socket.emit('logout', jwtService.getDecodedToken().playerId);
+        }
+
         jwtService.removeToken();
         jwtService.clearHeaders();
     };

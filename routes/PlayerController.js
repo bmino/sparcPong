@@ -29,12 +29,12 @@ router.post('/', function(req, res, next) {
 		(req.body.email && typeof req.body.email !== 'string'))
 		return next(new Error('Invalid data type of Player parameters.'));
 	
-	var playerUsername = req.body.username ? req.body.username.trim() : null;
-    var playerPassword = req.body.password ? req.body.password.trim() : null;
-    var playerFirstName = req.body.firstName ? req.body.firstName.trim() : null;
-	var playerLastName = req.body.lastName ? req.body.lastName.trim() : null;
+	var playerUsername = req.body.username.trim();
+    var playerPassword = req.body.password.trim();
+    var playerFirstName = req.body.firstName.trim();
+	var playerLastName = req.body.lastName.trim();
 	var playerPhone = req.body.phone;
-	var playerEmail = req.body.email ? req.body.email.replace(/\s+/g, '') : "";
+	var playerEmail = req.body.email.replace(/\s+/g, '');
 
     // Create new player
     var player = new Player();

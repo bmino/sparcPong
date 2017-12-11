@@ -13,17 +13,12 @@ function tier() {
 		
 		// Calculate possible ranks for the tier
 		var ranks = getRanks(tier);
-		
-		// For each player
-		for (var p=0; p<players.length; p++) {
-			var playerRank = players[p].rank;
-			// For each rank
-			for (var r=0; r<ranks.length; r++) {
-				if (playerRank == ranks[r]) {
-					tierPlayers.push(players[p]);
-				}
-			}
-		}
+
+		angular.forEach(players, function(player) {
+            angular.forEach(ranks, function(rank) {
+            	if (player.rank === rank) tierPlayers.push(player);
+			});
+		});
 		
 		return tierPlayers.sort(playerSort);
 	};
