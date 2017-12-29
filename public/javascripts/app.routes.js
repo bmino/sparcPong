@@ -10,70 +10,85 @@ function routes($routeProvider) {
 		/* Board Routes */
 		.when('/board/singles', {
 			templateUrl: '/partials/boards/singles.html',
-			controller: 'singlesBoardController'
+			controller: 'singlesBoardController',
+			protected: true
 		})
 		.when('/board/doubles', {
 			templateUrl: '/partials/boards/doubles.html',
-			controller: 'doublesBoardController'
+			controller: 'doublesBoardController',
+            protected: true
 		})
 		
 		/* Help Routes */
 		.when('/help/challenges', {
-			templateUrl: '/partials/help/challenges.html'
+			templateUrl: '/partials/help/challenges.html',
+            protected: true
 		})
 		.when('/help/rules', {
-			templateUrl: '/partials/help/rules.html'
+			templateUrl: '/partials/help/rules.html',
+            protected: true
 		})
 		.when('/help/alerts', {
-			templateUrl: '/partials/help/alerts.html'
+			templateUrl: '/partials/help/alerts.html',
+            protected: true
 		})
 		
 		/* Player Routes */
 		.when('/profile/player/:id?', {
 			templateUrl: '/partials/profiles/player.html',
-			controller: 'playerProfileController'
+			controller: 'playerProfileController',
+            protected: true
 		})
 		.when('/account/changeAlerts', {
 			templateUrl: '/partials/account/changeAlerts.html',
-			controller: 'changeAlertsController'
+			controller: 'changeAlertsController',
+            protected: true
 		})
 		.when('/account/changeUsername', {
 			templateUrl: '/partials/account/changeUsername.html',
-			controller: 'changeUsernameController'
+			controller: 'changeUsernameController',
+            protected: true
 		})
         .when('/account/changePassword', {
             templateUrl: '/partials/account/changePassword.html',
-            controller: 'changePasswordController'
+            controller: 'changePasswordController',
+            protected: true
         })
 		.when('/account/changeEmail', {
 			templateUrl: '/partials/account/changeEmail.html',
-			controller: 'changeEmailController'
+			controller: 'changeEmailController',
+            protected: true
 		})
 		
 		/* Team Routes */
 		.when('/profile/team/:id?', {
 			templateUrl: '/partials/profiles/team.html',
-			controller: 'teamProfileController'
+			controller: 'teamProfileController',
+            protected: true
 		})
 		
 		/* Sign Up Routes */
 		.when('/signUp/player', {
 			templateUrl: '/partials/signUp/newPlayer.html',
-			controller: 'signUpPlayerController'
+			controller: 'signUpPlayerController',
+            protected: false
 		})
 		.when('/signUp/team', {
 			templateUrl: '/partials/signUp/newTeam.html',
-			controller: 'signUpTeamController'
+			controller: 'signUpTeamController',
+            protected: true
 		})
 
 		/* Authentication Routes */
 		.when('/login', {
 			templateUrl: '/partials/login.html',
-			controller: 'loginController'
+			controller: 'loginController',
+            protected: false
 		})
         .when('/resetPassword/:resetKey?', {
             templateUrl: '/partials/resetPassword.html',
-            controller: 'resetPasswordController'
+            controller: 'resetPasswordController',
+            protected: false
         })
 		
 		.otherwise({

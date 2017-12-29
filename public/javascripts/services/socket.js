@@ -20,9 +20,11 @@ function Socket($rootScope) {
         };
         socket.on(eventName, appliedCallback);
 
-        scope.$on('$destroy', function() {
-            socket.removeListener(eventName, appliedCallback);
-        });
+        if (scope) {
+            scope.$on('$destroy', function() {
+                socket.removeListener(eventName, appliedCallback);
+            });
+        }
     }
 
     function emit(eventName, data, callback) {

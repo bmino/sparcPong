@@ -15,6 +15,9 @@ var AuthService = {
     PASSWORD_MIN_LENGTH: process.env.PASSWORD_MIN_LENGTH > 0 ? process.env.PASSWORD_MIN_LENGTH : 6,
     PASSWORD_MAX_LENGTH: 32,
 
+    login : login,
+    flash : flash,
+
     createToken : createToken,
     verifyToken: verifyToken,
 
@@ -31,9 +34,27 @@ var AuthService = {
 
 module.exports = AuthService;
 
+function login(playerId, password) {
+    console.log('Attempting to log in player id: ' + playerId);
+    return new Promise(function(resolve, reject) {
+        AuthService.validateCredentials(playerId, password)
+            .then(AuthService.createToken)
+            .then(resolve)
+            .catch(reject);
+    });
+}
+
+function flash(token) {
+    console.log('Attempting to re-log player.');
+    return new Promise(function(resolve, reject) {
+        AuthService.validateTokenCredentials(token)
+            .then(resolve)
+            .catch(reject);
+    });
+}
+
 function createToken(playerId) {
     console.log('Attempting to create token for ' + playerId);
-
     return new Promise(function(resolve, reject) {
         var payload = {
             playerId: playerId,

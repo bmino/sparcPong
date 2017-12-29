@@ -1,6 +1,5 @@
 var SocketBank = {
     SOCKETS: {},
-    ONLINE_USER_IDS: [],
 
     getClientCount : getClientCount,
     getOnlineClientIds : getOnlineClientIds,
@@ -16,19 +15,17 @@ module.exports = SocketBank;
 
 
 function getClientCount() {
-    var size = 0;
-    for (var key in this.SOCKETS) {
-        if (this.SOCKETS.hasOwnProperty(key)) size++;
-    }
-    return size;
+    return Object.keys(this.SOCKETS).length;
 }
 
 function getOnlineClientIds() {
     var uniqueIds = [];
-    for (var i=0; i<this.ONLINE_USER_IDS.length; i++) {
-        var userId = this.ONLINE_USER_IDS[i];
+    Object.keys(this.SOCKETS).forEach(function(socketId) {
+        var socket = SocketBank.SOCKETS[socketId];
+        var userId = socket.userId;
+        if (!userId) return;
         if (uniqueIds.indexOf(userId) < 0) uniqueIds.push(userId);
-    }
+    });
     return uniqueIds;
 }
 
@@ -37,21 +34,22 @@ function addSocket(socket) {
 }
 
 function removeSocket(socket) {
+    this.logoffUser(socket.userId, socket);
     delete this.SOCKETS[socket.id];
 }
 
-function loginUser(userId) {
+function loginUser(userId, socket) {
     console.log('Login from userId: '+ userId);
-    if (!isOnlineByUserId(userId)) this.ONLINE_USER_IDS.push(userId);
+    attachUserIdToSocket(userId, socket);
 }
 
-function logoffUser(userId) {
+function logoffUser(userId, socket) {
     console.log('Logout from userId: '+ userId);
-    var index = this.ONLINE_USER_IDS.indexOf(userId);
-    if (index >= 0) this.ONLINE_USER_IDS.splice(index, 1);
+    delete socket.userId;
 }
 
 
-function isOnlineByUserId(userId) {
-    return SocketBank.ONLINE_USER_IDS.indexOf(userId) !== -1;
+function attachUserIdToSocket(userId, socket) {
+    var currentSocket = SocketBank.SOCKETS[socket.id];
+    currentSocket.userId = userId;
 }

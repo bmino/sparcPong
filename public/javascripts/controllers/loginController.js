@@ -2,9 +2,9 @@ angular
 	.module('controllers')
 	.controller('loginController', LoginController);
 
-LoginController.$inject = ['$scope', '$location', 'loginService', 'modalService', 'socket'];
+LoginController.$inject = ['$scope', '$location', 'loginService', 'modalService', 'socket', 'jwtService'];
 
-function LoginController($scope, $location, loginService, modalService, socket) {
+function LoginController($scope, $location, loginService, modalService, socket, jwtService) {
 
     $scope.player = {};
     $scope.password = '';
@@ -63,15 +63,18 @@ function LoginController($scope, $location, loginService, modalService, socket) 
 
         console.log('logging in');
         $scope.authenticating = true;
-        loginService.createToken($scope.player._id, $scope.password)
-            .then( loginSuccess, loginFailure )
-            .finally(function() {
-                $scope.authenticating = false;
-            });
+
+        socket.emit('login', {
+            playerId: $scope.player._id,
+            password: $scope.password
+        });
     };
 
-    function loginSuccess() {
+    function loginSuccess(token) {
         console.log('login success');
+        jwtService.setToken(token);
+        jwtService.setHeaders(token);
+
         // Route to landing page
         $location.path('/');
     }
@@ -82,10 +85,14 @@ function LoginController($scope, $location, loginService, modalService, socket) 
             bodyText: reason
         };
         modalService.showAlertModal({}, modalOptions);
+        $scope.authenticating = false;
     }
 
     socket.on('player:new', $scope, populatePlayerList);
     socket.on('player:change:username', $scope, populatePlayerList);
+
+    socket.on('login:success', $scope, loginSuccess);
+    socket.on('login:error', $scope, loginFailure);
 
     init();
 

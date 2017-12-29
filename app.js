@@ -76,10 +76,11 @@ app.use(function(err, req, res, next) {
 
 
 var SocketBank = require('./singletons/SocketBank');
+var AuthService = require('./services/AuthService');
 
 // Socket Events
 io.on('connection', function(socket) {
-	console.log('New client socket connection...');
+	console.log('New socket connection...');
 	SocketBank.addSocket(socket);
 
 	// Notify all clients of presence
@@ -95,8 +96,39 @@ io.on('connection', function(socket) {
 		io.sockets.emit('client:leave', SocketBank.getClientCount());
 	});
 
+	socket.on('login', function(credentials) {
+		console.log('Received \'login\' socket event.');
+		var userId = credentials.playerId;
+		var password = credentials.password;
+
+		AuthService.login(userId, password)
+			.then(function(token) {
+                SocketBank.loginUser(userId, socket);
+                io.sockets.emit('client:online', SocketBank.getOnlineClientIds());
+				socket.emit('login:success', token);
+			})
+			.catch(function(err) {
+				console.error(err);
+				socket.emit('login:error', err.message);
+			});
+	});
+
+	socket.on('flash', function(token) {
+        console.log('Received \'flash\' socket event.');
+		AuthService.flash(token)
+			.then(function(payload) {
+                SocketBank.loginUser(payload.playerId, socket);
+                io.sockets.emit('client:online', SocketBank.getOnlineClientIds());
+                socket.emit('flash:success', token);
+            })
+			.catch(function(err) {
+				socket.emit('flash:error', err.message);
+			});
+	});
+
 	socket.on('logout', function(userId) {
-		SocketBank.logoffUser(userId);
+		console.log('Received \'logout\' socket event.');
+		SocketBank.logoffUser(userId, socket);
 		io.sockets.emit('client:online', SocketBank.getOnlineClientIds());
 	});
 });
