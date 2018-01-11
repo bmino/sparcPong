@@ -71,9 +71,13 @@ function PlayerProfileController($scope, $routeParams, jwtService, socket, playe
 	
 	socket.on('player:change:username', $scope, fetchChallenges);
 	socket.on('challenge:issued', $scope, fetchChallenges);
-	socket.on('challenge:resolved', $scope, fetchChallenges && getRecord);
+	socket.on('challenge:resolved', $scope, function() {
+		fetchChallenges() && getRecord();
+    });
 	socket.on('challenge:revoked', $scope, fetchChallenges);
-	socket.on('challenge:forfeited', $scope, fetchChallenges && getRecord);
+	socket.on('challenge:forfeited', $scope, function() {
+		fetchChallenges() && getRecord();
+    });
 
     init();
 
