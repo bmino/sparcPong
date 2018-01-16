@@ -18,7 +18,7 @@ router.post('/password/reset/enable', function(req, res, next) {
 });
 
 router.post('/password/reset/change', function(req, res, next) {
-    var password = req.body.password;
+    var password = req.body.password ? req.body.password.trim() : '';
     var resetKey = req.body.resetKey;
 
     console.log('Attempting to reset password.');

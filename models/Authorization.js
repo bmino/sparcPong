@@ -25,7 +25,7 @@ authorizationSchema.methods.setPassword = function(password) {
 
 authorizationSchema.methods.isPasswordEqualTo = function(password) {
     var self = this;
-    if (!password) return Promise.reject(new Error('Password cannot be empty.'));
+    if (password === null || password === undefined) return Promise.reject(new Error('Password must be defined.'));
     return bcrypt.compareSync(password, self.password);
 };
 

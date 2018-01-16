@@ -106,8 +106,8 @@ router.post('/change/username', auth.jwtAuthProtected, function(req, res, next) 
  * @param: newPassword
  */
 router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) {
-	var oldPassword = req.body.oldPassword ? req.body.oldPassword.trim() : null;
-    var newPassword = req.body.newPassword ? req.body.newPassword.trim() : null;
+	var oldPassword = req.body.oldPassword ? req.body.oldPassword.trim() : '';
+    var newPassword = req.body.newPassword ? req.body.newPassword.trim() : '';
     var clientId = AuthService.verifyToken(req.token).playerId;
 
     if (!clientId) return next(new Error('You must provide a valid player id.'));

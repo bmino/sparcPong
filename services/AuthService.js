@@ -12,7 +12,7 @@ var AuthService = {
     JWT_REJECT_IAT_BEFORE: process.env.JWT_REJECT_IAT_BEFORE || new Date(2017, 0).getTime(),
     PASSWORD_RESET_WINDOW_MINUTES: process.env.PASSWORD_RESET_WINDOW_MINUTES || 20,
     PASSWORD_RESET_REPEAT_HOURS: process.env.PASSWORD_RESET_REPEAT_HOURS || 1,
-    PASSWORD_MIN_LENGTH: process.env.PASSWORD_MIN_LENGTH > 0 ? process.env.PASSWORD_MIN_LENGTH : 6,
+    PASSWORD_MIN_LENGTH: process.env.PASSWORD_MIN_LENGTH !== undefined ? process.env.PASSWORD_MIN_LENGTH : 6,
     PASSWORD_MAX_LENGTH: 32,
 
     login : login,
@@ -168,7 +168,7 @@ function validateTokenCredentials(token) {
 
 function validatePasswordStrength(password) {
     return new Promise(function(resolve, reject) {
-        if (!password) return reject(new Error('Password cannot be empty.'));
+        if (password === null || password === undefined) return reject(new Error('Password must be defined.'));
         if (password.length < AuthService.PASSWORD_MIN_LENGTH) return reject(new Error('Password must be at least ' + AuthService.PASSWORD_MIN_LENGTH + ' characters in length.'));
         if (password.length > AuthService.PASSWORD_MAX_LENGTH) return reject(new Error('Password cannot be longer than ' + AuthService.PASSWORD_MAX_LENGTH + ' characters.'));
         return resolve(password);
