@@ -74,22 +74,22 @@ function verifyTier(challenger, challengee) {
 
 function verifyInvolvedByPlayerId(entity, playerId, message) {
     return new Promise(function(resolve, reject) {
-        if (entity.challenger.toString() === playerId ||
-            entity.challengee.toString() === playerId) return resolve(entity);
+        if (entity.challenger.toString() === playerId.toString() ||
+            entity.challengee.toString() === playerId.toString()) return resolve(entity);
         return reject(new Error(message || 'Expected the player to be the challenger or challengee.'));
     });
 }
 
 function verifyChallengerByPlayerId(entity, playerId, message) {
     return new Promise(function(resolve, reject) {
-        if (entity.challenger.toString() === playerId) return resolve(entity);
+        if (entity.challenger.toString() === playerId.toString()) return resolve(entity);
         return reject(new Error(message || 'Expected the player to be the challenger.'));
     });
 }
 
 function verifyChallengeeByPlayerId(entity, playerId, message) {
     return new Promise(function(resolve, reject) {
-        if (entity.challengee.toString() === playerId) return resolve(entity);
+        if (entity.challengee.toString() === playerId.toString()) return resolve(entity);
         return reject(new Error(message || 'Expected the player to be the challengee.'));
     });
 }

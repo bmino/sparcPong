@@ -37,7 +37,7 @@ module.exports.getRanks = function(tier) {
 module.exports.addBusinessDays = function(date, days) {
     // Bad Inputs
     if (!days) return date;
-    var newDate = new Date(date.getTime());
+    var newDate = typeof data === 'object' ? new Date(date.getTime()) : new Date(date);
     var added = 0;
     while (added < days) {
         // Looks at tomorrow's day

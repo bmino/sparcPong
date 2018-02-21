@@ -124,20 +124,11 @@ router.post('/forfeit', function(req, res, next) {
 	var challengeId = req.body.challengeId;
     var clientId = AuthService.verifyToken(req.token).playerId;
 
-	Challenge.findById(challengeId).exec()
-		.then(function(challenge) {
-            if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
-            return ChallengeService.verifyChallengeeByPlayerId(challenge, clientId, 'Only the challengee can forfeit this challenge.');
-        })
-        .then(ChallengeService.setForfeit)
-		.then(PlayerChallengeService.updateLastGames)
-		.then(ChallengeService.swapRanks)
-		.then(function() {
-            MailerService.forfeitedChallenge(challengeId);
-            req.app.io.sockets.emit('challenge:forfeited');
+	PlayerChallengeService.doForfeit(challengeId, clientId, req)
+        .then(function() {
             res.json({message: 'Challenge successfully forfeited.'});
-		})
-		.catch(next);
+        })
+        .catch(next);
 });
 
 

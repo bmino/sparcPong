@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var Util = require('../services/Util');
 
 var challengeSchema = new Schema({
 	challenger: { type: Schema.ObjectId, ref: 'Player', required: true },
@@ -69,6 +70,16 @@ challengeSchema.statics.getUnresolvedBetweenPlayers = function(players) {
             {$and: [{challenger: players[1]._id}, {challengee: players[0]._id}, {winner: null}]}
         ]
         }).exec();
+};
+
+challengeSchema.statics.getAllExpired = function() {
+    return Challenge.find({winner: null}).exec()
+        .then(function(challenges) {
+            return challenges.filter(function(challenge) {
+                var expirationDate = Util.addBusinessDays(challenge.createdAt, process.env.ALLOWED_CHALLENGE_DAYS || 4);
+                return expirationDate < new Date();
+            });
+        });
 };
 
 challengeSchema.statics.populateById = function(challengeId, populateAlerts) {

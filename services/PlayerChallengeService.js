@@ -2,10 +2,13 @@ var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
 var Challenge = mongoose.model('Challenge');
 var ChallengeService = require('./ChallengeService');
+var MailerService = require('./MailerService');
 var Util = require('./Util');
 
 var PlayerChallengeService = {
     ALLOWED_CHALLENGE_DAYS: process.env.ALLOWED_CHALLENGE_DAYS || 4,
+
+    doForfeit : doForfeit,
 
     verifyAllowedToChallenge : verifyAllowedToChallenge,
     verifyChallengesBetweenPlayers : verifyChallengesBetweenPlayers,
@@ -15,6 +18,22 @@ var PlayerChallengeService = {
 };
 
 module.exports = PlayerChallengeService;
+
+
+function doForfeit(challengeId, clientId, req) {
+    return Challenge.findById(challengeId).exec()
+        .then(function(challenge) {
+            if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
+            return ChallengeService.verifyChallengeeByPlayerId(challenge, clientId, 'Only the challengee can forfeit this challenge.');
+        })
+        .then(ChallengeService.setForfeit)
+        .then(PlayerChallengeService.updateLastGames)
+        .then(ChallengeService.swapRanks)
+        .then(function() {
+            MailerService.forfeitedChallenge(challengeId);
+            req.app.io.sockets.emit('challenge:forfeited');
+        });
+}
 
 
 function verifyChallengesBetweenPlayers(players) {
@@ -83,4 +102,3 @@ function updateLastGames(challenge) {
             .catch(reject);
     });
 }
-

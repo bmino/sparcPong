@@ -57,7 +57,7 @@ app.use('/api/challenge/player',			require('./routes/challenges/PlayerChallengeC
 app.use('/api/challenge/team',				require('./routes/challenges/TeamChallengeController'));
 app.use('/api/playerAlerts',				require('./routes/AlertController'));
 app.use('/api/envBridge',					require('./routes/EnvironmentBridgeController'));
-
+app.use('/manual',							require('./routes/ManualTaskController'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
