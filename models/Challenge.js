@@ -56,6 +56,14 @@ challengeSchema.statics.getResolved = function(playerId) {
         .exec();
 };
 
+challengeSchema.statics.getUnresolved = function(playerId) {
+    return Challenge.find({ $and: [
+        {$or: [{'challenger': playerId}, {'challengee': playerId}]},
+        {'winner': null}
+    ]})
+        .exec();
+};
+
 challengeSchema.statics.getResolvedBetweenPlayers = function(players) {
     return Challenge.find({$or: [
         {$and: [{challenger: players[0]._id}, {challengee: players[1]._id}, {winner: {$ne: null}}]},

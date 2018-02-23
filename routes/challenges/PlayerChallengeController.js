@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Challenge = mongoose.model('Challenge');
-var Player = mongoose.model('Player');
 var MailerService = require('../../services/MailerService');
 var ChallengeService = require('../../services/ChallengeService');
 var PlayerChallengeService = require('../../services/PlayerChallengeService');
@@ -17,18 +16,8 @@ router.post('/', function(req, res, next) {
     var challengeeId = req.body.challengeeId;
 	var clientId = AuthService.verifyToken(req.token).playerId;
 
-	if (!clientId || !challengeeId) return next(new Error('Two players are required for a challenge.'));
-    if (clientId === challengeeId) return next(new Error('Players cannot challenge themselves.'));
-
-	var challengerPromise = Player.findById(clientId).exec();
-	var challengeePromise = Player.findById(challengeeId).exec();
-
-    Promise.all([challengerPromise, challengeePromise])
-        .then(PlayerChallengeService.verifyAllowedToChallenge)
-		.then(Challenge.createByPlayers)
-		.then(function(challenge) {
-            MailerService.newChallenge(challenge._id);
-            req.app.io.sockets.emit('challenge:issued');
+	PlayerChallengeService.doChallenge(challengeeId, clientId, req)
+		.then(function() {
             res.json({message: 'Challenge issued!'});
 		})
 		.catch(next);

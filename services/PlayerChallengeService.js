@@ -8,6 +8,7 @@ var Util = require('./Util');
 var PlayerChallengeService = {
     ALLOWED_CHALLENGE_DAYS: process.env.ALLOWED_CHALLENGE_DAYS || 4,
 
+    doChallenge : doChallenge,
     doForfeit : doForfeit,
 
     verifyAllowedToChallenge : verifyAllowedToChallenge,
@@ -19,6 +20,21 @@ var PlayerChallengeService = {
 
 module.exports = PlayerChallengeService;
 
+function doChallenge(challengeeId, clientId, req) {
+    if (!clientId || !challengeeId) return Promise.reject(new Error('Two players are required for a challenge.'));
+    if (clientId === challengeeId) return Promise.reject(new Error('Players cannot challenge themselves.'));
+
+    return Promise.all([
+        Player.findById(clientId).exec(),
+        Player.findById(challengeeId).exec()
+    ])
+        .then(PlayerChallengeService.verifyAllowedToChallenge)
+        .then(Challenge.createByPlayers)
+        .then(function(challenge) {
+            MailerService.newChallenge(challenge._id);
+            req.app.io.sockets.emit('challenge:issued');
+        });
+}
 
 function doForfeit(challengeId, clientId, req) {
     return Challenge.findById(challengeId).exec()
