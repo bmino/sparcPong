@@ -2,8 +2,6 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Challenge = mongoose.model('Challenge');
-var MailerService = require('../../services/MailerService');
-var ChallengeService = require('../../services/ChallengeService');
 var PlayerChallengeService = require('../../services/PlayerChallengeService');
 var AuthService = require('../../services/AuthService');
 
@@ -57,15 +55,8 @@ router.delete('/revoke', function(req, res, next) {
 	var challengeId = req.body.challengeId;
     var clientId = AuthService.verifyToken(req.token).playerId;
 
-	Challenge.findById(challengeId).exec()
-		.then(function(challenge) {
-            if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
-            return ChallengeService.verifyChallengerByPlayerId(challenge, clientId, 'Only the challenger can revoke this challenge.');
-        })
-		.then(Challenge.removeByDocument)
-		.then(function(challenge) {
-            MailerService.revokedChallenge(challenge.challenger, challenge.challengee);
-            req.app.io.sockets.emit('challenge:revoked');
+    PlayerChallengeService.doRevoke(challengeId, clientId, req)
+		.then(function() {
             res.json({message: 'Successfully revoked challenge.'});
 		})
 		.catch(next);
@@ -85,21 +76,8 @@ router.post('/resolve', function(req, res, next) {
 	
 	if (!challengeId) return next(new Error('This is not a valid challenge.'));
 
-	Challenge.findById(challengeId).exec()
-		.then(function(challenge) {
-            return ChallengeService.verifyInvolvedByPlayerId(challenge, clientId, 'Only an involved player can resolve this challenge.');
-        })
-		.then(PlayerChallengeService.verifyForfeitIsNotRequired)
-        .then(function(challenge) {
-			return ChallengeService.setScore(challenge, challengerScore, challengeeScore);
-        })
-		.then(PlayerChallengeService.updateLastGames)
-		.then(function(challenge) {
-            if (challengerScore > challengeeScore) return ChallengeService.swapRanks(challenge);
-        })
+	PlayerChallengeService.doResolve(challengeId, challengerScore, challengeeScore, clientId, req)
 		.then(function() {
-            MailerService.resolvedChallenge(challengeId);
-            req.app.io.sockets.emit('challenge:resolved');
             res.json({message: 'Successfully resolved challenge.'});
 		})
 		.catch(next);

@@ -10,6 +10,8 @@ var PlayerChallengeService = {
 
     doChallenge : doChallenge,
     doForfeit : doForfeit,
+    doRevoke : doRevoke,
+    doResolve : doResolve,
 
     verifyAllowedToChallenge : verifyAllowedToChallenge,
     verifyChallengesBetweenPlayers : verifyChallengesBetweenPlayers,
@@ -48,6 +50,38 @@ function doForfeit(challengeId, clientId, req) {
         .then(function() {
             MailerService.forfeitedChallenge(challengeId);
             req.app.io.sockets.emit('challenge:forfeited');
+        });
+}
+
+function doRevoke(challengeId, clientId, req) {
+    return Challenge.findById(challengeId).exec()
+        .then(function(challenge) {
+            if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
+            return ChallengeService.verifyChallengerByPlayerId(challenge, clientId, 'Only the challenger can revoke this challenge.');
+        })
+        .then(Challenge.removeByDocument)
+        .then(function(challenge) {
+            MailerService.revokedChallenge(challenge.challenger, challenge.challengee);
+            req.app.io.sockets.emit('challenge:revoked');
+        });
+}
+
+function doResolve(challengeId, challengerScore, challengeeScore, clientId, req) {
+    return Challenge.findById(challengeId).exec()
+        .then(function(challenge) {
+            return ChallengeService.verifyInvolvedByPlayerId(challenge, clientId, 'Only an involved player can resolve this challenge.');
+        })
+        .then(PlayerChallengeService.verifyForfeitIsNotRequired)
+        .then(function(challenge) {
+            return ChallengeService.setScore(challenge, challengerScore, challengeeScore);
+        })
+        .then(PlayerChallengeService.updateLastGames)
+        .then(function(challenge) {
+            if (challengerScore > challengeeScore) return ChallengeService.swapRanks(challenge);
+        })
+        .then(function() {
+            MailerService.resolvedChallenge(challengeId);
+            req.app.io.sockets.emit('challenge:resolved');
         });
 }
 
