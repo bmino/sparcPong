@@ -11,8 +11,8 @@ router.post('/password/reset/enable', function(req, res, next) {
        .then(function(authorization) {
            return MailerService.resetPassword(authorization.getResetKey());
        })
-       .then(function() {
-           res.json({message: 'Check your email to reset your password.'});
+       .then(function(email) {
+           res.json({message: 'Recovery key has been sent to ' + AuthService.maskEmail(email)});
        })
        .catch(next);
 });
@@ -40,6 +40,5 @@ router.get('/logins', function(req, res, next) {
         })
         .catch(next);
 });
-
 
 module.exports = router;

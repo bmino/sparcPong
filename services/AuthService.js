@@ -30,6 +30,8 @@ var AuthService = {
     validatePasswordStrength : validatePasswordStrength,
 
     getLogins : getLogins
+
+    maskEmail : maskEmail
 };
 
 module.exports = AuthService;
@@ -180,4 +182,13 @@ function getLogins() {
         .then(function(players) {
             return players;
         });
+}
+
+function maskEmail(email) {
+    var emailParts = email.split('@');
+    var maskedName = '';
+    emailParts[0].split('').forEach(function(letter, index) {
+        maskedName += (index % 2 === 0 ? letter : '*');
+    });
+    return maskedName + '@' + emailParts[1];
 }
