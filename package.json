@@ -1,10 +1,14 @@
 {
   "name": "sparcPong",
-  "version": "3.2.3",
-  "private": true,
+  "version": "3.2.5",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bmino/sparcPong.git"
+  },
   "engines": {
-    "node": "8.9.1",
-    "npm": "5.5.1"
+    "node": "9.5.1",
+    "npm": "5.7.1"
   },
   "scripts": {
     "start": "node app.js"
@@ -30,5 +34,6 @@
     "socket.io": "^2.0.4",
     "uuid": "^3.1.0",
     "xoauth2": "^1.2.0"
-  }
+  },
+  "license": "MIT"
 }

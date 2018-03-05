@@ -180,7 +180,7 @@ router.post('/change/email/remove', auth.jwtAuthProtected, function(req, res, ne
  * Get player listing
  */
 router.get('/', auth.jwtAuthProtected, function(req, res, next) {
-	Player.find({}).exec()
+	Player.find({active: true}).exec()
 		.then(function(players) {
             res.json({message: players});
         })

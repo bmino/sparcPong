@@ -57,11 +57,7 @@ authorizationSchema.statics.attachToPlayerWithPassword = function(player, passwo
 };
 
 authorizationSchema.statics.findByPlayerId = function(playerId) {
-	return Authorization.findOne({user: playerId}).exec();
-};
-
-authorizationSchema.statics.findByPlayerId = function(playerId) {
-    return Authorization.findOne({user: playerId}).exec();
+	return Authorization.findOne({user: playerId}).populate('user').exec();
 };
 
 var Authorization = mongoose.model('Authorization', authorizationSchema);

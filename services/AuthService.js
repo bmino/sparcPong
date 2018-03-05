@@ -29,7 +29,7 @@ var AuthService = {
     validateTokenCredentials : validateTokenCredentials,
     validatePasswordStrength : validatePasswordStrength,
 
-    getLogins : getLogins
+    getLogins : getLogins,
 
     maskEmail : maskEmail
 };
@@ -138,6 +138,7 @@ function resetPasswordByExistingPassword(newPassword, existingPassword, playerId
             })
             .then(function (authorization) {
                 if (!authorization) return reject(new Error('Could not find an authentication record for this player.'));
+                if (!authorization.user.active) return reject(new Error('User has been deactivated.'));
                 if (!authorization.isPasswordEqualTo(existingPassword)) return reject(new Error('Incorrect current password.'));
                 return authorization.setPassword(newPassword);
             })
@@ -152,6 +153,7 @@ function validateCredentials(playerId, password) {
         Authorization.findByPlayerId(playerId)
             .then(function(authorization) {
                 if (!authorization) return reject(new Error('Could not find an authentication record for this player.'));
+                if (!authorization.user.active) return reject(new Error('User has been deactivated.'));
                 if (authorization.isPasswordEqualTo(password)) return resolve(playerId);
                 return reject(new Error('Incorrect password'));
             })
@@ -178,7 +180,7 @@ function validatePasswordStrength(password) {
 }
 
 function getLogins() {
-    return Player.find({}, 'username _id').exec()
+    return Player.find({active: true}, 'username _id').exec()
         .then(function(players) {
             return players;
         });

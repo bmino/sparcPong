@@ -9,7 +9,8 @@ var playerSchema = new Schema({
 	rank: { type: Number, default: 0 },
 	lastGame: { type: Date, default: null },
 	phone: Number,
-	email: String
+	email: String,
+    active: { type: Boolean, required: true, default: true }
 });
 
 playerSchema.methods.attachAlert = function(alert) {

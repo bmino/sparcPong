@@ -4,11 +4,15 @@
 		
 		<div class="userLabel">Leader:</div>
 		<span if-online="profile.leader._id" class="online-indicator"></span>
-		<a ng-href="#!/profile/player/{{profile.leader._id}}">{{profile.leader.firstName}} {{profile.leader.lastName}}</a>
+		<a ng-href="#!/profile/player/{{profile.leader._id}}">
+			<span ng-class="{'strike': !profile.leader.active}">{{profile.leader.firstName}} {{profile.leader.lastName}}</span>
+		</a>
 		<br />
 		<div class="userLabel">Partner:</div>
 		<span if-online="profile.partner._id" class="online-indicator"></span>
-		<a ng-href="#!/profile/player/{{profile.partner._id}}">{{profile.partner.firstName}} {{profile.partner.lastName}}</a>
+		<a ng-href="#!/profile/player/{{profile.partner._id}}">
+			<span ng-class="{'strike': !profile.partner.active}">{{profile.partner.firstName}} {{profile.partner.lastName}}</span>
+		</a>
 
 	</div>
 
@@ -20,7 +24,7 @@
 			<ul class="list-group in" id="incomingChallenges">
 				<li class="list-group-item challenge-incoming" ng-repeat="challenge in challenges.incoming | orderBy : '-updatedAt'">
 					<span if-online="[challenge.challenger.leader._id, challenge.challenger.partner._id]" class="online-indicator"></span>
-					<a ng-href="#!/profile/team/{{challenge.challenger._id}}" ng-bind="challenge.challenger.username"></a>
+					<a ng-href="#!/profile/team/{{challenge.challenger._id}}" ng-bind="challenge.challenger.username" ng-class="{'strike': !challenger.active}"></a>
 					<until-forfeit date="challenge.createdAt" doubles="true"></until-forfeit>
 					<report-team-challenge challenge="challenge">Report</report-team-challenge>
 				</li>
@@ -34,7 +38,7 @@
 			<ul class="list-group in" id="outgoingChallenges">
 				<li class="list-group-item challenge-outgoing" ng-repeat="challenge in challenges.outgoing | orderBy : '-updatedAt'">
 					<span if-online="[challenge.challengee.leader._id, challenge.challengee.partner._id]" class="online-indicator"></span>
-					<a ng-href="#!/profile/team/{{challenge.challengee._id}}" ng-bind="challenge.challengee.username"></a>
+					<a ng-href="#!/profile/team/{{challenge.challengee._id}}" ng-bind="challenge.challengee.username" ng-class="{'strike': !challengee.active}"></a>
 					<until-forfeit date="challenge.createdAt" doubles="true"></until-forfeit>
 					<report-team-challenge challenge="challenge">Report</report-team-challenge>
 				 </li>

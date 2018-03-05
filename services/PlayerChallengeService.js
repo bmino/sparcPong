@@ -117,6 +117,7 @@ function verifyAllowedToChallenge(players) {
     var challengee = players[1];
 
     return new Promise(function(resolve, reject) {
+        if (!challenger.active || !challengee.active) return reject(new Error('Both players must have active accounts'));
         var existingChallengesCheck = PlayerChallengeService.verifyChallengesBetweenPlayers(players);
         var rankCheck = ChallengeService.verifyRank(challenger, challengee);
         var tierCheck = ChallengeService.verifyTier(challenger, challengee);

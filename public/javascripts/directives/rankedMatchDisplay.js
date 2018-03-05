@@ -14,7 +14,7 @@ function RankedMatchDisplay() {
 		},
 		template:
 			'<span ng-bind="playerWon() ? \'Won vs\' : \'Lost vs\'"></span> ' +
-			'<a ng-href="#!/profile/{{type}}/{{getOpponent()._id}}"><span ng-bind="getOpponent().username"></span></a> ' +
+			'<a ng-href="#!/profile/{{type}}/{{getOpponent()._id}}"><span ng-bind="getOpponent().username" ng-class="{strike: !getOpponent().active}"></span></a> ' +
 			'<span ng-bind="getScore()"></span>' +
 			'<br />' +
 			'<span ng-bind="challenge.updatedAt | mongoDate"></span>',
