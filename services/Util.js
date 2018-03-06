@@ -5,6 +5,7 @@
  * @return: number - tier
  */
 module.exports.getTier = function(rank) {
+    if (rank < 1) return undefined;
     var tier = 1;
     var tierRanks = [];
     while (tierRanks.indexOf(rank) === -1) {
