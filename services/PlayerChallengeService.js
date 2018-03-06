@@ -35,6 +35,7 @@ function doChallenge(challengeeId, clientId, req) {
         .then(function(challenge) {
             MailerService.newChallenge(challenge._id);
             req.app.io.sockets.emit('challenge:issued');
+            return challenge;
         });
 }
 

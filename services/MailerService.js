@@ -22,6 +22,8 @@ var MailerService = {
     resolvedChallenge : resolvedChallenge,
     forfeitedChallenge : forfeitedChallenge,
 
+    newAutoChallenge : newAutoChallenge,
+
     resetPassword : resetPassword,
 
     transporter : nodemailer.createTransport("SMTP", {
@@ -170,7 +172,7 @@ function resolvedChallenge(challengeId) {
                 sendEmail('Resolved Challenge', 'Welp, stuff happens. It looks like '+ winner.username +' really laid the smack on ya. Log in at ' + process.env.LADDER_URL + ' and pick an easier opponent.', loser.email);
             }
             if (winner.email && winner.alerts.resolved) {
-                sendEmail('Resolved Challenge', 'Congratulations on beating '+ loser.username +'! Log in at ' + process.env.LADDER_URL + ' to crush some more feelings.', winner.email);
+                sendEmail('Resolved Challenge', 'Congratulations on demolishing '+ loser.username +'! Log in at ' + process.env.LADDER_URL + ' to crush some more feelings.', winner.email);
             }
         })
         .catch(console.log);
@@ -184,6 +186,15 @@ function forfeitedChallenge(challengeId) {
             if (challenge.challenger.email && challenge.challenger.alerts.forfeited) {
                 sendEmail('Forfeited Challenge', 'That lil weasel, '+ challenge.challengee.username +', forfeited your challenge. You win by default!', challenge.challenger.email);
             }
+        })
+        .catch(console.log);
+}
+
+function newAutoChallenge(challengeId) {
+    Challenge.populateById(challengeId, true)
+        .then(function(challenge) {
+            // TODO: Automated task notifications
+            sendEmail('New Auto Challenge', 'A challenge has been automatically issued on your behalf against '+ challenge.challengee.username +'. Log in at ' + process.env.LADDER_URL + ' to wreck that hooligan!', challenge.challenger.email);
         })
         .catch(console.log);
 }
@@ -211,7 +222,7 @@ function resetPassword(resetKey) {
 
 
 function sendEmail(subject, message, address) {
-    console.log('Trying to send email to '+ address);
+    console.log('Trying to send "' + subject + '" email to ' + address);
 
     return new Promise(function(resolve, reject) {
         var mailOptions = {
@@ -223,7 +234,7 @@ function sendEmail(subject, message, address) {
 
         MailerService.transporter.sendMail(mailOptions, function(error, response) {
             if (error) return reject(error);
-            console.log('Message sent to ' + address);
+            console.log('"' + subject + '" email sent to ' + address);
             return resolve(address);
         });
     });

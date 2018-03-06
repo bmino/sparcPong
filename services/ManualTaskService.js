@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
 var Challenge = mongoose.model('Challenge');
 var PlayerChallengeService = require('./PlayerChallengeService');
+var MailerService = require('./MailerService');
 
 var ManualTaskService = {
 
@@ -77,8 +78,9 @@ function issueChallenges(players, challengerIndex, challengeeIndex, req, issued)
 
     console.log('[Manual] - Attempting to match ' + players[challengerIndex].username + ' vs ' + players[challengeeIndex].username);
     return PlayerChallengeService.doChallenge(players[challengeeIndex]._id, players[challengerIndex]._id, req)
-        .then(function() {
+        .then(function(issuedChallenge) {
             console.log('[Manual] - Challenge issued successfully');
+            MailerService.newAutoChallenge(issuedChallenge._id);
             issued++;
             challengerIndex--;
             challengeeIndex = challengerIndex - 1;
