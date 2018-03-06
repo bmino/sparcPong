@@ -1,102 +1,76 @@
-/*
- * Calculates the tier for a given ranking.
- *
- * @param: rank
- * @return: number - tier
- */
-module.exports.getTier = function(rank) {
+var Util = {
+    getTier: getTier,
+    getRanks: getRanks,
+
+    addBusinessDays: addBusinessDays,
+    addDays: addDays,
+    addHours: addHours,
+    addMinutes: addMinutes,
+
+    isBusinessDay: isBusinessDay
+};
+
+module.exports = Util;
+
+
+function getTier(rank) {
     if (rank < 1) return undefined;
     var tier = 1;
     var tierRanks = [];
     while (tierRanks.indexOf(rank) === -1) {
-        tierRanks = module.exports.getRanks(tier++);
+        tierRanks = getRanks(tier++);
     }
     return tier;
-};
+}
 
-/*
- * Calculates the possible ranks for a given tier.
- *
- * @param: tier
- * @return: array - contains possible ranks
- */
-module.exports.getRanks = function(tier) {
+function getRanks(tier) {
     var ranks = [];
     var first = (tier * (tier-1) + 2) / 2;
     for (var r=0; r<tier; r++)
         ranks.push(first+r);
     return ranks;
-};
+}
 
-
-/*
- * Adds business days to a date.
- *
- * @param: date - the starting date
- * @param: days - number of days to add
- */
-module.exports.addBusinessDays = function(date, days) {
-    // Bad Inputs
+function addBusinessDays(date, days) {
     if (!days) return date;
-    var newDate = typeof data === 'object' ? new Date(date.getTime()) : new Date(date);
+    if (typeof date === 'number') date = new Date(date);
+    var newDate = new Date(date.getTime());
     var added = 0;
     while (added < days) {
         // Looks at tomorrow's day
         newDate.setDate(newDate.getDate()+1);
-        if (module.exports.isBusinessDay(newDate)) {
+        if (isBusinessDay(newDate)) {
             added++;
         }
     }
     return newDate;
-};
+}
 
-/*
- * Adds regular days to a date.
- *
- * @param: date - the starting date
- * @param: days - number of days to add
- */
-module.exports.addDays = function(date, days) {
-    // Bad Inputs
+function addDays(date, days) {
     if (!days) return date;
+    if (typeof date === 'number') date = new Date(date);
     var newDate = new Date(date.getTime());
     newDate.setDate(newDate.getDate()+parseInt(days));
     return newDate;
-};
+}
 
-/*
- * Adds hours to a date.
- *
- * @param: date - the starting date
- * @param: hours - number of hours to add
- */
-module.exports.addHours = function(date, hours) {
-    // Bad Inputs
+function addHours(date, hours) {
     if (!hours) return date;
+    if (typeof date === 'number') date = new Date(date);
     var newDate = new Date(date.getTime());
     newDate.setHours(newDate.getHours()+parseInt(hours));
     return newDate;
-};
+}
 
-/*
- * Adds minutes to a date.
- *
- * @param: date - the starting date
- * @param: minutes - number of minutes to add
- */
-module.exports.addMinutes = function(date, minutes) {
-    // Bad Inputs
+function addMinutes(date, minutes) {
     if (!minutes) return date;
+    if (typeof date === 'number') date = new Date(date);
     var newDate = new Date(date.getTime());
     newDate.setMinutes(newDate.getMinutes()+parseInt(minutes));
     return newDate;
-};
+}
 
-/*
- * Determines if the given date is a business day.
- *
- * @param: date
- */
-module.exports.isBusinessDay = function(date) {
+function isBusinessDay(date) {
+    if (typeof date === 'number') date = new Date(date);
     return date.getDay() !== 0 && date.getDay() !== 6;
-};
+}
