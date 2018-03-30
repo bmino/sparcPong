@@ -122,7 +122,7 @@ function calculatePoints(winner, loser) {
     console.log('Calculate point award for winning player ' + winner.rank);
     pointRatio = winner.rank / loser.rank;
     console.log(pointRatio + ' ' + ChallengeService.BASE_POINT_AWARD);
-    addPoints(winner, pointRatio * ChallengeService.BASE_POINT_AWARD);
+    addPoints(winner, Math.ceil(pointRatio * ChallengeService.BASE_POINT_AWARD));
     refreshRanks();
 }
 
