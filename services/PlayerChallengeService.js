@@ -120,12 +120,10 @@ function verifyAllowedToChallenge(players) {
     return new Promise(function(resolve, reject) {
         if (!challenger.active || !challengee.active) return reject(new Error('Both players must have active accounts'));
         var existingChallengesCheck = PlayerChallengeService.verifyChallengesBetweenPlayers(players);
-        var rankCheck = true;
-        var tierCheck = true;
         var reissueTimeCheck = Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime);
         var businessDayCheck = ChallengeService.verifyBusinessDay();
 
-        return Promise.all([existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
+        return Promise.all([existingChallengesCheck, reissueTimeCheck, businessDayCheck])
             .then(function() {return resolve(players);})
             .catch(reject);
     });

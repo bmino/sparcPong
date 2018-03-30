@@ -11,6 +11,7 @@ var favicon = require('serve-favicon');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
 
+
 // Mongo
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
@@ -29,6 +30,17 @@ if (!db_uri) {
 	process.env.LADDER_URL = 'http://127.0.0.1:' + port;
 }
 mongoose.connect(db_uri);
+
+// Cron Job Support var CronJob = require('cron').CronJob;
+var PointDecay = require('./services/PointDecay');
+var CronJob = require('cron').CronJob;
+// 0 1 * * * will run every day at 1 AM
+var pointDecayCron = new CronJob('0 1 * * *', function() {
+  PointDecay.implementPointDecay();
+  }, null, true
+  // null indicates nothing should be executed if/when the job stops.
+  // true indicates the job should immediately start.
+  );
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
