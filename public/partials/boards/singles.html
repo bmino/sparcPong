@@ -11,6 +11,7 @@
 				<div class="rank" ng-bind="player.rank"></div>
 				<span if-online="player._id" class="online-indicator"></span>
 				<a class="username" ng-href="#!/profile/player/{{player._id}}" ng-bind="player.username" ng-class="{'strike': !player.active}"></a>
+				<div class="points" ng-bind="player.points" ng-class="{'strike': !player.active}"></div>
 				<button class="btn btn-primary sp-button challengeButton" ng-click="challenge(player._id)">Challenge</button>
 			</li>
 		</ul>

@@ -78,7 +78,7 @@ function doResolve(challengeId, challengerScore, challengeeScore, clientId, req)
         })
         .then(PlayerChallengeService.updateLastGames)
         .then(function(challenge) {
-            if (challengerScore > challengeeScore) return ChallengeService.swapRanks(challenge);
+            ChallengeService.resolveGame(challenge);
         })
         .then(function() {
             MailerService.resolvedChallenge(challengeId);
@@ -120,8 +120,8 @@ function verifyAllowedToChallenge(players) {
     return new Promise(function(resolve, reject) {
         if (!challenger.active || !challengee.active) return reject(new Error('Both players must have active accounts'));
         var existingChallengesCheck = PlayerChallengeService.verifyChallengesBetweenPlayers(players);
-        var rankCheck = ChallengeService.verifyRank(challenger, challengee);
-        var tierCheck = ChallengeService.verifyTier(challenger, challengee);
+        var rankCheck = true;
+        var tierCheck = true;
         var reissueTimeCheck = Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime);
         var businessDayCheck = ChallengeService.verifyBusinessDay();
 

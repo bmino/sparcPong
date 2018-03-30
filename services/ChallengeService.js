@@ -6,9 +6,10 @@ var Util = require('./Util');
 var ChallengeService = {
     TEMP_RANK: -1,
     CHALLENGE_ANYTIME: process.env.CHALLENGE_ANYTIME || false,
-    CHALLENGE_BACK_DELAY_HOURS: process.env.CHALLENGE_BACK_DELAY_HOURS || 12,
+    CHALLENGE_BACK_DELAY_HOURS: process.env.CHALLENGE_BACK_DELAY_HOURS || 0,
     ALLOWED_OUTGOING: 1,
     ALLOWED_INCOMING: 1,
+    BASE_POINT_AWARD: 10,
 
     verifyBusinessDay : verifyBusinessDay,
     verifyReissueTime : verifyReissueTime,
@@ -22,11 +23,16 @@ var ChallengeService = {
     swapRanks : swapRanks,
     setRank : setRank,
 
+    addPoints : addPoints,
+    resolveGame : resolveGame,
+    calculatePoints : calculatePoints,
+
     setScore : setScore,
     setForfeit : setForfeit
 };
 
 module.exports = ChallengeService;
+var Player = mongoose.model('Player');
 
 
 function verifyBusinessDay() {
@@ -99,6 +105,40 @@ function swapRanks(entity) {
         });
 }
 
+function resolveGame(entity) {
+    console.log('Finalizing ladder game');
+    return entity.populate('challenger challengee').execPopulate()
+        .then(function(result) {
+            if (result.challengerScore > result.challengeeScore){
+                return calculatePoints(result.challenger, result.challengee);
+            }
+            return calculatePoints(result.challengee, result.challenger);
+        });
+
+
+}
+
+function calculatePoints(winner, loser) {
+    console.log('Calculate point award for winning player ' + winner.rank);
+    pointRatio = winner.rank / loser.rank;
+    console.log(pointRatio + ' ' + ChallengeService.BASE_POINT_AWARD);
+    addPoints(winner, pointRatio * ChallengeService.BASE_POINT_AWARD);
+    refreshRanks();
+}
+
+function addPoints(entity, points) {
+    console.log(entity.username);
+    console.log(points);
+    Player.findOne({username: entity.username}, function (err, user) {
+        user.points = user.points + points;
+        user.save(function (err) {
+            if(err) {
+                console.error('ERROR!');
+            }
+        });
+    });
+}
+
 function setRank(entity, newRank) {
     console.log('Changing rank of ' + entity.username + ' from [' + entity.rank + '] to [' + newRank + ']');
     return new Promise(function (resolve, reject) {
@@ -107,6 +147,20 @@ function setRank(entity, newRank) {
         entity.save()
             .then(function() {return resolve(oldRank);})
             .catch(reject);
+    });
+}
+
+function refreshRanks() {
+    console.log('Refreshing all ranks');
+    Player.find({}, function(err, players) {
+        players.sort((a, b) => parseFloat(b.points) - parseFloat(a.points));
+        var rank = 1;
+        players.forEach( function(player) {
+            console.log('Changing rank of ' + player.username + ' from [' + player.rank + '] to [' + rank + ']');
+            player.rank = rank;
+            rank++;
+            player.save();
+        });
     });
 }
 
