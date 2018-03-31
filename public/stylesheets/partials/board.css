@@ -7,6 +7,15 @@
 	margin-right: 8px;
 }
 
+.partial-board .points {
+	white-space: nowrap;
+	overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: middle;
+    color: red;
+}
+
 .partial-board li .username {
 	white-space: nowrap;
 	overflow: hidden;

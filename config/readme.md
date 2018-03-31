@@ -60,6 +60,13 @@ Challenge Properties
 | ALLOWED_CHALLENGE_DAYS | 4 | Business days until a singles challenge expires |
 | ALLOWED_CHALLENGE_DAYS_TEAM | 5 | Business days until a doubles challenge expires |
 
+Point Properties
+----------------
+
+| Property Name | Default | Description |
+| ------------- | ------- | ----------- |
+| DECAY_RATE    | 5       | Percentage at which points decay |
+
 
 Application Properties
 ----------------------
