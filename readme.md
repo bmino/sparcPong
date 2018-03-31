@@ -51,6 +51,11 @@ Build the project from the root directory
 npm install
 ```
 
+Install the cron job plugin
+```
+npm install cron
+```
+
 Start an instance of mongodb in a new terminal tab
 ```
 mongod
