@@ -24,7 +24,7 @@
 			<ul class="list-group in" id="incomingChallenges">
 				<li class="list-group-item challenge-incoming" ng-repeat="challenge in challenges.incoming | orderBy : '-updatedAt'">
 					<span if-online="[challenge.challenger.leader._id, challenge.challenger.partner._id]" class="online-indicator"></span>
-					<a ng-href="#!/profile/team/{{challenge.challenger._id}}" ng-bind="challenge.challenger.username" ng-class="{'strike': !challenger.active}"></a>
+					<a ng-href="#!/profile/team/{{challenge.challenger._id}}" ng-bind="challenge.challenger.username" ng-class="{'strike': !challenge.challenger.active}"></a>
 					<until-forfeit date="challenge.createdAt" doubles="true"></until-forfeit>
 					<report-team-challenge challenge="challenge">Report</report-team-challenge>
 				</li>
@@ -38,7 +38,7 @@
 			<ul class="list-group in" id="outgoingChallenges">
 				<li class="list-group-item challenge-outgoing" ng-repeat="challenge in challenges.outgoing | orderBy : '-updatedAt'">
 					<span if-online="[challenge.challengee.leader._id, challenge.challengee.partner._id]" class="online-indicator"></span>
-					<a ng-href="#!/profile/team/{{challenge.challengee._id}}" ng-bind="challenge.challengee.username" ng-class="{'strike': !challengee.active}"></a>
+					<a ng-href="#!/profile/team/{{challenge.challengee._id}}" ng-bind="challenge.challengee.username" ng-class="{'strike': !challenge.challengee.active}"></a>
 					<until-forfeit date="challenge.createdAt" doubles="true"></until-forfeit>
 					<report-team-challenge challenge="challenge">Report</report-team-challenge>
 				 </li>
