@@ -12,7 +12,7 @@ function ModalService($uibModal) {
 		backdrop: true,
 		keyboard: true,
 		modalFade: true,
-		templateUrl: '/partials/modals/base.html'
+		templateUrl: 'partials/modals/base.html'
 	};
 
 	var modalOptions = {
@@ -24,13 +24,13 @@ function ModalService($uibModal) {
 
 	
 	service.showAlertModal = function(customModalDefaults, customModalOptions) {
-		customModalDefaults.templateUrl = '/partials/modals/alert.html';
+		customModalDefaults.templateUrl = 'partials/modals/alert.html';
 		customModalOptions.actionButtonText = 'OK';
 		return service.showModal(customModalDefaults, customModalOptions);
 	};
 	
 	service.showScoreModal = function(customModalDefaults, customModalOptions) {
-		customModalDefaults.templateUrl = '/partials/modals/score.html';
+		customModalDefaults.templateUrl = 'partials/modals/score.html';
 		return service.showModal(customModalDefaults, customModalOptions);
 	};
 	

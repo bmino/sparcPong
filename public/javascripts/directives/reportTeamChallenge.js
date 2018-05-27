@@ -7,7 +7,7 @@ reportTeamChallenge.$inject = [];
 function reportTeamChallenge() {
 
 	return {
-		templateUrl: '/partials/templates/report-team-challenge.html',
+		templateUrl: 'partials/templates/report-team-challenge.html',
 		scope: {
 			challenge: '='
 		},

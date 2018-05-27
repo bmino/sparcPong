@@ -6,7 +6,7 @@ Socket.$inject = ['$rootScope'];
 
 function Socket($rootScope) {
 
-	var socket = io().connect();
+	var socket = io('/', {path: window.location.pathname + 'socket.io'}).connect();
 
 	return {
 		on: on,
