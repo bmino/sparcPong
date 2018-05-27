@@ -173,6 +173,7 @@ function validateTokenCredentials(token) {
 function validatePasswordStrength(password) {
     return new Promise(function(resolve, reject) {
         if (password === null || password === undefined) return reject(new Error('Password must be defined.'));
+        if (!AuthService.JWT_SECRET_KEY) return  reject(new Error('Application key has not been defined. A ladder administrator must configure this.'));
         if (password.length < AuthService.PASSWORD_MIN_LENGTH) return reject(new Error('Password must be at least ' + AuthService.PASSWORD_MIN_LENGTH + ' characters in length.'));
         if (password.length > AuthService.PASSWORD_MAX_LENGTH) return reject(new Error('Password cannot be longer than ' + AuthService.PASSWORD_MAX_LENGTH + ' characters.'));
         return resolve(password);
