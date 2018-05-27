@@ -9,10 +9,6 @@ KEY=VALUE
 ```
 
 
-Possible Properties
-===================
-Listed below are the available properties.
-
 
 Username Properties
 -------------------
@@ -44,7 +40,7 @@ Email Properties
 | Property Name | Default | Description |
 | ------------- | ------- | ----------- |
 | EMAIL_ADDRESS | *none* | Gmail address used to email users |
-| EMAIL_TITLE | Sparc Pong | Friendly email titled used to email users |
+| EMAIL_TITLE | Sparc Pong | Friendly email title used to email users |
 | AUTH_CLIENT_ID | *none* | Oauth2 client id for gmail account |
 | AUTH_CLIENT_SECRET | *none* | Oauth2 secret for gmail account |
 | AUTH_CLIENT_REFRESH | *none* | Oauth2 refresh token for gmail account |
