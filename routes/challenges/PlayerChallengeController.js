@@ -73,8 +73,6 @@ router.post('/resolve', function(req, res, next) {
 	var challengerScore = req.body.challengerScore;
 	var challengeeScore = req.body.challengeeScore;
     var clientId = AuthService.verifyToken(req.token).playerId;
-	
-	if (!challengeId) return next(new Error('This is not a valid challenge.'));
 
 	PlayerChallengeService.doResolve(challengeId, challengerScore, challengeeScore, clientId, req)
 		.then(function() {

@@ -68,6 +68,8 @@ function doRevoke(challengeId, clientId, req) {
 }
 
 function doResolve(challengeId, challengerScore, challengeeScore, clientId, req) {
+    if (!challengeId) return Promise.reject(new Error('This is not a valid challenge.'));
+
     return Challenge.findById(challengeId).exec()
         .then(function(challenge) {
             return ChallengeService.verifyInvolvedByPlayerId(challenge, clientId, 'Only an involved player can resolve this challenge.');
