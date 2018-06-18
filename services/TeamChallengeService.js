@@ -2,10 +2,13 @@ var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
 var TeamChallenge = mongoose.model('TeamChallenge');
 var ChallengeService = require('./ChallengeService');
+var MailerService = require('./MailerService');
 var Util = require('./Util');
 
 var TeamChallengeService = {
     ALLOWED_CHALLENGE_DAYS_TEAM: process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5,
+
+    doForfeit : doForfeit,
 
     verifyAllowedToChallenge : verifyAllowedToChallenge,
     verifyChallengesBetweenTeams : verifyChallengesBetweenTeams,
@@ -19,6 +22,23 @@ var TeamChallengeService = {
 
 module.exports = TeamChallengeService;
 
+function doForfeit(challengeId, clientId, req) {
+    if (!challengeId) return Promise.reject(new Error('This is not a valid challenge id.'));
+
+    console.log('Forfeiting challenge id [' + challengeId + ']');
+
+    return TeamChallenge.findById(challengeId).exec()
+        .then(function(teamChallenge) {
+            return TeamChallengeService.verifyAllowedToForfeit(teamChallenge, clientId);
+        })
+        .then(ChallengeService.setForfeit)
+        .then(TeamChallengeService.updateLastGames)
+        .then(ChallengeService.swapRanks)
+        .then(function() {
+            MailerService.forfeitedTeamChallenge(challengeId);
+            req.app.io.sockets.emit('challenge:team:forfeited');
+        });
+}
 
 function verifyChallengesBetweenTeams(teams) {
     var challenger = teams[0];

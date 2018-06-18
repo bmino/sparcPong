@@ -1,13 +1,16 @@
 var mongoose = require('mongoose');
 var Player = mongoose.model('Player');
 var Challenge = mongoose.model('Challenge');
+var TeamChallenge = mongoose.model('TeamChallenge');
 var PlayerChallengeService = require('./PlayerChallengeService');
+var TeamChallengeService = require('./TeamChallengeService');
 var MailerService = require('./MailerService');
 
 var ManualTaskService = {
 
     autoChallenge : autoChallenge,
-    autoForfeit : autoForfeit,
+    autoForfeitSingles : autoForfeitSingles,
+    autoForfeitDoubles : autoForfeitDoubles,
 
     deactivatePlayer : deactivatePlayer
 
@@ -25,16 +28,33 @@ function autoChallenge(request) {
         });
 }
 
-function autoForfeit(request) {
-    console.log('[Manual] - Forfeit task has been engaged');
+function autoForfeitSingles(request) {
+    console.log('[Manual] - Forfeit task (singles) has been engaged');
 
     return Challenge.getAllExpired()
         .then(function(challenges) {
-            console.log('[Manual] - Found ' + challenges.length + ' expired challenges');
+            console.log('[Manual] - Found ' + challenges.length + ' expired challenges (singles)');
 
             var forfeitPromises = [];
             challenges.forEach(function(challenge) {
                 var promise = PlayerChallengeService.doForfeit(challenge._id, challenge.challengee, request);
+                forfeitPromises.push(promise);
+            });
+
+            return Promise.all(forfeitPromises);
+        });
+}
+
+function autoForfeitDoubles(request) {
+    console.log('[Manual] - Forfeit task (doubles) has been engaged');
+
+    return TeamChallenge.getAllExpired()
+        .then(function(challenges) {
+            console.log('[Manual] - Found ' + challenges.length + ' expired challenges (doubles)');
+
+            var forfeitPromises = [];
+            challenges.forEach(function(challenge) {
+                var promise = TeamChallengeService.doForfeit(challenge._id, challenge.challengee, request);
                 forfeitPromises.push(promise);
             });
 

@@ -18,9 +18,14 @@ router.get('/challenge', function(req, res, next) {
 router.get('/forfeit', function(req, res, next) {
 	if (!req.query.key || req.query.key !== process.env.JWT_SECRET_KEY) return res.json('Invalid key');
 
-    ManualTaskService.autoForfeit(req)
+	Promise.all([
+        ManualTaskService.autoForfeitSingles(req),
+        ManualTaskService.autoForfeitDoubles(req)
+    ])
         .then(function(results) {
-        	var msg = 'Forfeited ' + results.length + ' challenges';
+            var singlesResults = results[0];
+            var doublesResults = results[1];
+        	var msg = 'Forfeited ' + singlesResults.length + ' challenges (singles) and ' + doublesResults.length + ' challenges (doubles)';
         	console.log('[Manual] - ' + msg);
             res.json(msg);
         })

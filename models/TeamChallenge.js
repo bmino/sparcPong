@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var Util = require('../services/Util');
 
 var teamChallengeSchema = new Schema({
 	challenger: { type: Schema.ObjectId, ref: 'Team', required: true },
@@ -60,6 +61,16 @@ teamChallengeSchema.statics.getResolved = function(teamId) {
         {'winner': {$ne: null}}
     ]})
         .exec();
+};
+
+teamChallengeSchema.statics.getAllExpired = function() {
+    return TeamChallenge.find({winner: null}).exec()
+        .then(function(challenges) {
+            return challenges.filter(function(challenge) {
+                var expirationDate = Util.addBusinessDays(challenge.createdAt, process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5);
+                return expirationDate < new Date();
+            });
+        });
 };
 
 teamChallengeSchema.statics.getOutgoing = function(teamId) {

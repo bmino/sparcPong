@@ -136,20 +136,8 @@ router.post('/forfeit', function(req, res, next) {
 	var challengeId = req.body.challengeId;
     var clientId = AuthService.verifyToken(req.token).playerId;
 
-	if (!challengeId) return next(new Error('This is not a valid challenge id.'));
-
-    console.log('Forfeiting challenge id [' + challengeId + ']');
-
-	TeamChallenge.findById(challengeId).exec()
-		.then(function(teamChallenge) {
-			return TeamChallengeService.verifyAllowedToForfeit(teamChallenge, clientId);
-		})
-		.then(ChallengeService.setForfeit)
-		.then(TeamChallengeService.updateLastGames)
-		.then(ChallengeService.swapRanks)
+    TeamChallengeService.doForfeit(challengeId, clientId, req)
 		.then(function() {
-            MailerService.forfeitedTeamChallenge(challengeId);
-			req.app.io.sockets.emit('challenge:team:forfeited');
 			res.json({message: 'Challenge successfully forfeited.'});
 		})
 		.catch(next);
