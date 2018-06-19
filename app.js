@@ -6,6 +6,7 @@ var io = require('socket.io')(server);
 app.io = io;
 var port = process.env.PORT || 3000;
 server.listen(port);
+console.log('Server is listening on port ' + port);
 var path = require('path');
 var favicon = require('serve-favicon');
 var morgan = require('morgan');
@@ -24,9 +25,9 @@ require('./models/Alert');
 
 var db_uri = process.env.MONGODB_URI;
 if (!db_uri) {
-	console.log('Defaulting to local instance.');
 	db_uri = 'mongodb://127.0.0.1/sparcPongDb';
 	process.env.LADDER_URL = 'http://127.0.0.1:' + port;
+    console.log('Defaulting to local mongodb instance at ' + db_uri);
 }
 mongoose.connect(db_uri);
 
