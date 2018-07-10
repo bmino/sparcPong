@@ -6,7 +6,7 @@ var Util = require('./Util');
 var ChallengeService = {
     TEMP_RANK: -1,
     CHALLENGE_ANYTIME: process.env.CHALLENGE_ANYTIME || false,
-    CHALLENGE_BACK_DELAY_HOURS: process.env.CHALLENGE_BACK_DELAY_HOURS || 12,
+    CHALLENGE_BACK_DELAY_HOURS: process.env.CHALLENGE_BACK_DELAY_HOURS === undefined ? 12 : process.env.CHALLENGE_BACK_DELAY_HOURS,
     ALLOWED_OUTGOING: 1,
     ALLOWED_INCOMING: 1,
 
