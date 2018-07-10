@@ -1,14 +1,14 @@
 {
   "name": "sparcPong",
-  "version": "3.2.9",
+  "version": "3.3.0",
   "private": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/bmino/sparcPong.git"
   },
   "engines": {
-    "node": "9.11.1",
-    "npm": "6.0.0"
+    "node": "10.4.1",
+    "npm": "6.1.0"
   },
   "scripts": {
     "start": "node app.js"
@@ -19,7 +19,7 @@
     "angular-jwt": "^0.1.9",
     "angular-route": "^1.6.7",
     "angular-ui-bootstrap": "^2.4.0",
-    "bcrypt": "^2.0.1",
+    "bcrypt": "^3.0.0",
     "body-parser": "^1.18.3",
     "bootstrap": "^3.3.7",
     "dotenv": "^5.0.1",
