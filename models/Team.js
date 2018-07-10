@@ -12,8 +12,8 @@ var teamSchema = new Schema({
 
 teamSchema.methods.hasMemberByPlayerId = function(playerId) {
     console.log('Checking if player id ' + playerId + ' is on team ' + this.username);
-    if (this.leader.toString() === playerId) return true;
-    if (this.partner.toString() === playerId) return true;
+    if (this.leader.toString() === playerId.toString()) return true;
+    if (this.partner.toString() === playerId.toString()) return true;
     return false;
 };
 
