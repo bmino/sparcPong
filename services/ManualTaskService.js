@@ -54,7 +54,7 @@ function autoForfeitDoubles(request) {
 
             var forfeitPromises = [];
             challenges.forEach(function(challenge) {
-                var promise = TeamChallengeService.doForfeit(challenge._id, challenge.challengee, request);
+                var promise = TeamChallengeService.doForfeit(challenge._id, challenge.challengee.leader, request);
                 forfeitPromises.push(promise);
             });
 
