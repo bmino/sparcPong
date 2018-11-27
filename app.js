@@ -4,9 +4,10 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 app.io = io;
-var port = process.env.PORT || 3000;
-server.listen(port);
-console.log('Server is listening on port ' + port);
+if (!process.env.PORT) process.env.PORT = 3000;
+server.listen(process.env.PORT, () => {
+    console.log(`Server is listening on port ${process.env.PORT}`);
+});
 var path = require('path');
 var favicon = require('serve-favicon');
 var morgan = require('morgan');
@@ -23,13 +24,12 @@ require('./models/Challenge');
 require('./models/TeamChallenge');
 require('./models/Alert');
 
-var db_uri = process.env.MONGODB_URI;
-if (!db_uri) {
-	db_uri = 'mongodb://127.0.0.1/sparcPongDb';
-	process.env.LADDER_URL = 'http://127.0.0.1:' + port;
-    console.log('Defaulting to local mongodb instance at ' + db_uri);
+if (!process.env.MONGODB_URI) {
+    process.env.MONGODB_URI = 'mongodb://127.0.0.1/sparcPongDb';
+	process.env.LADDER_URL = `http://127.0.0.1:${process.env.PORT}`;
+    console.log(`Defaulting to local mongodb instance at ${process.env.MONGODB_URI}`);
 }
-mongoose.connect(db_uri);
+mongoose.connect(process.env.MONGODB_URI);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
