@@ -10,7 +10,7 @@
 		<label>Tier: {{t}}</label>
 		<ul class="list-group">
 			<!-- Each Team -->
-			<li class="list-group-item" ng-repeat="team in teams | tier: t">
+			<li class="list-group-item" ng-repeat="team in teams | tier: t | orderBy: 'rank'">
 				<div class="rank" ng-bind="team.rank"></div>
 				<span if-online="[team.leader, team.partner]" class="online-indicator"></span>
 				<a class="username" ng-href="#!/profile/team/{{team._id}}" ng-bind="team.username"></a>
