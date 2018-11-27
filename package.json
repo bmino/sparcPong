@@ -1,6 +1,6 @@
 {
-  "name": "sparcPong",
-  "version": "3.3.0",
+  "name": "sparc-pong",
+  "version": "3.3.1",
   "private": false,
   "repository": {
     "type": "git",
@@ -8,7 +8,7 @@
   },
   "engines": {
     "node": "10.4.1",
-    "npm": "6.1.0"
+    "npm": "6.4.1"
   },
   "scripts": {
     "start": "node app.js"
@@ -28,7 +28,7 @@
     "jquery": "^3.2.1",
     "jsonwebtoken": "^8.2.1",
     "mongoose": "^5.1.2",
-    "morgan": "^1.9.0",
+    "morgan": "^1.9.1",
     "nodemailer": "^0.7.1",
     "serve-favicon": "^2.4.5",
     "socket.io": "^2.1.1",
