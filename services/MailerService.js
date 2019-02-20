@@ -26,15 +26,15 @@ var MailerService = {
 
     resetPassword : resetPassword,
 
-    transporter : nodemailer.createTransport("SMTP", {
-        service: 'gmail',
+    transporter : nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
         auth: {
-            XOAuth2: {
-                user: process.env.EMAIL_ADDRESS,
-                clientId: process.env.AUTH_CLIENT_ID,
-                clientSecret: process.env.AUTH_CLIENT_SECRET,
-                refreshToken: process.env.AUTH_CLIENT_REFRESH
-            }
+            type: 'OAuth2',
+            user: process.env.EMAIL_ADDRESS,
+            clientId: process.env.AUTH_CLIENT_ID,
+            clientSecret: process.env.AUTH_CLIENT_SECRET,
+            refreshToken: process.env.AUTH_CLIENT_REFRESH
         }
     })
 };
