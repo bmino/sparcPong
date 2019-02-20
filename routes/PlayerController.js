@@ -136,7 +136,7 @@ router.post('/change/email', auth.jwtAuthProtected, function(req, res, next) {
 	if (newEmail.length > 50) return next(new Error('Your email length cannot exceed 50 characters.'));
 
     EmailService.verifyEmail(newEmail)
-		.then(Player.emailExists(newEmail))
+		.then(Player.emailExists)
 		.then(function() {
             return Player.findById(clientId).exec();
 		})
