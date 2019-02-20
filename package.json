@@ -1,38 +1,38 @@
 {
   "name": "sparc-pong",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "private": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/bmino/sparcPong.git"
   },
   "engines": {
-    "node": "10.4.1",
-    "npm": "6.4.1"
+    "node": "11.8.0",
+    "npm": "6.7.0"
   },
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "angular": "^1.6.7",
-    "angular-cookies": "^1.6.7",
-    "angular-jwt": "^0.1.9",
-    "angular-route": "^1.6.7",
+    "angular": "^1.7.7",
+    "angular-cookies": "^1.7.7",
+    "angular-jwt": "^0.1.10",
+    "angular-route": "^1.7.7",
     "angular-ui-bootstrap": "^2.4.0",
-    "bcrypt": "^3.0.0",
+    "bcrypt": "^3.0.4",
     "body-parser": "^1.18.3",
-    "bootstrap": "^3.3.7",
+    "bootstrap": "^3.4.1",
     "dotenv": "^5.0.1",
-    "ejs": "^2.5.7",
-    "express": "^4.16.3",
-    "jquery": "^3.2.1",
-    "jsonwebtoken": "^8.2.1",
-    "mongoose": "^5.1.2",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "jquery": "^3.3.1",
+    "jsonwebtoken": "^8.4.0",
+    "mongoose": "^5.4.13",
     "morgan": "^1.9.1",
     "nodemailer": "^0.7.1",
-    "serve-favicon": "^2.4.5",
-    "socket.io": "^2.1.1",
-    "uuid": "^3.2.1",
+    "serve-favicon": "^2.5.0",
+    "socket.io": "^2.2.0",
+    "uuid": "^3.3.2",
     "xoauth2": "^1.2.0"
   },
   "license": "MIT"
