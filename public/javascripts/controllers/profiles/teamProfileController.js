@@ -27,37 +27,40 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
 		} else {
 			console.log('Profile id not given. Looking up teams.');
 			var clientId = jwtService.getDecodedToken().playerId;
-			teamService.lookupTeams(clientId).then(function(teams) {
-				if (!teams || teams.length === 0) {
-					$location.path('signUp/team');
-				} else {
-					console.log('Found team [' + teams[0].username + ']');
-                    $scope.profileId = teams[0]._id;
-					
-					loadTeam();
-					fetchChallenges();
-					getRecord();
-				}
-			});
+			teamService.lookupTeams(clientId)
+				.then(function(teams) {
+					if (!teams || teams.length === 0) {
+						$location.path('signUp/team');
+					} else {
+						console.log('Found team [' + teams[0].username + ']');
+						$scope.profileId = teams[0]._id;
+						loadTeam();
+						fetchChallenges();
+						getRecord();
+					}
+				});
 		}
 	}
 	
 	function loadTeam() {
-		teamService.getTeam($scope.profileId).then(function(team) {
-			if (!team) {
-				console.log('Could not fetch profile');
-				// TODO: Error message
-				$scope.loadingProfile = false;
-			} else {
-				$scope.profile = team;
-				$scope.loadingProfile = false;
-			}
-		});
+		return teamService.getTeam($scope.profileId)
+			.then(function(team) {
+				if (!team) {
+					console.log('Could not fetch profile');
+					// TODO: Error message
+					$scope.loadingProfile = false;
+				} else {
+					$scope.profile = team;
+					$scope.loadingProfile = false;
+				}
+			});
 	}
 	
 	function fetchChallenges() {
-		teamChallengeService.getChallenges($scope.profileId).then( sortChallenges );
+		return teamChallengeService.getChallenges($scope.profileId)
+			.then( sortChallenges );
 	}
+
 	function sortChallenges(challenges) {
 		$scope.challenges.resolved = challenges.resolved;
 		$scope.challenges.outgoing = challenges.outgoing;
@@ -66,28 +69,33 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
 	}
 	
 	function getRecord() {
-		teamService.getRecord($scope.profileId).then(function(data) {
-			if (data) {
-				$scope.wins = data.wins;
-				$scope.losses = data.losses;
-			}
-			$scope.loadingRecord = false;
-		});
+		return teamService.getRecord($scope.profileId)
+			.then(function(data) {
+				if (data) {
+					$scope.wins = data.wins;
+					$scope.losses = data.losses;
+				}
+			})
+			.finally(function() {
+				$scope.loadingRecord = false;
+			});
 	}
 
 	
-	socket.on('player:change:username', $scope, loadTeam);
+	socket.on('player:change:username', $scope, function() {
+		loadTeam().then(fetchChallenges);
+	});
 	socket.on('team:change:username', $scope, function() {
-		loadTeam() && fetchChallenges();
+		loadTeam().then(fetchChallenges);
+    });
+	socket.on('challenge:team:resolved', $scope, function() {
+		fetchChallenges().then(getRecord);
+    });
+	socket.on('challenge:team:forfeited', $scope, function() {
+		fetchChallenges().then(getRecord);
     });
 	socket.on('challenge:team:issued', $scope, fetchChallenges);
-	socket.on('challenge:team:resolved', $scope, function() {
-		fetchChallenges() && getRecord();
-    });
 	socket.on('challenge:team:revoked', $scope, fetchChallenges);
-	socket.on('challenge:team:forfeited', $scope, function() {
-		fetchChallenges() && getRecord();
-    });
 
     init();
 

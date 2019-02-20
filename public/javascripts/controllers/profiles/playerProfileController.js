@@ -30,21 +30,24 @@ function PlayerProfileController($scope, $routeParams, jwtService, socket, playe
 	}
 	
 	function loadPlayer() {
-		playerService.getPlayer($scope.profileId).then(function(player) {
-			if (!player) {
-				console.log('Could not fetch profile');
-				// TODO: Error message
-				$scope.loadingProfile = false;
-			} else {
-				$scope.profile = player;
-				$scope.loadingProfile = false;
-			}
-		});
+		return playerService.getPlayer($scope.profileId)
+			.then(function(player) {
+				if (!player) {
+					console.log('Could not fetch profile');
+					// TODO: Error message
+					$scope.loadingProfile = false;
+				} else {
+					$scope.profile = player;
+					$scope.loadingProfile = false;
+				}
+			});
 	}
 	
 	function fetchChallenges() {
-		playerChallengeService.getChallenges($scope.profileId).then( sortChallenges );
+		return playerChallengeService.getChallenges($scope.profileId)
+			.then( sortChallenges );
 	}
+
 	function sortChallenges(challenges) {
 		$scope.challenges.resolved = challenges.resolved;
 		$scope.challenges.outgoing = challenges.outgoing;
@@ -53,7 +56,7 @@ function PlayerProfileController($scope, $routeParams, jwtService, socket, playe
 	}
 	
 	function getRecord() {
-		playerService.getRecord($scope.profileId)
+		return playerService.getRecord($scope.profileId)
 			.then(function(data) {
 				if (data) {
 					$scope.wins = data.wins;
@@ -70,15 +73,15 @@ function PlayerProfileController($scope, $routeParams, jwtService, socket, playe
 	};
 	
 	socket.on('player:change:username', $scope, fetchChallenges);
-	socket.on('challenge:issued', $scope, fetchChallenges);
 	socket.on('challenge:resolved', $scope, function() {
-		fetchChallenges() && getRecord();
+		fetchChallenges().then(getRecord);
     });
-	socket.on('challenge:revoked', $scope, fetchChallenges);
 	socket.on('challenge:forfeited', $scope, function() {
-		fetchChallenges() && getRecord();
+		fetchChallenges().then(getRecord);
     });
+	socket.on('challenge:issued', $scope, fetchChallenges);
+	socket.on('challenge:revoked', $scope, fetchChallenges);
 
-    init();
+	init();
 
 }
