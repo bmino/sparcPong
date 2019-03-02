@@ -26,12 +26,12 @@ const SocketBank = {
     },
 
     loginUser(userId, socket) {
-        console.log('Login from userId: '+ userId);
+        console.log(`Login from userId: ${userId}`);
         SocketBank.attachUserIdToSocket(userId, socket);
     },
 
     logoffUser(userId, socket) {
-        console.log('Logout from userId: '+ userId);
+        console.log(`Logout from userId: ${userId}`);
         delete socket.userId;
     },
 

@@ -1,7 +1,7 @@
 const EmailService = {
 
     verifyEmail(email) {
-        console.log('Verifying email of '+ email);
+        console.log(`Verifying email of ${email}`);
 
         return new Promise(function(resolve, reject) {
             if (!email) return reject(new Error('You must give an email.'));

@@ -12,7 +12,7 @@ router.post('/password/reset/enable', function(req, res, next) {
            return MailerService.resetPassword(authorization.getResetKey());
        })
        .then(function(email) {
-           res.json({message: 'Recovery key has been sent to ' + AuthService.maskEmail(email)});
+           res.json({message: `Recovery key has been sent to ${AuthService.maskEmail(email)}`});
        })
        .catch(next);
 });

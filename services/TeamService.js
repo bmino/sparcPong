@@ -18,9 +18,9 @@ const TeamService = {
                 if (!player.active) return Promise.reject(new Error('Deactivated players cannot join a team'));
 
                 let count = teams.length;
-                let plural = TeamService.PLAYER_TEAMS_MAX > 1 ? 's' : '';
-                console.log('Found ' + count + ' teams associated with this player.');
-                if (count >= TeamService.PLAYER_TEAMS_MAX) return Promise.reject(new Error('Players may not be a part of more than ' + TeamService.PLAYER_TEAMS_MAX + ' team' + plural + '.'));
+                let team_s = TeamService.PLAYER_TEAMS_MAX > 1 ? 'teamss' : 'team';
+                console.log(`Found ${count} teams associated with this player.`);
+                if (count >= TeamService.PLAYER_TEAMS_MAX) return Promise.reject(new Error(`Players may not be a part of more than ${TeamService.PLAYER_TEAMS_MAX} ${team_s}.`));
                 return Promise.resolve(count);
             })
             .catch(Promise.reject);

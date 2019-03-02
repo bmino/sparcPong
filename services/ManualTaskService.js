@@ -22,7 +22,7 @@ const ManualTaskService = {
 
         return Challenge.getAllExpired()
             .then(function(challenges) {
-                console.log('[Manual] - Found ' + challenges.length + ' expired challenges (singles)');
+                console.log(`[Manual] - Found ${challenges.length} expired challenges (singles)`);
 
                 let forfeitPromises = [];
                 challenges.forEach(function(challenge) {
@@ -39,7 +39,7 @@ const ManualTaskService = {
 
         return TeamChallenge.getAllExpired()
             .then(function(challenges) {
-                console.log('[Manual] - Found ' + challenges.length + ' expired challenges (doubles)');
+                console.log(`[Manual] - Found ${challenges.length} expired challenges (doubles)`);
 
                 let forfeitPromises = [];
                 challenges.forEach(function(challenge) {
@@ -84,7 +84,7 @@ const ManualTaskService = {
         // Must check next player
         if (challengeeIndex < 0) return ManualTaskService.issueChallenges(players, --challengerIndex, challengerIndex - 1, req, issued);
 
-        console.log('[Manual] - Attempting to match ' + players[challengerIndex].username + ' vs ' + players[challengeeIndex].username);
+        console.log(`[Manual] - Attempting to match ${players[challengerIndex].username} vs ${players[challengeeIndex].username}`);
         return PlayerChallengeService.doChallenge(players[challengeeIndex]._id, players[challengerIndex]._id, req)
             .then(function(issuedChallenge) {
                 console.log('[Manual] - Challenge issued successfully');
@@ -94,7 +94,7 @@ const ManualTaskService = {
                 challengeeIndex = challengerIndex - 1;
             })
             .catch(function(err) {
-                console.error('[Manual] - ' + err);
+                console.error(`[Manual] - ${err}`);
                 challengeeIndex--;
             })
             .then(function() {

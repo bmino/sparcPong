@@ -30,7 +30,7 @@ router.post('/', function(req, res, next) {
 		})
 		.then(function(teams) {
             if (!teams[0].hasMemberByPlayerId(clientId)) {
-                return Promise.reject(new Error('You must be a member of the challenging team, "' + teams[0].username + '"'));
+                return Promise.reject(new Error(`You must be a member of the challenging team, "${teams[0].username}"`));
             }
             return TeamChallenge.createByTeams(teams);
         })

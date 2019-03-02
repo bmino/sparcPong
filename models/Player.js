@@ -23,7 +23,7 @@ playerSchema.statics.findByAuthorization = function(authorization) {
 };
 
 playerSchema.statics.usernameExists = function(username) {
-    console.log('Checking if player username, ' + username + ', exists.');
+    console.log(`Checking if player username exists: ${username}`);
     return new Promise(function (resolve, reject) {
         Player.count({username: username}).exec()
 			.then(function(count) {
@@ -35,7 +35,7 @@ playerSchema.statics.usernameExists = function(username) {
 };
 
 playerSchema.statics.emailExists = function(email) {
-    console.log('Checking if email, '+ email +', exists.');
+    console.log(`Checking if email exists: ${email}`);
     return new Promise(function(resolve, reject) {
         Player.count({email: email}).exec()
 			.then(function(count) {
@@ -54,7 +54,7 @@ playerSchema.statics.lowestRank = function() {
                 if (lowestRankPlayer && lowestRankPlayer.length > 0) {
                     lowestRank = lowestRankPlayer[0].rank;
                 }
-                console.log('Found lowest rank of ' + lowestRank);
+                console.log(`Found lowest rank of ${lowestRank}`);
                 return resolve(lowestRank);
             })
 			.catch(reject);

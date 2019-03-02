@@ -16,7 +16,7 @@ const AuthService = {
     PASSWORD_MAX_LENGTH: 32,
 
     login(playerId, password) {
-        console.log('Attempting to log in player id: ' + playerId);
+        console.log(`Attempting to log in player id: ${playerId}`);
         return new Promise(function(resolve, reject) {
             AuthService.validateCredentials(playerId, password)
                 .then(AuthService.createToken)
@@ -35,7 +35,7 @@ const AuthService = {
     },
 
     createToken(playerId) {
-        console.log('Attempting to create token for ' + playerId);
+        console.log(`Attempting to create token for ${playerId}`);
         return new Promise(function(resolve, reject) {
             let payload = {
                 playerId: playerId,
@@ -75,7 +75,7 @@ const AuthService = {
 
                     let previousResetExpiration = Util.addHours(new Date(auth.getResetDate()), AuthService.PASSWORD_RESET_REPEAT_HOURS);
                     if (previousResetExpiration > new Date()) {
-                        return reject(new Error('Cannot reset passwords multiple times within ' + AuthService.PASSWORD_RESET_REPEAT_HOURS + ' hours.'));
+                        return reject(new Error(`Cannot reset passwords multiple times within ${AuthService.PASSWORD_RESET_REPEAT_HOURS} hours.`));
                     }
                     return auth.enablePasswordReset();
                 })
@@ -99,7 +99,7 @@ const AuthService = {
 
                     let resetWindowExpiration = Util.addMinutes(auth.getResetDate(), AuthService.PASSWORD_RESET_WINDOW_MINUTES);
                     if (resetWindowExpiration < new Date()) {
-                        return reject(new Error('Passwords can only be reset within a ' + AuthService.PASSWORD_RESET_WINDOW_MINUTES + ' minute window.'));
+                        return reject(new Error(`Passwords can only be reset within a ${AuthService.PASSWORD_RESET_WINDOW_MINUTES} minute window.`));
                     }
                     return auth.setPassword(password);
                 })
@@ -153,8 +153,8 @@ const AuthService = {
         return new Promise(function(resolve, reject) {
             if (password === null || password === undefined) return reject(new Error('Password must be defined.'));
             if (!AuthService.JWT_SECRET_KEY) return  reject(new Error('Application key has not been defined. A ladder administrator must configure this.'));
-            if (password.length < AuthService.PASSWORD_MIN_LENGTH) return reject(new Error('Password must be at least ' + AuthService.PASSWORD_MIN_LENGTH + ' characters in length.'));
-            if (password.length > AuthService.PASSWORD_MAX_LENGTH) return reject(new Error('Password cannot be longer than ' + AuthService.PASSWORD_MAX_LENGTH + ' characters.'));
+            if (password.length < AuthService.PASSWORD_MIN_LENGTH) return reject(new Error(`Password must be at least ${AuthService.PASSWORD_MIN_LENGTH} characters in length.`));
+            if (password.length > AuthService.PASSWORD_MAX_LENGTH) return reject(new Error(`Password cannot be longer than ${AuthService.PASSWORD_MAX_LENGTH} characters.`));
             return resolve(password);
         });
     },
@@ -172,7 +172,7 @@ const AuthService = {
         emailParts[0].split('').forEach(function(letter, index) {
             maskedName += (index % 2 === 0 ? letter : '*');
         });
-        return maskedName + '@' + emailParts[1];
+        return `${maskedName}@${emailParts[1]}`;
     }
 };
 

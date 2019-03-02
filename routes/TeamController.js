@@ -74,7 +74,7 @@ router.post('/change/username', function(req, res, next) {
         })
 		.then(function() {
             req.app.io.sockets.emit('team:change:username');
-            res.json({message: 'Successfully changed your team name to '+ newUsername +'!'});
+            res.json({message: `Successfully changed your team name to ${newUsername}!`});
 		})
 		.catch(next);
 });

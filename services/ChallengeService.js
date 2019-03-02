@@ -24,7 +24,7 @@ const ChallengeService = {
         let reissueTime = Util.addHours(mostRecentChallenge.updatedAt, ChallengeService.CHALLENGE_BACK_DELAY_HOURS);
         if (reissueTime < new Date()) return Promise.resolve(challenges);
 
-        return Promise.reject(new Error('You must wait at least ' + ChallengeService.CHALLENGE_BACK_DELAY_HOURS + ' hours before re-challenging the same opponent.'));
+        return Promise.reject(new Error(`You must wait at least ${ChallengeService.CHALLENGE_BACK_DELAY_HOURS} hours before re-challenging the same opponent.`));
     },
 
     verifyRank(challenger, challengee) {
@@ -37,8 +37,8 @@ const ChallengeService = {
         console.log('Verifying tier limitations');
         let challengerTier = Util.getTier(challenger.rank);
         let challengeeTier = Util.getTier(challengee.rank);
-        if (!challengerTier) return Promise.reject(new Error(challenger.username + ' is not in any tier'));
-        if (!challengeeTier) return Promise.reject(new Error(challengee.username + ' is not in any tier'));
+        if (!challengerTier) return Promise.reject(new Error(`${challenger.username} is not in any tier`));
+        if (!challengeeTier) return Promise.reject(new Error(`${challengee.username} is not in any tier`));
 
         if (Math.abs(challengerTier - challengeeTier) > 1)
             return Promise.reject(new Error('You cannot challenge an opponent beyond 1 tier.'));
@@ -78,7 +78,7 @@ const ChallengeService = {
     },
 
     setRank(entity, newRank) {
-        console.log('Changing rank of ' + entity.username + ' from [' + entity.rank + '] to [' + newRank + ']');
+        console.log(`Changing rank of ${entity.username} from [${entity.rank}] to [${newRank}]`);
         return new Promise(function (resolve, reject) {
             let oldRank = entity.rank;
             entity.rank = newRank;
@@ -89,7 +89,7 @@ const ChallengeService = {
     },
 
     setScore(challenge, challengerScore, challengeeScore) {
-        console.log('Setting score for challenge id [' + challenge._id + ']');
+        console.log(`Setting score for challenge id [${challenge._id}]`);
         if (challengerScore < 0 || challengeeScore < 0) return Promise.reject(new Error('Both scores must be positive.'));
         if (!Number.isInteger(challengerScore) || !Number.isInteger(challengeeScore)) return Promise.reject(new Error('Both scores must be integers.'));
         if (challengerScore + challengeeScore < 2) return Promise.reject(new Error('A valid set consists of at least 2 games.'));
@@ -101,7 +101,7 @@ const ChallengeService = {
     },
 
     setForfeit(challenge) {
-        console.log('Setting forfeit for challenge id [' + challenge._id + ']');
+        console.log(`Setting forfeit for challenge id [${challenge._id}]`);
         challenge.setScore(undefined, undefined);
         return challenge.save();
     }

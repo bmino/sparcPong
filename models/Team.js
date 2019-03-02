@@ -11,7 +11,7 @@ let teamSchema = new Schema({
 });
 
 teamSchema.methods.hasMemberByPlayerId = function(playerId) {
-    console.log('Checking if player id ' + playerId + ' is on team ' + this.username);
+    console.log(`Checking if player id ${playerId} is on team ${this.username}`);
     if (this.leader.toString() === playerId.toString()) return true;
     if (this.partner.toString() === playerId.toString()) return true;
     return false;
@@ -22,7 +22,7 @@ teamSchema.statics.getTeamsByPlayerId = function(playerId) {
 };
 
 teamSchema.statics.usernameExists = function(username) {
-    console.log('Checking if team username, ' + username + ', exists.');
+    console.log(`Checking if team username, ${username}, exists.`);
     return new Promise(function (resolve, reject) {
         Team.count({username: username}).exec()
             .then(function(count) {
@@ -42,7 +42,7 @@ teamSchema.statics.lowestRank = function() {
                 if (lowestRankTeam && lowestRankTeam.length > 0) {
                     lowestRank = lowestRankTeam[0].rank;
                 }
-                console.log('Found lowest rank of ' + lowestRank);
+                console.log(`Found lowest rank of ${lowestRank}`);
                 return resolve(lowestRank);
             })
             .catch(reject);

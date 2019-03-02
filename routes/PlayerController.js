@@ -94,7 +94,7 @@ router.post('/change/username', auth.jwtAuthProtected, function(req, res, next) 
         })
 		.then(function() {
             req.app.io.sockets.emit('player:change:username');
-            res.json({message: 'Successfully changed your username to '+ newUsername});
+            res.json({message: `Successfully changed your username to ${newUsername}`});
 		})
 		.catch(next);
 });
@@ -148,7 +148,7 @@ router.post('/change/email', auth.jwtAuthProtected, function(req, res, next) {
 		})
 		.then(function() {
             req.app.io.sockets.emit('player:change:email');
-            res.json({message: 'Successfully changed your email to '+ newEmail +'!'});
+            res.json({message: `Successfully changed your email to ${newEmail}!`});
 		})
 		.catch(next);
 });

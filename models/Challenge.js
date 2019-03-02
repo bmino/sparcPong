@@ -32,7 +32,7 @@ challengeSchema.methods.setScore = function(challengerScore, challengeeScore) {
 };
 
 challengeSchema.statics.createByPlayers = function(players) {
-    console.log('Creating new challenge between ' + players[0].username + ' and ' + players[1].username);
+    console.log(`Creating new challenge between ${players[0].username} and ${players[1].username}`);
     let challenge = new Challenge();
     challenge.challenger = players[0]._id;
     challenge.challengee = players[1]._id;

@@ -8,8 +8,8 @@ router.get('/challenge', function(req, res, next) {
 
     ManualTaskService.autoChallenge(req)
         .then(function(issued) {
-            let msg = 'Issued ' + issued + ' challenges';
-            console.log('[Manual] - ' + msg);
+            let msg = `Issued ${issued} challenges`;
+            console.log(`[Manual] - ${msg}`);
             res.json(msg);
         })
         .catch(next);
@@ -25,8 +25,8 @@ router.get('/forfeit', function(req, res, next) {
         .then(function(results) {
             let singlesResults = results[0];
             let doublesResults = results[1];
-        	let msg = 'Forfeited ' + singlesResults.length + ' challenges (singles) and ' + doublesResults.length + ' challenges (doubles)';
-        	console.log('[Manual] - ' + msg);
+        	let msg = `Forfeited ${singlesResults.length} challenges (singles) and ${doublesResults.length} challenges (doubles)`;
+        	console.log(`[Manual] - ${msg}`);
             res.json(msg);
         })
 		.catch(next);
@@ -39,7 +39,7 @@ router.get('/deactivate', function(req, res, next) {
     return ManualTaskService.deactivatePlayer(req.query.id, req)
         .then(function() {
             let msg = 'Deactivated player';
-            console.log('[Manual] - ' + msg);
+            console.log(`[Manual] - ${msg}`);
             res.json(msg);
         })
         .catch(next);
