@@ -1,8 +1,8 @@
-var jwt = require('jsonwebtoken');
-var AuthService = require('../services/AuthService');
-var jwtSecret = AuthService.JWT_SECRET_KEY;
-var jwtAuthHeaderPrefix = AuthService.JWT_AUTH_HEADER_PREFIX;
-var jwtValidBeginningTime = AuthService.JWT_REJECT_IAT_BEFORE;
+let jwt = require('jsonwebtoken');
+let AuthService = require('../services/AuthService');
+let jwtSecret = AuthService.JWT_SECRET_KEY;
+let jwtAuthHeaderPrefix = AuthService.JWT_AUTH_HEADER_PREFIX;
+let jwtValidBeginningTime = AuthService.JWT_REJECT_IAT_BEFORE;
 
 /**
  * Ensures that a request has supplied an authorization header.
@@ -12,7 +12,7 @@ exports.authorizationHeaderExists = function (req, res, next) {
         return res.status(401).send('No Authorization header.');
     }
 
-    var authHeader = req.headers.authorization.split(' ');
+    let authHeader = req.headers.authorization.split(' ');
 
     if (authHeader.length === 1) {
         return res.status(401).send('Invalid Authorization header. No credentials provided.');
@@ -30,11 +30,11 @@ exports.authorizationHeaderExists = function (req, res, next) {
  * Validates a JWT token.
  */
 exports.validateJWT = function (req, res, next) {
-    var authHeader = req.headers.authorization.split(' ');
+    let authHeader = req.headers.authorization.split(' ');
 
     try {
-        var jwtToken = authHeader[1];
-        var payload = jwt.verify(jwtToken, jwtSecret);
+        let jwtToken = authHeader[1];
+        let payload = jwt.verify(jwtToken, jwtSecret);
     } catch (err) {
         console.error(err);
         return res.status(401).send('Could not validate jwt security token.');
@@ -52,7 +52,7 @@ exports.validateJWT = function (req, res, next) {
 };
 
 function makeTokenAvailable (req, res, next) {
-    var authHeader = req.headers.authorization.split(' ');
+    let authHeader = req.headers.authorization.split(' ');
     req.token = authHeader[1];
     next();
 }

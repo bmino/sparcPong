@@ -14,7 +14,7 @@ function ChangeEmailController($scope, jwtService, modalService, playerService) 
 	}
 	
 	function getEmail() {
-        var playerId = jwtService.getDecodedToken().playerId;
+        let playerId = jwtService.getDecodedToken().playerId;
 
 		playerService.getPlayer(playerId).then(function(player) {
 			if (!player) console.log('Uh oh, this player could not be found.');
@@ -23,7 +23,7 @@ function ChangeEmailController($scope, jwtService, modalService, playerService) 
 	}
 	
 	$scope.validateEmail = function() {
-		var modalOptions;
+		let modalOptions;
 		playerService.changeEmail($scope.email).then(
 			// Success
 			function(success) {
@@ -45,7 +45,7 @@ function ChangeEmailController($scope, jwtService, modalService, playerService) 
 	};
 	
 	$scope.removeEmail = function() {
-		var modalOptions;
+		let modalOptions;
 		playerService.removeEmail().then(
 			// Success
 			function(success) {

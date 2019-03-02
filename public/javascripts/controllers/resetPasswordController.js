@@ -15,7 +15,7 @@ function ResetPasswordController($scope, $routeParams, $location, modalService, 
 	}
 	
 	$scope.validatePassword = function() {
-        var modalOptions;
+        let modalOptions;
 
 		if ($scope.newPassword !== $scope.newPasswordConfirm) {
             modalOptions = {

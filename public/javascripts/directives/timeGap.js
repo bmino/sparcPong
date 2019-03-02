@@ -14,11 +14,11 @@ function timeGap(timeService) {
 		},
 		link: function(scope, elem, attrs) {
 			
-			var oDate = scope.date ? timeService.parseDate(scope.date) : null;
+			let oDate = scope.date ? timeService.parseDate(scope.date) : null;
             if (oDate) updateLater();
 
 			function updateTime() {
-				var elapsed;
+				let elapsed;
 				if (scope.type === 'since')
 					elapsed = timeService.timeBetween(oDate, new Date());
 				else if (scope.type === 'until')
@@ -39,7 +39,7 @@ function timeGap(timeService) {
 			}
 
             function dangerLevel(gameTime) {
-                var hours = timeService.hoursBetween(new Date(gameTime), new Date());
+                let hours = timeService.hoursBetween(new Date(gameTime), new Date());
                 if (hours <= 48)
                     return 'alert-success';
                 if (hours > 48 && hours <= 72)

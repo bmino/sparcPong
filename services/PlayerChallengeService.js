@@ -1,11 +1,11 @@
-var mongoose = require('mongoose');
-var Player = mongoose.model('Player');
-var Challenge = mongoose.model('Challenge');
-var ChallengeService = require('./ChallengeService');
-var MailerService = require('./MailerService');
-var Util = require('./Util');
+let mongoose = require('mongoose');
+let Player = mongoose.model('Player');
+let Challenge = mongoose.model('Challenge');
+let ChallengeService = require('./ChallengeService');
+let MailerService = require('./MailerService');
+let Util = require('./Util');
 
-var PlayerChallengeService = {
+let PlayerChallengeService = {
     ALLOWED_CHALLENGE_DAYS: process.env.ALLOWED_CHALLENGE_DAYS || 4,
 
     doChallenge : doChallenge,
@@ -90,15 +90,15 @@ function doResolve(challengeId, challengerScore, challengeeScore, clientId, req)
 
 
 function verifyChallengesBetweenPlayers(players) {
-    var challenger = players[0];
-    var challengee = players[1];
+    let challenger = players[0];
+    let challengee = players[1];
     return new Promise(function(resolve, reject) {
 
-        var challengerIncoming = Challenge.count({challengee: challenger._id, winner: null}).exec();
-        var challengerOutgoing = Challenge.count({challenger: challenger._id, winner: null}).exec();
-        var challengeeIncoming = Challenge.count({challengee: challengee._id, winner: null}).exec();
-        var challengeeOutgoing = Challenge.count({challenger: challengee._id, winner: null}).exec();
-        var challengesBetween  = Challenge.getUnresolvedBetweenPlayers(players);
+        let challengerIncoming = Challenge.count({challengee: challenger._id, winner: null}).exec();
+        let challengerOutgoing = Challenge.count({challenger: challenger._id, winner: null}).exec();
+        let challengeeIncoming = Challenge.count({challengee: challengee._id, winner: null}).exec();
+        let challengeeOutgoing = Challenge.count({challenger: challengee._id, winner: null}).exec();
+        let challengesBetween  = Challenge.getUnresolvedBetweenPlayers(players);
 
         return Promise.all([challengerIncoming, challengerOutgoing, challengeeIncoming, challengeeOutgoing, challengesBetween])
             .then(function (counts) {
@@ -116,16 +116,16 @@ function verifyChallengesBetweenPlayers(players) {
 }
 
 function verifyAllowedToChallenge(players) {
-    var challenger = players[0];
-    var challengee = players[1];
+    let challenger = players[0];
+    let challengee = players[1];
 
     return new Promise(function(resolve, reject) {
         if (!challenger.active || !challengee.active) return reject(new Error('Both players must have active accounts'));
-        var existingChallengesCheck = PlayerChallengeService.verifyChallengesBetweenPlayers(players);
-        var rankCheck = ChallengeService.verifyRank(challenger, challengee);
-        var tierCheck = ChallengeService.verifyTier(challenger, challengee);
-        var reissueTimeCheck = Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime);
-        var businessDayCheck = ChallengeService.verifyBusinessDay();
+        let existingChallengesCheck = PlayerChallengeService.verifyChallengesBetweenPlayers(players);
+        let rankCheck = ChallengeService.verifyRank(challenger, challengee);
+        let tierCheck = ChallengeService.verifyTier(challenger, challengee);
+        let reissueTimeCheck = Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime);
+        let businessDayCheck = ChallengeService.verifyBusinessDay();
 
         return Promise.all([existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
             .then(function() {return resolve(players);})
@@ -136,8 +136,8 @@ function verifyAllowedToChallenge(players) {
 function verifyForfeitIsNotRequired(challenge) {
     console.log('Verifying player challenge forfeit');
     return new Promise(function(resolve, reject) {
-        var dateIssued = challenge.createdAt;
-        var expires = Util.addBusinessDays(dateIssued, PlayerChallengeService.ALLOWED_CHALLENGE_DAYS);
+        let dateIssued = challenge.createdAt;
+        let expires = Util.addBusinessDays(dateIssued, PlayerChallengeService.ALLOWED_CHALLENGE_DAYS);
         if (expires < new Date()) return reject(new Error('This challenge has expired. It must be forfeited.'));
         return resolve(challenge);
     });
@@ -147,9 +147,9 @@ function updateLastGames(challenge) {
     return new Promise(function(resolve, reject) {
         console.log('Updating last games for the challenge with id of ['+ challenge._id +']');
 
-        var gameTime = challenge.updatedAt;
-        var challengerUpdate = Player.findByIdAndUpdate(challenge.challenger, {$set: {lastGame: gameTime}}).exec();
-        var challengeeUpdate = Player.findByIdAndUpdate(challenge.challengee, {$set: {lastGame: gameTime}}).exec();
+        let gameTime = challenge.updatedAt;
+        let challengerUpdate = Player.findByIdAndUpdate(challenge.challenger, {$set: {lastGame: gameTime}}).exec();
+        let challengeeUpdate = Player.findByIdAndUpdate(challenge.challengee, {$set: {lastGame: gameTime}}).exec();
 
         return Promise.all([challengerUpdate, challengeeUpdate])
             .then(function() {return resolve(challenge);})

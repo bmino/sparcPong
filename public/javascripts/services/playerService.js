@@ -6,14 +6,14 @@ PlayerService.$inject = ['$http'];
 
 function PlayerService($http) {
 	
-	var service = this;
+	let service = this;
 	
 	// Default Headers
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
 	
 	
 	service.createPlayer = function(username, password, firstName, lastName, phone, email) {
-		var request = $http({
+		let request = $http({
 			method: "post",
 			url: "api/player/",
 			data: {
@@ -29,7 +29,7 @@ function PlayerService($http) {
 	};
 	
 	service.changeUsername = function(newUsername) {
-		var request = $http({
+		let request = $http({
 			method: "post",
 			url: "api/player/change/username/",
 			data: {
@@ -40,7 +40,7 @@ function PlayerService($http) {
 	};
 
     service.changePassword = function(oldPassword, newPassword) {
-        var request = $http({
+        let request = $http({
             method: "post",
             url: "api/player/change/password/",
             data: {
@@ -52,7 +52,7 @@ function PlayerService($http) {
     };
 	
 	service.changeEmail = function(newEmail) {
-		var request = $http({
+		let request = $http({
 			method: "post",
 			url: "api/player/change/email/",
 			data: {
@@ -63,7 +63,7 @@ function PlayerService($http) {
 	};
 	
 	service.removeEmail = function() {
-		var request = $http({
+		let request = $http({
 			method: "post",
 			url: "api/player/change/email/remove"
 		});
@@ -71,7 +71,7 @@ function PlayerService($http) {
 	};
 	
 	service.getAlerts = function() {
-		var request = $http({
+		let request = $http({
 			method: "get",
 			url: "api/playerAlerts/"
 		});
@@ -79,7 +79,7 @@ function PlayerService($http) {
 	};
 	
 	service.updateAlerts = function(alerts) {
-		var request = $http({
+		let request = $http({
 			method: "post",
 			url: "api/playerAlerts/",
 			data: {
@@ -91,7 +91,7 @@ function PlayerService($http) {
 	
 	
 	service.getPlayer = function(playerId) {
-		var request = $http({
+		let request = $http({
 			method: "get",
 			url: "api/player/fetch/"+playerId
 		});
@@ -99,7 +99,7 @@ function PlayerService($http) {
 	};
 	
 	service.getPlayers = function() {
-		var request = $http({
+		let request = $http({
 			method: "get",
 			url: "api/player/"
 		});
@@ -107,7 +107,7 @@ function PlayerService($http) {
 	};
 	
 	service.getRecord = function(playerId) {
-		var request = $http({
+		let request = $http({
 			method: "get",
 			url: "api/player/record/"+playerId
 		});

@@ -1,12 +1,12 @@
-var mongoose = require('mongoose');
-var Player = mongoose.model('Player');
-var Challenge = mongoose.model('Challenge');
-var TeamChallenge = mongoose.model('TeamChallenge');
-var PlayerChallengeService = require('./PlayerChallengeService');
-var TeamChallengeService = require('./TeamChallengeService');
-var MailerService = require('./MailerService');
+let mongoose = require('mongoose');
+let Player = mongoose.model('Player');
+let Challenge = mongoose.model('Challenge');
+let TeamChallenge = mongoose.model('TeamChallenge');
+let PlayerChallengeService = require('./PlayerChallengeService');
+let TeamChallengeService = require('./TeamChallengeService');
+let MailerService = require('./MailerService');
 
-var ManualTaskService = {
+let ManualTaskService = {
 
     autoChallenge : autoChallenge,
     autoForfeitSingles : autoForfeitSingles,
@@ -35,9 +35,9 @@ function autoForfeitSingles(request) {
         .then(function(challenges) {
             console.log('[Manual] - Found ' + challenges.length + ' expired challenges (singles)');
 
-            var forfeitPromises = [];
+            let forfeitPromises = [];
             challenges.forEach(function(challenge) {
-                var promise = PlayerChallengeService.doForfeit(challenge._id, challenge.challengee, request);
+                let promise = PlayerChallengeService.doForfeit(challenge._id, challenge.challengee, request);
                 forfeitPromises.push(promise);
             });
 
@@ -52,9 +52,9 @@ function autoForfeitDoubles(request) {
         .then(function(challenges) {
             console.log('[Manual] - Found ' + challenges.length + ' expired challenges (doubles)');
 
-            var forfeitPromises = [];
+            let forfeitPromises = [];
             challenges.forEach(function(challenge) {
-                var promise = TeamChallengeService.doForfeit(challenge._id, challenge.challengee.leader, request);
+                let promise = TeamChallengeService.doForfeit(challenge._id, challenge.challengee.leader, request);
                 forfeitPromises.push(promise);
             });
 
@@ -71,9 +71,9 @@ function deactivatePlayer(playerId, request) {
         Challenge.getOutgoing(playerId)
     ])
         .then(function(results) {
-            var player = results[0];
-            var incoming = results[1];
-            var outgoing = results[2];
+            let player = results[0];
+            let incoming = results[1];
+            let outgoing = results[2];
             if (!player) return Promise.reject(new Error('Could not find player'));
             if (!player.active) return Promise.reject(new Error('Player is not currently active'));
             if (incoming.length) return PlayerChallengeService.doForfeit(incoming[0]._id, playerId, request);

@@ -1,22 +1,22 @@
-var express = require('express');
-var router = express.Router();
-var mongoose = require('mongoose');
-var Player = mongoose.model('Player');
-var AuthService = require('../services/AuthService');
+let express = require('express');
+let router = express.Router();
+let mongoose = require('mongoose');
+let Player = mongoose.model('Player');
+let AuthService = require('../services/AuthService');
 
 
 /**
  * Get player alerts
  */
 router.get('/', function(req, res, next) {
-    var clientId = AuthService.verifyToken(req.token).playerId;
+    let clientId = AuthService.verifyToken(req.token).playerId;
 
 	if (!clientId) return next(new Error('You must provide a valid player id.'));
 
 	Player.findById(clientId).populate('alerts').exec()
 		.then(function(player) {
 			if (!player || !player.alerts) return Promise.reject(new Error("Could not find the player's alert settings."));
-			var alerts = {};
+			let alerts = {};
 
             alerts.challenged = player.alerts.challenged;
             alerts.revoked = player.alerts.revoked;
@@ -35,8 +35,8 @@ router.get('/', function(req, res, next) {
  * @param: alerts
  */
 router.post('/', function(req, res, next) {
-    var newAlerts = req.body.alerts;
-    var clientId = AuthService.verifyToken(req.token).playerId;
+    let newAlerts = req.body.alerts;
+    let clientId = AuthService.verifyToken(req.token).playerId;
 
     if (!clientId) return next(new Error('You must provide a valid player id.'));
 	if (!newAlerts) return next(new Error('Uh oh, the alert preferences got lost along the way.'));

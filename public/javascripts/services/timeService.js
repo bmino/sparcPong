@@ -6,10 +6,10 @@ TimeService.$inject = ['$http', '$filter'];
 
 function TimeService($http, $filter) {
 	
-	var service = this;
+	let service = this;
 	
 	service.getAllowedChallengeDays = function() {
-        var request = $http({
+        let request = $http({
             method: 'get',
             url: '/api/envBridge/ALLOWED_CHALLENGE_DAYS'
         });
@@ -17,7 +17,7 @@ function TimeService($http, $filter) {
 	};
 
     service.getAllowedChallengeDaysTeam = function() {
-        var request = $http({
+        let request = $http({
             method: 'get',
             url: '/api/envBridge/ALLOWED_CHALLENGE_DAYS_TEAM'
         });
@@ -33,19 +33,19 @@ function TimeService($http, $filter) {
 	};
 	
 	service.hoursBetween = function(date1, date2) {
-		var diff =  Math.abs(date2 - date1);
-		var seconds = Math.floor(diff/1000);
-		var minutes = Math.floor(seconds/60);
+		let diff =  Math.abs(date2 - date1);
+		let seconds = Math.floor(diff/1000);
+		let minutes = Math.floor(seconds/60);
 		return Math.floor(minutes/60);
 	};
 	
 	service.timeBetween = function (date1, date2) {
-		var neg = (date2 - date1) < 0;
-		var diff =  Math.abs(date2 - date1);
-		var seconds = Math.floor(diff/1000);
-		var minutes = Math.floor(seconds/60); 
+		let neg = (date2 - date1) < 0;
+		let diff =  Math.abs(date2 - date1);
+		let seconds = Math.floor(diff/1000);
+		let minutes = Math.floor(seconds/60); 
 		seconds = seconds % 60;
-		var hours = Math.floor(minutes/60);
+		let hours = Math.floor(minutes/60);
 		minutes = minutes % 60;
 		return service.prettyTime(hours, minutes, seconds, neg);
 	};
@@ -56,7 +56,7 @@ function TimeService($http, $filter) {
 	};
 	
 	service.leftPad = function (number, targetLength) {
-		var output = number + '';
+		let output = number + '';
 		while (output.length < targetLength) {
 			output = '0' + output;
 		}
@@ -66,8 +66,8 @@ function TimeService($http, $filter) {
 	service.addBusinessDays = function (date, days) {
 		if (!days) return date;
 		
-		var dateClone = new Date(date.getTime());
-		var added = 0;
+		let dateClone = new Date(date.getTime());
+		let added = 0;
 		while (added < days) {
 			// Looks at tomorrow's day
             dateClone.setDate(dateClone.getDate()+1);

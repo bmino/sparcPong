@@ -1,20 +1,20 @@
 require('dotenv').config({path: 'config/application.env'});
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io')(server);
+let express = require('express');
+let app = express();
+let server = require('http').createServer(app);
+let io = require('socket.io')(server);
 app.io = io;
 if (!process.env.PORT) process.env.PORT = 3000;
 server.listen(process.env.PORT, () => {
     console.log(`Server is listening on port ${process.env.PORT}`);
 });
-var path = require('path');
-var favicon = require('serve-favicon');
-var morgan = require('morgan');
-var bodyParser = require('body-parser');
+let path = require('path');
+let favicon = require('serve-favicon');
+let morgan = require('morgan');
+let bodyParser = require('body-parser');
 
 // Mongo
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 require('./models/Authorization');
@@ -47,7 +47,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
 // JWT Security
-var auth = require('./middleware/jwtMiddleware');
+let auth = require('./middleware/jwtMiddleware');
 app.use(['/api/team/*', '/api/challenge/*', '/api/playerAlerts/*', '/api/envBridge/*'], auth.jwtAuthProtected);
 
 app.use('/',								require('./routes/EjsViewController'));
@@ -62,7 +62,7 @@ app.use('/manual',							require('./routes/ManualTaskController'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-	var err = new Error('Not Found');
+	let err = new Error('Not Found');
 	err.status = 404;
 	next(err);
 });
@@ -76,8 +76,8 @@ app.use(function(err, req, res, next) {
 
 
 
-var SocketBank = require('./singletons/SocketBank');
-var AuthService = require('./services/AuthService');
+let SocketBank = require('./singletons/SocketBank');
+let AuthService = require('./services/AuthService');
 
 // Socket Events
 io.on('connection', function(socket) {
@@ -99,8 +99,8 @@ io.on('connection', function(socket) {
 
 	socket.on('login', function(credentials) {
 		console.log('Received \'login\' socket event.');
-		var userId = credentials.playerId;
-		var password = credentials.password;
+		let userId = credentials.playerId;
+		let password = credentials.password;
 
 		AuthService.login(userId, password)
 			.then(function(token) {

@@ -21,7 +21,7 @@ function SignUpPlayerController($scope, $location, modalService, playerService) 
     };
 
 	$scope.createPlayer = function() {
-        var modalOptions = {
+        let modalOptions = {
             headerText: 'New Player',
             bodyText: 'Password confirmation does not match'
         };
@@ -34,7 +34,7 @@ function SignUpPlayerController($scope, $location, modalService, playerService) 
 	function creationSuccess(response) {
         clearInputs();
 
-        var modalOptions = {
+        let modalOptions = {
             headerText: 'New Player',
             bodyText: response
         };
@@ -42,7 +42,7 @@ function SignUpPlayerController($scope, $location, modalService, playerService) 
 	}
 
     function creationError(response) {
-        var modalOptions = {
+        let modalOptions = {
             headerText: 'New Player',
             bodyText: response
         };

@@ -6,7 +6,7 @@ Socket.$inject = ['$rootScope'];
 
 function Socket($rootScope) {
 
-	var socket = io('/', {path: window.location.pathname + 'socket.io'}).connect();
+	let socket = io('/', {path: window.location.pathname + 'socket.io'}).connect();
 
 	return {
 		on: on,
@@ -14,7 +14,7 @@ function Socket($rootScope) {
 	};
 
     function on(eventName, scope, callback) {
-        var appliedCallback = function () {
+        let appliedCallback = function () {
             callback.apply(socket, arguments);
             $rootScope.$evalAsync();
         };

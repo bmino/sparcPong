@@ -16,7 +16,7 @@ function ifOnline(userBankService) {
     function link(scope, elem, attrs) {
 
         scope.$watchGroup([userBankService.getLoggedInUsers, 'ifOnline'], function(watched) {
-            var onlineUserIds = watched[0];
+            let onlineUserIds = watched[0];
 
             if (!scope.ifOnline) return elem.hide();
             if (!onlineUserIds) return elem.hide();

@@ -10,10 +10,10 @@ function run($rootScope, $location, loginService) {
     loginService.attemptRelogin();
 
     $rootScope.$on('$routeChangeStart', function(event, next, current) {
-        var destination = $location.path();
+        let destination = $location.path();
 
         if (!next.$$route) return;
-        var goingToProtectedRoute = next.$$route.protected;
+        let goingToProtectedRoute = next.$$route.protected;
 
         if (goingToProtectedRoute && !loginService.isLoggedIn()) {
             console.log('Blocked route access to ' + destination);

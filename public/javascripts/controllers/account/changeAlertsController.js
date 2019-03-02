@@ -40,7 +40,7 @@ function changeAlertsController($scope, modalService, playerService) {
     }
 
     function minifiedAlerts() {
-        var minified = {
+        let minified = {
             team: {}
         };
         angular.forEach($scope.alerts, function (value, alertKey) {
@@ -68,7 +68,7 @@ function changeAlertsController($scope, modalService, playerService) {
         playerService.updateAlerts(minifiedAlerts())
             .then(console.log)
             .catch(function (error) {
-                var modalOptions = {
+                let modalOptions = {
                     headerText: 'Change Alerts',
                     bodyText: error
                 };

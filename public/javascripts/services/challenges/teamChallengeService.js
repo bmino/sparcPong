@@ -6,13 +6,13 @@ TeamChallengeService.$inject = ['$http'];
 
 function TeamChallengeService($http) {
 	
-	var service = this;
+	let service = this;
 	
 	// Default Headers
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
 	
 	service.createChallenge = function(challengeeId) {
-		var request = $http({
+		let request = $http({
 			method: "post",
 			url: "api/challenge/team",
 			data: {
@@ -23,7 +23,7 @@ function TeamChallengeService($http) {
 	};
 	
 	service.getChallenges = function(playerId) {
-		var request = $http({
+		let request = $http({
 			method: "get",
 			url: "api/challenge/team/"+playerId
 		});
@@ -31,7 +31,7 @@ function TeamChallengeService($http) {
 	};
 	
 	service.revokeChallenge = function(challengeId) {
-		var request = $http({
+		let request = $http({
 			method: "delete",
 			url: "api/challenge/team/revoke/",
 			data: {
@@ -42,7 +42,7 @@ function TeamChallengeService($http) {
 	};
 	
 	service.resolveChallenge = function(challengeId, challengerScore, challengeeScore) {
-		var request = $http({
+		let request = $http({
 			method: "post",
 			url: "api/challenge/team/resolve/",
 			data: {
@@ -55,7 +55,7 @@ function TeamChallengeService($http) {
 	};
 	
 	service.forfeitChallenge = function(challengeId) {
-		var request = $http({
+		let request = $http({
 			method: "post",
 			url: "api/challenge/team/forfeit/",
 			data: {

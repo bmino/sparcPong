@@ -13,8 +13,8 @@ function SinglesBoardController($scope, socket, modalService, playerService, pla
 	}
 	
 	function generateTiers(tiers) {
-		var arr = [];
-		for (var t=1; t<tiers; t++) {
+		let arr = [];
+		for (let t=1; t<tiers; t++) {
 			arr.push(t);
 		}
 		$scope.tiers = arr;
@@ -29,7 +29,7 @@ function SinglesBoardController($scope, socket, modalService, playerService, pla
 	
 	/* Should be covered by back end check, but just in case */
 	function sanitizeUsernames(group) {
-		for (var i=0; i<group.length; i++) {
+		for (let i=0; i<group.length; i++) {
 			group[i]['username'].replace(/&/g, '&amp;')
 								.replace(/>/g, '&gt;')
 								.replace(/</g, '&lt;')
@@ -41,14 +41,14 @@ function SinglesBoardController($scope, socket, modalService, playerService, pla
 		playerChallengeService.createChallenge(challengeeId).then( goodChallenge, badChallenge );
 	};
 	function goodChallenge(success) {
-		var modalOptions = {
+		let modalOptions = {
             headerText: 'Challenge',
             bodyText: success
         };
         modalService.showAlertModal({}, modalOptions);
 	}
 	function badChallenge(error) {
-		var modalOptions = {
+		let modalOptions = {
             headerText: 'Challenge',
             bodyText: error
         };

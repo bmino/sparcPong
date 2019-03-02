@@ -31,7 +31,7 @@ function LoginController($scope, $location, loginService, modalService, socket, 
     };
 
     $scope.forgotPassword = function() {
-        var modalOptions = {
+        let modalOptions = {
             headerText: 'Password Reset',
             bodyText: 'You must first select a username.'
         };
@@ -54,7 +54,7 @@ function LoginController($scope, $location, loginService, modalService, socket, 
     };
 
     $scope.login = function() {
-        var modalOptions = {
+        let modalOptions = {
             headerText: 'Log In Error',
             bodyText: 'You must first select a username.'
         };
@@ -80,7 +80,7 @@ function LoginController($scope, $location, loginService, modalService, socket, 
     }
 
     function loginFailure(reason) {
-        var modalOptions = {
+        let modalOptions = {
             headerText: 'Log In Error',
             bodyText: reason
         };

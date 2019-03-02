@@ -26,7 +26,7 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
 			getRecord();
 		} else {
 			console.log('Profile id not given. Looking up teams.');
-			var clientId = jwtService.getDecodedToken().playerId;
+			let clientId = jwtService.getDecodedToken().playerId;
 			teamService.lookupTeams(clientId)
 				.then(function(teams) {
 					if (!teams || teams.length === 0) {

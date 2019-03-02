@@ -6,16 +6,16 @@ ModalService.$inject = ['$uibModal'];
 
 function ModalService($uibModal) {
 	
-	var service = this;
+	let service = this;
 
-	var modalDefaults = {
+	let modalDefaults = {
 		backdrop: true,
 		keyboard: true,
 		modalFade: true,
 		templateUrl: 'partials/modals/base.html'
 	};
 
-	var modalOptions = {
+	let modalOptions = {
 		closeButtonText: 'Close',
 		actionButtonText: 'OK',
 		headerText: 'Proceed?',
@@ -43,8 +43,8 @@ function ModalService($uibModal) {
 
 	service.show = function (customModalDefaults, customModalOptions) {
 		
-		var tempModalDefaults = {};
-		var tempModalOptions = {};
+		let tempModalDefaults = {};
+		let tempModalOptions = {};
 
 		// Map angular-ui modal custom defaults to modal defaults defined in service
 		angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);

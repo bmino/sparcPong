@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
-var PlayerChallengeService = require('../services/PlayerChallengeService');
-var TeamChallengeService = require('../services/TeamChallengeService');
+let express = require('express');
+let router = express.Router();
+let PlayerChallengeService = require('../services/PlayerChallengeService');
+let TeamChallengeService = require('../services/TeamChallengeService');
 
 
 /**

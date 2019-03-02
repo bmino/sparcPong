@@ -1,4 +1,4 @@
-var SocketBank = {
+let SocketBank = {
     SOCKETS: {},
 
     getClientCount : getClientCount,
@@ -19,10 +19,10 @@ function getClientCount() {
 }
 
 function getOnlineClientIds() {
-    var uniqueIds = [];
+    let uniqueIds = [];
     Object.keys(this.SOCKETS).forEach(function(socketId) {
-        var socket = SocketBank.SOCKETS[socketId];
-        var userId = socket.userId;
+        let socket = SocketBank.SOCKETS[socketId];
+        let userId = socket.userId;
         if (!userId) return;
         if (uniqueIds.indexOf(userId) < 0) uniqueIds.push(userId);
     });
@@ -50,6 +50,6 @@ function logoffUser(userId, socket) {
 
 
 function attachUserIdToSocket(userId, socket) {
-    var currentSocket = SocketBank.SOCKETS[socket.id];
+    let currentSocket = SocketBank.SOCKETS[socket.id];
     currentSocket.userId = userId;
 }

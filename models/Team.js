@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+let mongoose = require('mongoose');
+let Schema = mongoose.Schema;
 
-var teamSchema = new Schema({
+let teamSchema = new Schema({
 	username: { type: String, required: true, unique: true },
 	leader: { type: Schema.ObjectId, ref: 'Player', required: true },
 	partner: { type: Schema.ObjectId, ref: 'Player', required: false },
@@ -38,7 +38,7 @@ teamSchema.statics.lowestRank = function() {
     return new Promise(function(resolve, reject) {
         Team.find().sort({'rank': -1}).limit(1).exec()
             .then(function (lowestRankTeam) {
-                var lowestRank = 0;
+                let lowestRank = 0;
                 if (lowestRankTeam && lowestRankTeam.length > 0) {
                     lowestRank = lowestRankTeam[0].rank;
                 }
@@ -49,6 +49,6 @@ teamSchema.statics.lowestRank = function() {
     });
 };
 
-var Team = mongoose.model('Team', teamSchema);
+let Team = mongoose.model('Team', teamSchema);
 
 module.exports = Team;

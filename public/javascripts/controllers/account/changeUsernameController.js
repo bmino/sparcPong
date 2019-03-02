@@ -9,7 +9,7 @@ function ChangeUsernameController($scope, jwtService, modalService, playerServic
 	$scope.newUsername = '';
 
 	function init() {
-		var playerId = jwtService.getDecodedToken().playerId;
+		let playerId = jwtService.getDecodedToken().playerId;
 
 		playerService.getPlayer(playerId)
 			.then(populateUsernameField)
@@ -22,7 +22,7 @@ function ChangeUsernameController($scope, jwtService, modalService, playerServic
 	}
 	
 	$scope.validateUsername = function() {
-		var modalOptions;
+		let modalOptions;
 		playerService.changeUsername($scope.newUsername)
 			.then(function(success) {
 				modalOptions = {

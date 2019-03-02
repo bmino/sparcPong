@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var ManualTaskService = require('../services/ManualTaskService');
+let express = require('express');
+let router = express.Router();
+let ManualTaskService = require('../services/ManualTaskService');
 
 
 router.get('/challenge', function(req, res, next) {
@@ -8,7 +8,7 @@ router.get('/challenge', function(req, res, next) {
 
     ManualTaskService.autoChallenge(req)
         .then(function(issued) {
-            var msg = 'Issued ' + issued + ' challenges';
+            let msg = 'Issued ' + issued + ' challenges';
             console.log('[Manual] - ' + msg);
             res.json(msg);
         })
@@ -23,9 +23,9 @@ router.get('/forfeit', function(req, res, next) {
         ManualTaskService.autoForfeitDoubles(req)
     ])
         .then(function(results) {
-            var singlesResults = results[0];
-            var doublesResults = results[1];
-        	var msg = 'Forfeited ' + singlesResults.length + ' challenges (singles) and ' + doublesResults.length + ' challenges (doubles)';
+            let singlesResults = results[0];
+            let doublesResults = results[1];
+        	let msg = 'Forfeited ' + singlesResults.length + ' challenges (singles) and ' + doublesResults.length + ' challenges (doubles)';
         	console.log('[Manual] - ' + msg);
             res.json(msg);
         })
@@ -38,7 +38,7 @@ router.get('/deactivate', function(req, res, next) {
 
     return ManualTaskService.deactivatePlayer(req.query.id, req)
         .then(function() {
-            var msg = 'Deactivated player';
+            let msg = 'Deactivated player';
             console.log('[Manual] - ' + msg);
             res.json(msg);
         })

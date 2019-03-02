@@ -6,14 +6,14 @@ TeamService.$inject = ['$http'];
 
 function TeamService($http) {
 	
-	var service = this;
+	let service = this;
 	
 	// Default Headers
 	$http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
 	
 	
 	service.createTeam = function(username, leaderId, partnerId) {
-		var request = $http({
+		let request = $http({
 			method: "post",
 			url: "api/team/",
 			data: {
@@ -26,7 +26,7 @@ function TeamService($http) {
 	};
 	
 	service.changeTeamUsername = function(teamId, newUsername) {
-		var request = $http({
+		let request = $http({
 			method: "post",
 			url: "api/team/change/username/",
 			data: {
@@ -39,7 +39,7 @@ function TeamService($http) {
 	
 	
 	service.getTeam = function(teamId) {
-		var request = $http({
+		let request = $http({
 			method: "get",
 			url: "api/team/fetch/"+teamId
 		});
@@ -47,7 +47,7 @@ function TeamService($http) {
 	};
 	
 	service.getTeams = function() {
-		var request = $http({
+		let request = $http({
 			method: "get",
 			url: "api/team/"
 		});
@@ -55,7 +55,7 @@ function TeamService($http) {
 	};
 	
 	service.lookupTeams = function(playerId) {
-		var request = $http({
+		let request = $http({
 			method: "get",
 			url: "api/team/fetch/lookup/"+playerId
 		});
@@ -63,7 +63,7 @@ function TeamService($http) {
 	};
 	
 	service.getRecord = function(teamId) {
-		var request = $http({
+		let request = $http({
 			method: "get",
 			url: "api/team/record/"+teamId
 		});

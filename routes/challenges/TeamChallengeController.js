@@ -1,12 +1,12 @@
-var express = require('express');
-var router = express.Router();
-var mongoose = require('mongoose');
-var TeamChallenge = mongoose.model('TeamChallenge');
-var Team = mongoose.model('Team');
-var MailerService = require('../../services/MailerService');
-var ChallengeService = require('../../services/ChallengeService');
-var TeamChallengeService = require('../../services/TeamChallengeService');
-var AuthService = require('../../services/AuthService');
+let express = require('express');
+let router = express.Router();
+let mongoose = require('mongoose');
+let TeamChallenge = mongoose.model('TeamChallenge');
+let Team = mongoose.model('Team');
+let MailerService = require('../../services/MailerService');
+let ChallengeService = require('../../services/ChallengeService');
+let TeamChallengeService = require('../../services/TeamChallengeService');
+let AuthService = require('../../services/AuthService');
 
 /**
  * Issue new challenge.
@@ -14,17 +14,17 @@ var AuthService = require('../../services/AuthService');
  * @param: challengeeId
  */
 router.post('/', function(req, res, next) {
-	var challengeeId = req.body.challengeeId;
-    var clientId = AuthService.verifyToken(req.token).playerId;
+	let challengeeId = req.body.challengeeId;
+    let clientId = AuthService.verifyToken(req.token).playerId;
 
 	// Grabs team info on both challenge participants
-	var challengerTeamsPromise = Team.getTeamsByPlayerId(clientId);
-	var challengeeTeamPromise =	Team.findById(challengeeId).exec();
+	let challengerTeamsPromise = Team.getTeamsByPlayerId(clientId);
+	let challengeeTeamPromise =	Team.findById(challengeeId).exec();
 
 	Promise.all([challengerTeamsPromise, challengeeTeamPromise])
 		.then(function(results) {
-			var playerTeams = results[0];
-			var challengeeTeam = results[1];
+			let playerTeams = results[0];
+			let challengeeTeam = results[1];
 			if (!playerTeams || playerTeams.length === 0) return Promise.reject(new Error('Player must be a member of a team.'));
 			return TeamChallengeService.verifyAllowedToChallenge([playerTeams[0], challengeeTeam]);
 		})
@@ -48,17 +48,17 @@ router.post('/', function(req, res, next) {
  * @param: teamId
  */
 router.get('/:teamId', function(req, res, next) {
-	var teamId = req.params.teamId;
+	let teamId = req.params.teamId;
 
 	if (!teamId) return next(new Error('This is not a valid team.'));
 
-	var resolvedChallenges = TeamChallenge.getResolved(teamId)
+	let resolvedChallenges = TeamChallenge.getResolved(teamId)
 		.then(TeamChallenge.populateTeams);
 
-	var outgoingChallenges = TeamChallenge.getOutgoing(teamId)
+	let outgoingChallenges = TeamChallenge.getOutgoing(teamId)
 		.then(TeamChallenge.populateTeamsAndTeamMembers);
 
-	var incomingChallenges = TeamChallenge.getIncoming(teamId)
+	let incomingChallenges = TeamChallenge.getIncoming(teamId)
 		.then(TeamChallenge.populateTeamsAndTeamMembers);
 
 	Promise.all([resolvedChallenges, outgoingChallenges, incomingChallenges])
@@ -75,8 +75,8 @@ router.get('/:teamId', function(req, res, next) {
  * @param: challengeId
  */
 router.delete('/revoke', function(req, res, next) {
-	var challengeId = req.body.challengeId;
-    var clientId = AuthService.verifyToken(req.token).playerId;
+	let challengeId = req.body.challengeId;
+    let clientId = AuthService.verifyToken(req.token).playerId;
 	
 	if (!challengeId) return next(new Error('This is not a valid challenge id.'));
 
@@ -101,10 +101,10 @@ router.delete('/revoke', function(req, res, next) {
  * @param: challengeeScore
  */
 router.post('/resolve', function(req, res, next) {
-	var challengeId = req.body.challengeId;
-	var challengerScore = req.body.challengerScore;
-	var challengeeScore = req.body.challengeeScore;
-    var clientId = AuthService.verifyToken(req.token).playerId;
+	let challengeId = req.body.challengeId;
+	let challengerScore = req.body.challengerScore;
+	let challengeeScore = req.body.challengeeScore;
+    let clientId = AuthService.verifyToken(req.token).playerId;
 	
 	if (!challengeId) return next(new Error('This is not a valid challenge.'));
 
@@ -133,8 +133,8 @@ router.post('/resolve', function(req, res, next) {
  * @param: challengeId
  */
 router.post('/forfeit', function(req, res, next) {
-	var challengeId = req.body.challengeId;
-    var clientId = AuthService.verifyToken(req.token).playerId;
+	let challengeId = req.body.challengeId;
+    let clientId = AuthService.verifyToken(req.token).playerId;
 
     TeamChallengeService.doForfeit(challengeId, clientId, req)
 		.then(function() {

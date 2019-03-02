@@ -1,14 +1,14 @@
-var express = require('express');
-var router = express.Router();
-var auth = require('../middleware/jwtMiddleware');
-var mongoose = require('mongoose');
-var Player = mongoose.model('Player');
-var Authorization = mongoose.model('Authorization');
-var Challenge = mongoose.model('Challenge');
-var Alert = mongoose.model('Alert');
-var NameService = require('../services/NameService');
-var EmailService = require('../services/EmailService');
-var AuthService = require('../services/AuthService');
+let express = require('express');
+let router = express.Router();
+let auth = require('../middleware/jwtMiddleware');
+let mongoose = require('mongoose');
+let Player = mongoose.model('Player');
+let Authorization = mongoose.model('Authorization');
+let Challenge = mongoose.model('Challenge');
+let Alert = mongoose.model('Alert');
+let NameService = require('../services/NameService');
+let EmailService = require('../services/EmailService');
+let AuthService = require('../services/AuthService');
 
 /**
  * Creates new player
@@ -29,15 +29,15 @@ router.post('/', function(req, res, next) {
 		(req.body.email && typeof req.body.email !== 'string'))
 		return next(new Error('Invalid data type of Player parameters.'));
 	
-	var playerUsername = req.body.username.trim();
-    var playerPassword = req.body.password.trim();
-    var playerFirstName = req.body.firstName.trim();
-	var playerLastName = req.body.lastName.trim();
-	var playerPhone = req.body.phone;
-	var playerEmail = req.body.email.replace(/\s+/g, '');
+	let playerUsername = req.body.username.trim();
+    let playerPassword = req.body.password.trim();
+    let playerFirstName = req.body.firstName.trim();
+	let playerLastName = req.body.lastName.trim();
+	let playerPhone = req.body.phone;
+	let playerEmail = req.body.email.replace(/\s+/g, '');
 
     // Create new player
-    var player = new Player();
+    let player = new Player();
     player.username = playerUsername;
     player.firstName = playerFirstName;
     player.lastName = playerLastName;
@@ -77,8 +77,8 @@ router.post('/', function(req, res, next) {
  * @param: newName
  */
 router.post('/change/username', auth.jwtAuthProtected, function(req, res, next) {
-	var newUsername = req.body.newUsername ? req.body.newUsername.trim() : null;
-    var clientId = AuthService.verifyToken(req.token).playerId;
+	let newUsername = req.body.newUsername ? req.body.newUsername.trim() : null;
+    let clientId = AuthService.verifyToken(req.token).playerId;
 
 	if (!clientId) return next(new Error('You must provide a valid player id.'));
 
@@ -106,9 +106,9 @@ router.post('/change/username', auth.jwtAuthProtected, function(req, res, next) 
  * @param: newPassword
  */
 router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) {
-	var oldPassword = req.body.oldPassword ? req.body.oldPassword.trim() : '';
-    var newPassword = req.body.newPassword ? req.body.newPassword.trim() : '';
-    var clientId = AuthService.verifyToken(req.token).playerId;
+	let oldPassword = req.body.oldPassword ? req.body.oldPassword.trim() : '';
+    let newPassword = req.body.newPassword ? req.body.newPassword.trim() : '';
+    let clientId = AuthService.verifyToken(req.token).playerId;
 
     if (!clientId) return next(new Error('You must provide a valid player id.'));
 
@@ -127,8 +127,8 @@ router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) 
  * @param: newEmail
  */
 router.post('/change/email', auth.jwtAuthProtected, function(req, res, next) {
-	var newEmail = req.body.newEmail ? req.body.newEmail.replace(/\s+/g, '') : null;
-    var clientId = AuthService.verifyToken(req.token).playerId;
+	let newEmail = req.body.newEmail ? req.body.newEmail.replace(/\s+/g, '') : null;
+    let clientId = AuthService.verifyToken(req.token).playerId;
 
 
     if (!clientId) return next(new Error('You must provide a valid player id.'));
@@ -157,7 +157,7 @@ router.post('/change/email', auth.jwtAuthProtected, function(req, res, next) {
  * Removes player email
  */
 router.post('/change/email/remove', auth.jwtAuthProtected, function(req, res, next) {
-    var clientId = AuthService.verifyToken(req.token).playerId;
+    let clientId = AuthService.verifyToken(req.token).playerId;
 
 	if (!clientId) return next(new Error('You must provide a valid player id.'));
 	
@@ -193,7 +193,7 @@ router.get('/', auth.jwtAuthProtected, function(req, res, next) {
  * @param: playerId
  */
 router.get('/fetch/:playerId', auth.jwtAuthProtected, function(req, res, next) {
-	var playerId = req.params.playerId;
+	let playerId = req.params.playerId;
 	if (!playerId) return next(new Error('You must specify a player id.'));
 	
 	Player.findById(playerId).exec()
@@ -211,13 +211,13 @@ router.get('/fetch/:playerId', auth.jwtAuthProtected, function(req, res, next) {
  * @param: playerId
  */
 router.get('/record/:playerId', auth.jwtAuthProtected, function(req, res, next) {
-	var playerId = req.params.playerId;
+	let playerId = req.params.playerId;
 	if (!playerId) return next(new Error('You must specify a player id.'));
 
 	Challenge.getResolved(playerId)
 		.then(function(challenges) {
-			var wins = 0;
-			var losses = 0;
+			let wins = 0;
+			let losses = 0;
             challenges.forEach(function(challenge) {
                 if (challenge.winner.toString() === playerId.toString()) wins++;
                 else losses++;

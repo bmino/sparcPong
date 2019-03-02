@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
-var AuthService = require('../services/AuthService');
-var MailerService = require('../services/MailerService');
+let express = require('express');
+let router = express.Router();
+let AuthService = require('../services/AuthService');
+let MailerService = require('../services/MailerService');
 
 router.post('/password/reset/enable', function(req, res, next) {
-   var playerId = req.body.playerId;
+   let playerId = req.body.playerId;
 
    console.log('Attempting to enable password reset.');
    AuthService.enablePasswordResetByPlayerId(playerId)
@@ -18,8 +18,8 @@ router.post('/password/reset/enable', function(req, res, next) {
 });
 
 router.post('/password/reset/change', function(req, res, next) {
-    var password = req.body.password ? req.body.password.trim() : '';
-    var resetKey = req.body.resetKey;
+    let password = req.body.password ? req.body.password.trim() : '';
+    let resetKey = req.body.resetKey;
 
     console.log('Attempting to reset password.');
     AuthService.resetPasswordByResetKey(password, resetKey)

@@ -36,7 +36,7 @@ function SignUpTeamController($scope, modalService, playerService, teamService) 
     function creationSuccess(response) {
         clearInputs();
         
-        var modalOptions = {
+        let modalOptions = {
             headerText: 'New Team',
             bodyText: response
         };
@@ -44,7 +44,7 @@ function SignUpTeamController($scope, modalService, playerService, teamService) 
     }
 
     function creationError(response) {
-        var modalOptions = {
+        let modalOptions = {
             headerText: 'New Team',
             bodyText: response
         };

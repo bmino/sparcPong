@@ -1,4 +1,4 @@
-var NameService = {
+let NameService = {
     USERNAME_LENGTH_MIN: process.env.USERNAME_LENGTH_MIN || 2,
     USERNAME_LENGTH_MAX: process.env.USERNAME_LENGTH_MAX || 15,
 

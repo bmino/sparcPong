@@ -9,15 +9,15 @@ function ResolvePlayerChallengeController($scope, playerChallengeService, modalS
     $scope.resolve = function(challenge) {
         challenge.challengerScore = challenge.challengeeScore = 0;
 
-        var modalOptions = {
+        let modalOptions = {
             headerText: 'Resolve Challenge',
             bodyText: 'Report how many games each player won.',
             challenge: challenge
         };
         modalService.showScoreModal({}, modalOptions)
             .then(function (result) {
-                var challengerScore = result.challenge.challengerScore;
-                var challengeeScore = result.challenge.challengeeScore;
+                let challengerScore = result.challenge.challengerScore;
+                let challengeeScore = result.challenge.challengeeScore;
 
                 playerChallengeService.resolveChallenge(challenge._id, challengerScore, challengeeScore)
                     .then(function (success) {
@@ -39,7 +39,7 @@ function ResolvePlayerChallengeController($scope, playerChallengeService, modalS
     };
 
     $scope.revoke = function(challenge) {
-        var modalOptions = {
+        let modalOptions = {
             closeButtonText: 'Cancel',
             actionButtonText: 'Revoke Challenge',
             headerText: 'Revoke',
@@ -49,14 +49,14 @@ function ResolvePlayerChallengeController($scope, playerChallengeService, modalS
             .then(function () {
                 playerChallengeService.revokeChallenge(challenge._id)
                     .then(function (success) {
-                        var modalOptions = {
+                        let modalOptions = {
                             headerText: 'Revoke Challenge',
                             bodyText: success
                         };
                         modalService.showAlertModal({}, modalOptions);
                     })
                     .catch(function (error) {
-                        var modalOptions = {
+                        let modalOptions = {
                             headerText: 'Revoke Challenge',
                             bodyText: error
                         };
@@ -67,7 +67,7 @@ function ResolvePlayerChallengeController($scope, playerChallengeService, modalS
     };
 
     $scope.forfeit = function(challenge) {
-        var modalOptions = {
+        let modalOptions = {
             closeButtonText: 'Cancel',
             actionButtonText: 'Forfeit Challenge',
             headerText: 'Forfeit',

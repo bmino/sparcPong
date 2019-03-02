@@ -1,9 +1,9 @@
-var mongoose = require('mongoose');
-var Team = mongoose.model('Team');
-var Challenge = mongoose.model('Challenge');
-var Util = require('./Util');
+let mongoose = require('mongoose');
+let Team = mongoose.model('Team');
+let Challenge = mongoose.model('Challenge');
+let Util = require('./Util');
 
-var ChallengeService = {
+let ChallengeService = {
     TEMP_RANK: -1,
     CHALLENGE_ANYTIME: process.env.CHALLENGE_ANYTIME || false,
     CHALLENGE_BACK_DELAY_HOURS: process.env.CHALLENGE_BACK_DELAY_HOURS === undefined ? 12 : process.env.CHALLENGE_BACK_DELAY_HOURS,
@@ -39,11 +39,11 @@ function verifyReissueTime(challenges) {
     console.log('Verifying enough time has passed before another challenge can be issued.');
     if (!challenges || challenges.length === 0) return Promise.resolve(challenges);
 
-    var mostRecentChallenge = challenges.sort(function (a, b) {
+    let mostRecentChallenge = challenges.sort(function (a, b) {
         return (a.updatedAt > b.updatedAt) ? -1 : 1;
     })[0];
 
-    var reissueTime = Util.addHours(mostRecentChallenge.updatedAt, ChallengeService.CHALLENGE_BACK_DELAY_HOURS);
+    let reissueTime = Util.addHours(mostRecentChallenge.updatedAt, ChallengeService.CHALLENGE_BACK_DELAY_HOURS);
     if (reissueTime < new Date()) return Promise.resolve(challenges);
 
     return Promise.reject(new Error('You must wait at least ' + ChallengeService.CHALLENGE_BACK_DELAY_HOURS + ' hours before re-challenging the same opponent.'));
@@ -57,8 +57,8 @@ function verifyRank(challenger, challengee) {
 
 function verifyTier(challenger, challengee) {
     console.log('Verifying tier limitations');
-    var challengerTier = Util.getTier(challenger.rank);
-    var challengeeTier = Util.getTier(challengee.rank);
+    let challengerTier = Util.getTier(challenger.rank);
+    let challengeeTier = Util.getTier(challengee.rank);
     if (!challengerTier) return Promise.reject(new Error(challenger.username + ' is not in any tier'));
     if (!challengeeTier) return Promise.reject(new Error(challengee.username + ' is not in any tier'));
 
@@ -85,7 +85,7 @@ function verifyChallengeeByPlayerId(entity, playerId, message) {
 
 function swapRanks(entity) {
     console.log('Swapping rankings');
-    var populatedEntity = null;
+    let populatedEntity = null;
     return entity.populate('challenger challengee').execPopulate()
         .then(function(populatedEntityResult) {
             populatedEntity = populatedEntityResult;
@@ -102,7 +102,7 @@ function swapRanks(entity) {
 function setRank(entity, newRank) {
     console.log('Changing rank of ' + entity.username + ' from [' + entity.rank + '] to [' + newRank + ']');
     return new Promise(function (resolve, reject) {
-        var oldRank = entity.rank;
+        let oldRank = entity.rank;
         entity.rank = newRank;
         entity.save()
             .then(function() {return resolve(oldRank);})

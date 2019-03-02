@@ -7,12 +7,12 @@ tier.$inject = [];
 function tier() {
 
 	return function (players, tier) {
-		var tierPlayers = [];
+		let tierPlayers = [];
 		
 		if (!players) return tierPlayers;
 		
 		// Calculate possible ranks for the tier
-		var ranks = getRanks(tier);
+		let ranks = getRanks(tier);
 
 		angular.forEach(players, function(player) {
             angular.forEach(ranks, function(rank) {
@@ -28,9 +28,9 @@ function tier() {
 	}
 	
 	function getRanks(tier) {
-        var ranks = [];
-        var first = (tier * (tier-1) + 2) / 2;
-        for (var r=0; r<tier; r++) {
+        let ranks = [];
+        let first = (tier * (tier-1) + 2) / 2;
+        for (let r=0; r<tier; r++) {
             ranks.push(first+r);
         }
         return ranks;

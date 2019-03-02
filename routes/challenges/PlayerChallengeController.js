@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
-var mongoose = require('mongoose');
-var Challenge = mongoose.model('Challenge');
-var PlayerChallengeService = require('../../services/PlayerChallengeService');
-var AuthService = require('../../services/AuthService');
+let express = require('express');
+let router = express.Router();
+let mongoose = require('mongoose');
+let Challenge = mongoose.model('Challenge');
+let PlayerChallengeService = require('../../services/PlayerChallengeService');
+let AuthService = require('../../services/AuthService');
 
 
 /**
@@ -11,8 +11,8 @@ var AuthService = require('../../services/AuthService');
  * @param: challengeeId
  */
 router.post('/', function(req, res, next) {
-    var challengeeId = req.body.challengeeId;
-	var clientId = AuthService.verifyToken(req.token).playerId;
+    let challengeeId = req.body.challengeeId;
+	let clientId = AuthService.verifyToken(req.token).playerId;
 
 	PlayerChallengeService.doChallenge(challengeeId, clientId, req)
 		.then(function() {
@@ -26,16 +26,16 @@ router.post('/', function(req, res, next) {
  * Get all challenges involving a player.
  */
 router.get('/:playerId', function(req, res, next) {
-	var playerId = req.params.playerId;
+	let playerId = req.params.playerId;
 	if (!playerId) return next(new Error('This is not a valid player.'));
 
-	var resolvedChallenges = Challenge.getResolved(playerId)
+	let resolvedChallenges = Challenge.getResolved(playerId)
 		.then(Challenge.populatePlayers);
 
-	var outgoingChallenges = Challenge.getOutgoing(playerId)
+	let outgoingChallenges = Challenge.getOutgoing(playerId)
 		.then(Challenge.populatePlayers);
 
-	var incomingChallenges = Challenge.getIncoming(playerId)
+	let incomingChallenges = Challenge.getIncoming(playerId)
 		.then(Challenge.populatePlayers);
 
     Promise.all([resolvedChallenges, outgoingChallenges, incomingChallenges])
@@ -52,8 +52,8 @@ router.get('/:playerId', function(req, res, next) {
  * @param: challengeId
  */
 router.delete('/revoke', function(req, res, next) {
-	var challengeId = req.body.challengeId;
-    var clientId = AuthService.verifyToken(req.token).playerId;
+	let challengeId = req.body.challengeId;
+    let clientId = AuthService.verifyToken(req.token).playerId;
 
     PlayerChallengeService.doRevoke(challengeId, clientId, req)
 		.then(function() {
@@ -69,10 +69,10 @@ router.delete('/revoke', function(req, res, next) {
  * @param: challengeeScore
  */
 router.post('/resolve', function(req, res, next) {
-	var challengeId = req.body.challengeId;
-	var challengerScore = req.body.challengerScore;
-	var challengeeScore = req.body.challengeeScore;
-    var clientId = AuthService.verifyToken(req.token).playerId;
+	let challengeId = req.body.challengeId;
+	let challengerScore = req.body.challengerScore;
+	let challengeeScore = req.body.challengeeScore;
+    let clientId = AuthService.verifyToken(req.token).playerId;
 
 	PlayerChallengeService.doResolve(challengeId, challengerScore, challengeeScore, clientId, req)
 		.then(function() {
@@ -86,8 +86,8 @@ router.post('/resolve', function(req, res, next) {
  * @param: challengeId
  */
 router.post('/forfeit', function(req, res, next) {
-	var challengeId = req.body.challengeId;
-    var clientId = AuthService.verifyToken(req.token).playerId;
+	let challengeId = req.body.challengeId;
+    let clientId = AuthService.verifyToken(req.token).playerId;
 
 	PlayerChallengeService.doForfeit(challengeId, clientId, req)
         .then(function() {

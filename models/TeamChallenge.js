@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var Util = require('../services/Util');
+let mongoose = require('mongoose');
+let Schema = mongoose.Schema;
+let Util = require('../services/Util');
 
-var teamChallengeSchema = new Schema({
+let teamChallengeSchema = new Schema({
 	challenger: { type: Schema.ObjectId, ref: 'Team', required: true },
 	challengee: { type: Schema.ObjectId, ref: 'Team', required: true },
 	winner: { type: Schema.ObjectId, ref: 'Team', default: null },
@@ -32,7 +32,7 @@ teamChallengeSchema.methods.setScore = function(challengerScore, challengeeScore
 };
 
 teamChallengeSchema.statics.createByTeams = function(teams) {
-    var challenge = new TeamChallenge();
+    let challenge = new TeamChallenge();
     challenge.challenger = teams[0]._id;
     challenge.challengee = teams[1]._id;
     return challenge.save();
@@ -67,7 +67,7 @@ teamChallengeSchema.statics.getAllExpired = function() {
     return TeamChallenge.find({winner: null}).populate('challenger challengee').exec()
         .then(function(challenges) {
             return challenges.filter(function(challenge) {
-                var expirationDate = Util.addBusinessDays(challenge.createdAt, process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5);
+                let expirationDate = Util.addBusinessDays(challenge.createdAt, process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5);
                 return expirationDate < new Date();
             });
         });
@@ -82,7 +82,7 @@ teamChallengeSchema.statics.getIncoming = function(teamId) {
 };
 
 teamChallengeSchema.statics.populateById = function(teamChallengeId, populateAlerts) {
-    var population = {
+    let population = {
         path: 'challenger challengee',
         populate: {
             path: 'leader partner',
@@ -110,6 +110,6 @@ teamChallengeSchema.statics.removeByDocument = function(teamChallenge) {
     return teamChallenge.remove();
 };
 
-var TeamChallenge = mongoose.model('TeamChallenge', teamChallengeSchema);
+let TeamChallenge = mongoose.model('TeamChallenge', teamChallengeSchema);
 
 module.exports = TeamChallenge;

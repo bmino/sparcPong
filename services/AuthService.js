@@ -1,10 +1,10 @@
-var mongoose = require('mongoose');
-var Authorization = mongoose.model('Authorization');
-var Player = mongoose.model('Player');
-var Util = require('./Util');
-var jwt = require('jsonwebtoken');
+let mongoose = require('mongoose');
+let Authorization = mongoose.model('Authorization');
+let Player = mongoose.model('Player');
+let Util = require('./Util');
+let jwt = require('jsonwebtoken');
 
-var AuthService = {
+let AuthService = {
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
     JWT_AUTH_HEADER_PREFIX: process.env.JWT_AUTH_HEADER_PREFIX || 'JWT',
     JWT_ALGORITHM: process.env.JWT_ALGORITHM || 'HS256',
@@ -58,16 +58,16 @@ function flash(token) {
 function createToken(playerId) {
     console.log('Attempting to create token for ' + playerId);
     return new Promise(function(resolve, reject) {
-        var payload = {
+        let payload = {
             playerId: playerId,
             iat: new Date().getTime()
         };
-        var options = {
+        let options = {
             algorithm: AuthService.JWT_ALGORITHM,
             expiresIn: AuthService.JWT_EXPIRATION_DAYS + 'd'
         };
         try {
-            var token = jwt.sign(payload, AuthService.JWT_SECRET_KEY, options);
+            let token = jwt.sign(payload, AuthService.JWT_SECRET_KEY, options);
             console.log('Successfully created a token');
             return resolve(token);
         } catch (err) {
@@ -94,7 +94,7 @@ function enablePasswordResetByPlayerId(playerId) {
                 if (!auth) return reject(new Error('Could not find an authentication record for this player.'));
                 if (!auth.getResetDate()) return auth.enablePasswordReset();
 
-                var previousResetExpiration = Util.addHours(new Date(auth.getResetDate()), AuthService.PASSWORD_RESET_REPEAT_HOURS);
+                let previousResetExpiration = Util.addHours(new Date(auth.getResetDate()), AuthService.PASSWORD_RESET_REPEAT_HOURS);
                 if (previousResetExpiration > new Date()) {
                     return reject(new Error('Cannot reset passwords multiple times within ' + AuthService.PASSWORD_RESET_REPEAT_HOURS + ' hours.'));
                 }
@@ -118,7 +118,7 @@ function resetPasswordByResetKey(password, resetKey) {
                 if (auth.getResetKey() !== resetKey) return reject(new Error('Invalid password reset key.'));
                 if (!auth.getResetDate()) return auth.setPassword(password);
 
-                var resetWindowExpiration = Util.addMinutes(auth.getResetDate(), AuthService.PASSWORD_RESET_WINDOW_MINUTES);
+                let resetWindowExpiration = Util.addMinutes(auth.getResetDate(), AuthService.PASSWORD_RESET_WINDOW_MINUTES);
                 if (resetWindowExpiration < new Date()) {
                     return reject(new Error('Passwords can only be reset within a ' + AuthService.PASSWORD_RESET_WINDOW_MINUTES + ' minute window.'));
                 }
@@ -164,7 +164,7 @@ function validateCredentials(playerId, password) {
 function validateTokenCredentials(token) {
     console.log('Validating credentials via existing token.');
     return new Promise(function(resolve, reject) {
-        var payload = AuthService.verifyToken(token);
+        let payload = AuthService.verifyToken(token);
         if (!payload) return reject(new Error('Invalid token credential.'));
         return resolve(payload);
     });
@@ -188,8 +188,8 @@ function getLogins() {
 }
 
 function maskEmail(email) {
-    var emailParts = email.split('@');
-    var maskedName = '';
+    let emailParts = email.split('@');
+    let maskedName = '';
     emailParts[0].split('').forEach(function(letter, index) {
         maskedName += (index % 2 === 0 ? letter : '*');
     });

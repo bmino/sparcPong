@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var Util = require('../services/Util');
+let mongoose = require('mongoose');
+let Schema = mongoose.Schema;
+let Util = require('../services/Util');
 
-var challengeSchema = new Schema({
+let challengeSchema = new Schema({
 	challenger: { type: Schema.ObjectId, ref: 'Player', required: true },
 	challengee: { type: Schema.ObjectId, ref: 'Player', required: true },
 	winner: { type: Schema.ObjectId, ref: 'Player', default: null },
@@ -33,7 +33,7 @@ challengeSchema.methods.setScore = function(challengerScore, challengeeScore) {
 
 challengeSchema.statics.createByPlayers = function(players) {
     console.log('Creating new challenge between ' + players[0].username + ' and ' + players[1].username);
-    var challenge = new Challenge();
+    let challenge = new Challenge();
     challenge.challenger = players[0]._id;
     challenge.challengee = players[1]._id;
     return challenge.save();
@@ -84,14 +84,14 @@ challengeSchema.statics.getAllExpired = function() {
     return Challenge.find({winner: null}).exec()
         .then(function(challenges) {
             return challenges.filter(function(challenge) {
-                var expirationDate = Util.addBusinessDays(challenge.createdAt, process.env.ALLOWED_CHALLENGE_DAYS || 4);
+                let expirationDate = Util.addBusinessDays(challenge.createdAt, process.env.ALLOWED_CHALLENGE_DAYS || 4);
                 return expirationDate < new Date();
             });
         });
 };
 
 challengeSchema.statics.populateById = function(challengeId, populateAlerts) {
-    var population = {
+    let population = {
         path: 'challenger challengee',
         populate: {
             path: ''
@@ -109,6 +109,6 @@ challengeSchema.statics.removeByDocument = function(challenge) {
     return challenge.remove();
 };
 
-var Challenge = mongoose.model('Challenge', challengeSchema);
+let Challenge = mongoose.model('Challenge', challengeSchema);
 
 module.exports = Challenge;

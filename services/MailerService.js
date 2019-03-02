@@ -1,15 +1,15 @@
-var mongoose = require('mongoose');
-var Challenge = mongoose.model('Challenge');
-var TeamChallenge = mongoose.model('TeamChallenge');
-var Player = mongoose.model('Player');
-var Team = mongoose.model('Team');
-var Authorization = mongoose.model('Authorization');
+let mongoose = require('mongoose');
+let Challenge = mongoose.model('Challenge');
+let TeamChallenge = mongoose.model('TeamChallenge');
+let Player = mongoose.model('Player');
+let Team = mongoose.model('Team');
+let Authorization = mongoose.model('Authorization');
 
-var nodemailer = require('nodemailer');
-var xoauth2 = require('xoauth2');
+let nodemailer = require('nodemailer');
+let xoauth2 = require('xoauth2');
 
 
-var MailerService = {
+let MailerService = {
     EMAIL_TITLE: process.env.EMAIL_TITLE || 'Sparc Pong',
 
     newTeamChallenge : newTeamChallenge,
@@ -47,8 +47,8 @@ function newTeamChallenge(teamChallengeId) {
 
     TeamChallenge.populateById(teamChallengeId, true)
         .then(function(challenge) {
-            var challenger = challenge.challenger;
-            var challengee = challenge.challengee;
+            let challenger = challenge.challenger;
+            let challengee = challenge.challengee;
             if (challengee.leader.email && challengee.leader.alerts.team.challenged) {
                 sendEmail('Doubles Challenge', 'Your team has been challenged by "'+ challenger.username +'." Log in at ' + process.env.LADDER_URL + ' to deal with those scrubs!', challengee.leader.email);
             }
@@ -62,20 +62,20 @@ function newTeamChallenge(teamChallengeId) {
 function revokedTeamChallenge(teamChallengerId, teamChallengeeId) {
     console.log('Checking email permissions for a revoked team challenge');
 
-    var challengerPromise = Team.findById(teamChallengerId).exec();
-    var challengeePromise = Team.findById(teamChallengeeId).exec();
-    var challengeeLeaderPromise = challengeePromise.then(function(challengee) {
+    let challengerPromise = Team.findById(teamChallengerId).exec();
+    let challengeePromise = Team.findById(teamChallengeeId).exec();
+    let challengeeLeaderPromise = challengeePromise.then(function(challengee) {
         return Player.findById(challengee.leader).populate('alerts').exec();
     });
-    var challengeePartnerPromise = challengeePromise.then(function(challengee) {
+    let challengeePartnerPromise = challengeePromise.then(function(challengee) {
         return Player.findById(challengee.partner).populate('alerts').exec();
     });
 
     Promise.all([challengeeLeaderPromise, challengeePartnerPromise, challengerPromise])
         .then(function(values) {
-            var leader = values[0];
-            var partner = values[1];
-            var challengerTeam = values[2];
+            let leader = values[0];
+            let partner = values[1];
+            let challengerTeam = values[2];
 
             if (leader.email && leader.alerts.team.revoked) {
                 sendEmail('Revoked Doubles Challenge', '"'+ challengerTeam.username +'" got scared and revoked a challenge against you.', leader.email);
@@ -92,12 +92,12 @@ function resolvedTeamChallenge(teamChallengeId) {
 
     TeamChallenge.populateById(teamChallengeId, true)
         .then(function(teamChallenge) {
-            var winner = teamChallenge.getWinner();
-            var loser = teamChallenge.getLoser();
-            var loserLeader = loser.leader;
-            var loserPartner = loser.partner;
-            var winnerLeader = winner.leader;
-            var winnerPartner = winner.partner;
+            let winner = teamChallenge.getWinner();
+            let loser = teamChallenge.getLoser();
+            let loserLeader = loser.leader;
+            let loserPartner = loser.partner;
+            let winnerLeader = winner.leader;
+            let winnerPartner = winner.partner;
 
             if (loserLeader.email && loserLeader.alerts.team.resolved) {
                 sendEmail('Resolved Doubles Challenge', 'Welp, stuff happens. It looks like "'+ winner.username +'" really laid the smack on your team. Log in at ' + process.env.LADDER_URL + ' and pick an easier team.', loserLeader.email);
@@ -151,8 +151,8 @@ function revokedChallenge(challengerId, challengeeId) {
         Player.findById(challengeeId).populate('alerts').exec()
     ])
         .then(function(players) {
-            var challenger = players[0];
-            var challengee = players[1];
+            let challenger = players[0];
+            let challengee = players[1];
             if (challengee.email && challengee.alerts.revoked) {
                 sendEmail('Revoked Challenge', challenger.username + ' got scared and revoked a challenge against you.', challengee.email);
             }
@@ -165,8 +165,8 @@ function resolvedChallenge(challengeId) {
 
     Challenge.populateById(challengeId, true)
         .then(function(challenge) {
-            var loser = challenge.getLoser();
-            var winner = challenge.getWinner();
+            let loser = challenge.getLoser();
+            let winner = challenge.getWinner();
 
             if (loser.email && loser.alerts.resolved) {
                 sendEmail('Resolved Challenge', 'Welp, stuff happens. It looks like '+ winner.username +' really laid the smack on ya. Log in at ' + process.env.LADDER_URL + ' and pick an easier opponent.', loser.email);
@@ -225,7 +225,7 @@ function sendEmail(subject, message, address) {
     console.log('Trying to send "' + subject + '" email to ' + address);
 
     return new Promise(function(resolve, reject) {
-        var mailOptions = {
+        let mailOptions = {
             to: address,
             from: MailerService.EMAIL_TITLE +' <'+ process.env.EMAIL_ADDRESS +'>',
             subject: subject,

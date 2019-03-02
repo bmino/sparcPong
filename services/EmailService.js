@@ -1,4 +1,4 @@
-var EmailService = {
+let EmailService = {
 
     verifyEmail : verifyEmail
 

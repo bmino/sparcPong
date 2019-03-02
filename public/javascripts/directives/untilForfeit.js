@@ -15,9 +15,9 @@ function untilForfeit(timeService) {
 		},
 		link: function(scope, elem, attrs) {
 
-			var initialDate, expireDate;
+			let initialDate, expireDate;
 
-			var daysPromise = angular.isDefined(scope.doubles) ?
+			let daysPromise = angular.isDefined(scope.doubles) ?
 				timeService.getAllowedChallengeDaysTeam() :
 				timeService.getAllowedChallengeDays();
 
@@ -33,7 +33,7 @@ function untilForfeit(timeService) {
 			}
 
             function updateTime() {
-                var remaining = timeService.timeBetween(new Date(), expireDate);
+                let remaining = timeService.timeBetween(new Date(), expireDate);
                 elem.text('[' + remaining + ']');
             }
 

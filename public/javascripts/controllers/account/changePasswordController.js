@@ -15,7 +15,7 @@ function ChangePasswordController($scope, modalService, playerService) {
 	}
 	
 	$scope.validatePassword = function() {
-        var modalOptions;
+        let modalOptions;
 
 		if ($scope.newPassword !== $scope.newPasswordConfirm) {
             modalOptions = {
