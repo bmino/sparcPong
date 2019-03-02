@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-let alertSchema = new Schema({
+const alertSchema = new Schema({
 	challenged: { type: Boolean, default: true },
 	revoked: { type: Boolean, default: false },
 	resolved: { type: Boolean, default: false },
@@ -23,6 +23,6 @@ alertSchema.statics.attachToPlayer = function(player) {
 		});
 };
 
-let Alert = mongoose.model('Alert', alertSchema);
+const Alert = mongoose.model('Alert', alertSchema);
 
 module.exports = Alert;

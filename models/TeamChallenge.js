@@ -110,6 +110,6 @@ teamChallengeSchema.statics.removeByDocument = function(teamChallenge) {
     return teamChallenge.remove();
 };
 
-let TeamChallenge = mongoose.model('TeamChallenge', teamChallengeSchema);
+const TeamChallenge = mongoose.model('TeamChallenge', teamChallengeSchema);
 
 module.exports = TeamChallenge;

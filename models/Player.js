@@ -61,6 +61,6 @@ playerSchema.statics.lowestRank = function() {
     });
 };
 
-let Player = mongoose.model('Player', playerSchema);
+const Player = mongoose.model('Player', playerSchema);
 
 module.exports = Player;

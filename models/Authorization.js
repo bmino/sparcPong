@@ -60,6 +60,6 @@ authorizationSchema.statics.findByPlayerId = function(playerId) {
 	return Authorization.findOne({user: playerId}).populate('user').exec();
 };
 
-let Authorization = mongoose.model('Authorization', authorizationSchema);
+const Authorization = mongoose.model('Authorization', authorizationSchema);
 
 module.exports = Authorization;

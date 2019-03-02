@@ -109,6 +109,6 @@ challengeSchema.statics.removeByDocument = function(challenge) {
     return challenge.remove();
 };
 
-let Challenge = mongoose.model('Challenge', challengeSchema);
+const Challenge = mongoose.model('Challenge', challengeSchema);
 
 module.exports = Challenge;
