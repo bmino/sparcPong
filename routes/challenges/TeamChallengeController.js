@@ -1,12 +1,12 @@
-let express = require('express');
-let router = express.Router();
-let mongoose = require('mongoose');
-let TeamChallenge = mongoose.model('TeamChallenge');
-let Team = mongoose.model('Team');
-let MailerService = require('../../services/MailerService');
-let ChallengeService = require('../../services/ChallengeService');
-let TeamChallengeService = require('../../services/TeamChallengeService');
-let AuthService = require('../../services/AuthService');
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
+const TeamChallenge = mongoose.model('TeamChallenge');
+const Team = mongoose.model('Team');
+const MailerService = require('../../services/MailerService');
+const ChallengeService = require('../../services/ChallengeService');
+const TeamChallengeService = require('../../services/TeamChallengeService');
+const AuthService = require('../../services/AuthService');
 
 /**
  * Issue new challenge.

@@ -1,12 +1,12 @@
-let mongoose = require('mongoose');
-let Challenge = mongoose.model('Challenge');
-let TeamChallenge = mongoose.model('TeamChallenge');
-let Player = mongoose.model('Player');
-let Team = mongoose.model('Team');
-let Authorization = mongoose.model('Authorization');
+const mongoose = require('mongoose');
+const Challenge = mongoose.model('Challenge');
+const TeamChallenge = mongoose.model('TeamChallenge');
+const Player = mongoose.model('Player');
+const Team = mongoose.model('Team');
+const Authorization = mongoose.model('Authorization');
 
-let nodemailer = require('nodemailer');
-let xoauth2 = require('xoauth2');
+const nodemailer = require('nodemailer');
+const xoauth2 = require('xoauth2');
 
 
 let MailerService = {

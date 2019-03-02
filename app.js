@@ -1,20 +1,20 @@
 require('dotenv').config({path: 'config/application.env'});
-let express = require('express');
-let app = express();
-let server = require('http').createServer(app);
-let io = require('socket.io')(server);
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 app.io = io;
 if (!process.env.PORT) process.env.PORT = 3000;
 server.listen(process.env.PORT, () => {
     console.log(`Server is listening on port ${process.env.PORT}`);
 });
-let path = require('path');
-let favicon = require('serve-favicon');
-let morgan = require('morgan');
-let bodyParser = require('body-parser');
+const path = require('path');
+const favicon = require('serve-favicon');
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
 
 // Mongo
-let mongoose = require('mongoose');
+const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 require('./models/Authorization');
@@ -47,7 +47,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
 // JWT Security
-let auth = require('./middleware/jwtMiddleware');
+const auth = require('./middleware/jwtMiddleware');
 app.use(['/api/team/*', '/api/challenge/*', '/api/playerAlerts/*', '/api/envBridge/*'], auth.jwtAuthProtected);
 
 app.use('/',								require('./routes/EjsViewController'));
@@ -76,8 +76,8 @@ app.use(function(err, req, res, next) {
 
 
 
-let SocketBank = require('./singletons/SocketBank');
-let AuthService = require('./services/AuthService');
+const SocketBank = require('./singletons/SocketBank');
+const AuthService = require('./services/AuthService');
 
 // Socket Events
 io.on('connection', function(socket) {

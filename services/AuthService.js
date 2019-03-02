@@ -1,8 +1,8 @@
-let mongoose = require('mongoose');
-let Authorization = mongoose.model('Authorization');
-let Player = mongoose.model('Player');
-let Util = require('./Util');
-let jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+const Authorization = mongoose.model('Authorization');
+const Player = mongoose.model('Player');
+const Util = require('./Util');
+const jwt = require('jsonwebtoken');
 
 let AuthService = {
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,

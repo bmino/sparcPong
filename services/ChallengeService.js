@@ -1,7 +1,4 @@
-let mongoose = require('mongoose');
-let Team = mongoose.model('Team');
-let Challenge = mongoose.model('Challenge');
-let Util = require('./Util');
+const Util = require('./Util');
 
 let ChallengeService = {
     TEMP_RANK: -1,

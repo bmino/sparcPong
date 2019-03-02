@@ -1,7 +1,7 @@
-let mongoose = require('mongoose');
-let Schema = mongoose.Schema;
-let bcrypt = require('bcrypt');
-let uuid = require('uuid');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const bcrypt = require('bcrypt');
+const uuid = require('uuid');
 
 let authorizationSchema = new Schema({
 	user: { type: Schema.ObjectId, ref: 'Player', required: true },

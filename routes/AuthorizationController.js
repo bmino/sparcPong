@@ -1,7 +1,7 @@
-let express = require('express');
-let router = express.Router();
-let AuthService = require('../services/AuthService');
-let MailerService = require('../services/MailerService');
+const express = require('express');
+const router = express.Router();
+const AuthService = require('../services/AuthService');
+const MailerService = require('../services/MailerService');
 
 router.post('/password/reset/enable', function(req, res, next) {
    let playerId = req.body.playerId;

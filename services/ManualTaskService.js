@@ -1,10 +1,10 @@
-let mongoose = require('mongoose');
-let Player = mongoose.model('Player');
-let Challenge = mongoose.model('Challenge');
-let TeamChallenge = mongoose.model('TeamChallenge');
-let PlayerChallengeService = require('./PlayerChallengeService');
-let TeamChallengeService = require('./TeamChallengeService');
-let MailerService = require('./MailerService');
+const mongoose = require('mongoose');
+const Player = mongoose.model('Player');
+const Challenge = mongoose.model('Challenge');
+const TeamChallenge = mongoose.model('TeamChallenge');
+const PlayerChallengeService = require('./PlayerChallengeService');
+const TeamChallengeService = require('./TeamChallengeService');
+const MailerService = require('./MailerService');
 
 let ManualTaskService = {
 

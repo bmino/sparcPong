@@ -1,8 +1,8 @@
-let express = require('express');
-let router = express.Router();
-let mongoose = require('mongoose');
-let Player = mongoose.model('Player');
-let AuthService = require('../services/AuthService');
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
+const Player = mongoose.model('Player');
+const AuthService = require('../services/AuthService');
 
 
 /**

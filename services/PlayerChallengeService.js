@@ -1,9 +1,9 @@
-let mongoose = require('mongoose');
-let Player = mongoose.model('Player');
-let Challenge = mongoose.model('Challenge');
-let ChallengeService = require('./ChallengeService');
-let MailerService = require('./MailerService');
-let Util = require('./Util');
+const mongoose = require('mongoose');
+const Player = mongoose.model('Player');
+const Challenge = mongoose.model('Challenge');
+const ChallengeService = require('./ChallengeService');
+const MailerService = require('./MailerService');
+const Util = require('./Util');
 
 let PlayerChallengeService = {
     ALLOWED_CHALLENGE_DAYS: process.env.ALLOWED_CHALLENGE_DAYS || 4,

@@ -1,14 +1,14 @@
-let express = require('express');
-let router = express.Router();
-let auth = require('../middleware/jwtMiddleware');
-let mongoose = require('mongoose');
-let Player = mongoose.model('Player');
-let Authorization = mongoose.model('Authorization');
-let Challenge = mongoose.model('Challenge');
-let Alert = mongoose.model('Alert');
-let NameService = require('../services/NameService');
-let EmailService = require('../services/EmailService');
-let AuthService = require('../services/AuthService');
+const express = require('express');
+const router = express.Router();
+const auth = require('../middleware/jwtMiddleware');
+const mongoose = require('mongoose');
+const Player = mongoose.model('Player');
+const Authorization = mongoose.model('Authorization');
+const Challenge = mongoose.model('Challenge');
+const Alert = mongoose.model('Alert');
+const NameService = require('../services/NameService');
+const EmailService = require('../services/EmailService');
+const AuthService = require('../services/AuthService');
 
 /**
  * Creates new player

@@ -1,6 +1,6 @@
-let mongoose = require('mongoose');
-let Player = mongoose.model('Player');
-let Team = mongoose.model('Team');
+const mongoose = require('mongoose');
+const Player = mongoose.model('Player');
+const Team = mongoose.model('Team');
 
 let TeamService = {
     PLAYER_TEAMS_MAX: 1,

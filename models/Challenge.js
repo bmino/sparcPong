@@ -1,6 +1,6 @@
-let mongoose = require('mongoose');
-let Schema = mongoose.Schema;
-let Util = require('../services/Util');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const Util = require('../services/Util');
 
 let challengeSchema = new Schema({
 	challenger: { type: Schema.ObjectId, ref: 'Player', required: true },

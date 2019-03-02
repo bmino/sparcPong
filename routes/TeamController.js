@@ -1,11 +1,11 @@
-let express = require('express');
-let router = express.Router();
-let mongoose = require('mongoose');
-let Player = mongoose.model('Player');
-let Team = mongoose.model('Team');
-let TeamChallenge = mongoose.model('TeamChallenge');
-let NameService = require('../services/NameService');
-let TeamService = require('../services/TeamService');
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
+const Player = mongoose.model('Player');
+const Team = mongoose.model('Team');
+const TeamChallenge = mongoose.model('TeamChallenge');
+const NameService = require('../services/NameService');
+const TeamService = require('../services/TeamService');
 
 /**
  * Create new team

@@ -1,6 +1,6 @@
-let express = require('express');
-let router = express.Router();
-let ManualTaskService = require('../services/ManualTaskService');
+const express = require('express');
+const router = express.Router();
+const ManualTaskService = require('../services/ManualTaskService');
 
 
 router.get('/challenge', function(req, res, next) {

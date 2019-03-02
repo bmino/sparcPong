@@ -1,9 +1,9 @@
-let express = require('express');
-let router = express.Router();
-let mongoose = require('mongoose');
-let Challenge = mongoose.model('Challenge');
-let PlayerChallengeService = require('../../services/PlayerChallengeService');
-let AuthService = require('../../services/AuthService');
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
+const Challenge = mongoose.model('Challenge');
+const PlayerChallengeService = require('../../services/PlayerChallengeService');
+const AuthService = require('../../services/AuthService');
 
 
 /**

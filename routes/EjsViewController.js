@@ -1,6 +1,6 @@
-let express = require('express');
-let router = express.Router();
-let version = require('../package.json').version;
+const express = require('express');
+const router = express.Router();
+const version = require('../package.json').version;
 
 /**
  * Get home page

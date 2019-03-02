@@ -1,8 +1,8 @@
-let jwt = require('jsonwebtoken');
-let AuthService = require('../services/AuthService');
-let jwtSecret = AuthService.JWT_SECRET_KEY;
-let jwtAuthHeaderPrefix = AuthService.JWT_AUTH_HEADER_PREFIX;
-let jwtValidBeginningTime = AuthService.JWT_REJECT_IAT_BEFORE;
+const jwt = require('jsonwebtoken');
+const AuthService = require('../services/AuthService');
+const jwtSecret = AuthService.JWT_SECRET_KEY;
+const jwtAuthHeaderPrefix = AuthService.JWT_AUTH_HEADER_PREFIX;
+const jwtValidBeginningTime = AuthService.JWT_REJECT_IAT_BEFORE;
 
 /**
  * Ensures that a request has supplied an authorization header.
