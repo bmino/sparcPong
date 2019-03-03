@@ -3,13 +3,9 @@ const router = express.Router();
 const auth = require('../middleware/jwtMiddleware');
 const mongoose = require('mongoose');
 const Player = mongoose.model('Player');
-const Authorization = mongoose.model('Authorization');
 const Challenge = mongoose.model('Challenge');
-const Alert = mongoose.model('Alert');
-const NameService = require('../services/NameService');
-const EmailService = require('../services/EmailService');
+const PlayerService = require('../services/PlayerService');
 const AuthService = require('../services/AuthService');
-const SocketService = require('../services/SocketService');
 
 /**
  * Creates new player
@@ -35,38 +31,10 @@ router.post('/', function(req, res, next) {
     let playerFirstName = req.body.firstName.trim();
     let playerLastName = req.body.lastName.trim();
     let playerPhone = req.body.phone;
-    let playerEmail = req.body.email.replace(/\s+/g, '');
+    let playerEmail = req.body.email.trim();
 
-    // Create new player
-    let player = new Player();
-    player.username = playerUsername;
-    player.firstName = playerFirstName;
-    player.lastName = playerLastName;
-    player.phone = playerPhone;
-    player.email = playerEmail;
-
-
-    Promise.all([
-        AuthService.validatePasswordStrength(playerPassword),
-        NameService.verifyRealName(playerFirstName, playerLastName),
-        NameService.verifyUsername(playerUsername),
-        Player.usernameExists(playerUsername),
-        EmailService.verifyEmail(playerEmail),
-        Player.emailExists(playerEmail),
-        Player.lowestRank()
-    ])
-        .then(function(values) {
-            // Set initial rank and persist player
-            player.rank = values[6] + 1;
-            return player.save();
-        })
-        .then(Alert.attachToPlayer)
-        .then(function(createdPlayer) {
-            return Authorization.attachToPlayerWithPassword(createdPlayer, playerPassword)
-        })
+    PlayerService.createPlayer(playerUsername, playerPassword, playerFirstName, playerLastName, playerPhone, playerEmail)
         .then(function() {
-            SocketService.IO.sockets.emit('player:new', playerUsername);
-            console.log('Successfully created a new player.');
             res.json({message: 'Player created!'});
         })
         .catch(next);
@@ -83,18 +51,8 @@ router.post('/change/username', auth.jwtAuthProtected, function(req, res, next) 
 
     if (!clientId) return next(new Error('You must provide a valid player id.'));
 
-    NameService.verifyUsername(newUsername)
-        .then(Player.usernameExists)
+    PlayerService.changeUsername(newUsername, clientId)
         .then(function() {
-            return Player.findById(clientId).exec()
-        })
-        .then(function(player) {
-            if (!player) return Promise.reject(new Error('Could not find your account.'));
-            player.username = newUsername;
-            return player.save();
-        })
-        .then(function() {
-            SocketService.IO.sockets.emit('player:change:username');
             res.json({message: `Successfully changed your username to ${newUsername}`});
         })
         .catch(next);
@@ -111,11 +69,8 @@ router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) 
     let newPassword = req.body.newPassword ? req.body.newPassword.trim() : '';
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-    if (!clientId) return next(new Error('You must provide a valid player id.'));
-
-    AuthService.resetPasswordByExistingPassword(newPassword, oldPassword, clientId)
+    PlayerService.changePassword(oldPassword, newPassword, clientId)
         .then(function() {
-            SocketService.IO.sockets.emit('player:change:password');
             res.json({message: 'Successfully changed your password'});
         })
         .catch(next);
@@ -128,27 +83,11 @@ router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) 
  * @param: newEmail
  */
 router.post('/change/email', auth.jwtAuthProtected, function(req, res, next) {
-    let newEmail = req.body.newEmail ? req.body.newEmail.replace(/\s+/g, '') : null;
+    let newEmail = req.body.newEmail ? req.body.newEmail.trim() : null;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-
-    if (!clientId) return next(new Error('You must provide a valid player id.'));
-    if (!newEmail || newEmail.length === 0) return next(new Error('You must provide an email address.'));
-    if (newEmail.length > 50) return next(new Error('Your email length cannot exceed 50 characters.'));
-
-    EmailService.verifyEmail(newEmail)
-        .then(Player.emailExists)
+    PlayerService.changeEmail(newEmail, clientId)
         .then(function() {
-            return Player.findById(clientId).exec();
-        })
-        .then(function(player) {
-            if (!player) return Promise.reject(new Error('Could not find your current account.'));
-            console.log('Changing player email.');
-            player.email = newEmail;
-            return player.save();
-        })
-        .then(function() {
-            SocketService.IO.sockets.emit('player:change:email');
             res.json({message: `Successfully changed your email to ${newEmail}!`});
         })
         .catch(next);
@@ -160,17 +99,8 @@ router.post('/change/email', auth.jwtAuthProtected, function(req, res, next) {
 router.post('/change/email/remove', auth.jwtAuthProtected, function(req, res, next) {
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-    if (!clientId) return next(new Error('You must provide a valid player id.'));
-
-    console.log('Removing player email.');
-    Player.findById(clientId).exec()
-        .then(function(player) {
-            if (!player) return Promise.reject(new Error('Could not find your current account.'));
-            player.email = '';
-            return player.save();
-        })
+    PlayerService.removeEmail(clientId)
         .then(function() {
-            SocketService.IO.sockets.emit('player:change:email');
             res.json({message: 'Successfully removed your email!'});
         })
         .catch(next);

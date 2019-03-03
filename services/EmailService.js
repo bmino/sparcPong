@@ -12,6 +12,9 @@ const EmailService = {
             // Needs a period
             if ((email.match(/\./g) || []).length < 1) return reject(new Error('Email must contain at least one period.'));
 
+            // Cannot contain spaces
+            if ((email.match(/\s+/g) || []).length > 0) return reject(new Error('Email cannot contain spaces.'));
+
             return resolve(email);
         });
     }
