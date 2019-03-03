@@ -9,6 +9,7 @@ const xoauth2 = require(`xoauth2`);
 
 const MailerService = {
     EMAIL_TITLE: process.env.EMAIL_TITLE || `Sparc Pong`,
+    LADDER_URL: process.env.LADDER_URL || `http://localhost:${process.env.PORT}`,
 
     transporter : nodemailer.createTransport({
         host: `smtp.gmail.com`,
@@ -30,10 +31,10 @@ const MailerService = {
                 let challenger = challenge.challenger;
                 let challengee = challenge.challengee;
                 if (challengee.leader.email && challengee.leader.alerts.team.challenged) {
-                    MailerService.sendEmail(`Doubles Challenge`, `Your team has been challenged by "${challenger.username}." Log in at ${process.env.LADDER_URL} to deal with those scrubs!`, challengee.leader.email);
+                    MailerService.sendEmail(`Doubles Challenge`, `Your team has been challenged by "${challenger.username}." Log in at ${MailerService.LADDER_URL} to deal with those scrubs!`, challengee.leader.email);
                 }
                 if (challengee.partner.email && challengee.partner.alerts.team.challenged) {
-                    MailerService.sendEmail(`Doubles Challenge`, `Your team has been challenged by "${challenger.username}." Log in at ${process.env.LADDER_URL} to deal with those scrubs!`, challengee.partner.email);
+                    MailerService.sendEmail(`Doubles Challenge`, `Your team has been challenged by "${challenger.username}." Log in at ${MailerService.LADDER_URL} to deal with those scrubs!`, challengee.partner.email);
                 }
             })
             .catch(console.log);
@@ -80,16 +81,16 @@ const MailerService = {
                 let winnerPartner = winner.partner;
 
                 if (loserLeader.email && loserLeader.alerts.team.resolved) {
-                    MailerService.sendEmail(`Resolved Doubles Challenge`, `Welp, stuff happens. It looks like "${winner.username}" really laid the smack on your team. Log in at ${process.env.LADDER_URL} and pick an easier team.`, loserLeader.email);
+                    MailerService.sendEmail(`Resolved Doubles Challenge`, `Welp, stuff happens. It looks like "${winner.username}" really laid the smack on your team. Log in at ${MailerService.LADDER_URL} and pick an easier team.`, loserLeader.email);
                 }
                 if (loserPartner.email && loserPartner.alerts.team.resolved) {
-                    MailerService.sendEmail(`Resolved Doubles Challenge`, `Welp, stuff happens. It looks like "${winner.username}" really laid the smack on your team. Log in at ${process.env.LADDER_URL} and pick an easier team.`, loserPartner.email);
+                    MailerService.sendEmail(`Resolved Doubles Challenge`, `Welp, stuff happens. It looks like "${winner.username}" really laid the smack on your team. Log in at ${MailerService.LADDER_URL} and pick an easier team.`, loserPartner.email);
                 }
                 if (winnerLeader.email && winnerLeader.alerts.team.resolved) {
-                    MailerService.sendEmail(`Resolved Doubles Challenge`, `Congratulations on beating "${loser.username}!" Log in at ${process.env.LADDER_URL} to crush some more feelings.`, winnerLeader.email);
+                    MailerService.sendEmail(`Resolved Doubles Challenge`, `Congratulations on beating "${loser.username}!" Log in at ${MailerService.LADDER_URL} to crush some more feelings.`, winnerLeader.email);
                 }
                 if (winnerPartner.email && winnerPartner.alerts.team.resolved) {
-                    MailerService.sendEmail(`Resolved Doubles Challenge`, `Congratulations on beating "${loser.username}!" Log in at ${process.env.LADDER_URL} to crush some more feelings.`, winnerPartner.email);
+                    MailerService.sendEmail(`Resolved Doubles Challenge`, `Congratulations on beating "${loser.username}!" Log in at ${MailerService.LADDER_URL} to crush some more feelings.`, winnerPartner.email);
                 }
             })
             .catch(console.log);
@@ -116,7 +117,7 @@ const MailerService = {
         Challenge.populateById(challengeId, true)
             .then(function(challenge) {
                 if (challenge.challengee.email && challenge.challengee.alerts.challenged) {
-                    MailerService.sendEmail(`New Challenge`, `You have been challenged by "${challenge.challenger.username}." Log in at ${process.env.LADDER_URL} to deal with that scrub!`, challenge.challengee.email);
+                    MailerService.sendEmail(`New Challenge`, `You have been challenged by "${challenge.challenger.username}." Log in at ${MailerService.LADDER_URL} to deal with that scrub!`, challenge.challengee.email);
                 }
             })
             .catch(console.log);
@@ -148,10 +149,10 @@ const MailerService = {
                 let winner = challenge.getWinner();
 
                 if (loser.email && loser.alerts.resolved) {
-                    MailerService.sendEmail(`Resolved Challenge`, `Welp, stuff happens. It looks like "${winner.username}" really laid the smack on ya. Log in at ${process.env.LADDER_URL} and pick an easier opponent.`, loser.email);
+                    MailerService.sendEmail(`Resolved Challenge`, `Welp, stuff happens. It looks like "${winner.username}" really laid the smack on ya. Log in at ${MailerService.LADDER_URL} and pick an easier opponent.`, loser.email);
                 }
                 if (winner.email && winner.alerts.resolved) {
-                    MailerService.sendEmail(`Resolved Challenge`, `Congratulations on demolishing "${loser.username}!" Log in at ${process.env.LADDER_URL} to crush some more feelings.`, winner.email);
+                    MailerService.sendEmail(`Resolved Challenge`, `Congratulations on demolishing "${loser.username}!" Log in at ${MailerService.LADDER_URL} to crush some more feelings.`, winner.email);
                 }
             })
             .catch(console.log);
@@ -172,7 +173,7 @@ const MailerService = {
     newAutoChallenge(challengeId) {
         Challenge.populateById(challengeId, true)
             .then(function(challenge) {
-                MailerService.sendEmail(`New Auto Challenge`, `A challenge has been automatically issued on your behalf against "${challenge.challengee.username}." Log in at ${process.env.LADDER_URL} to wreck that hooligan!`, challenge.challenger.email);
+                MailerService.sendEmail(`New Auto Challenge`, `A challenge has been automatically issued on your behalf against "${challenge.challengee.username}." Log in at ${MailerService.LADDER_URL} to wreck that hooligan!`, challenge.challenger.email);
             })
             .catch(console.log);
     },
@@ -186,7 +187,7 @@ const MailerService = {
                 .then(function(player) {
                     if (!player) return reject(new Error(`Player could not be found`));
                     if (!player.email) return reject(new Error(`Could not find an email for this player.`));
-                    return MailerService.sendEmail(`Password Reset`, `Your reset key is: ${resetKey}\n You may reset your password at ${process.env.LADDER_URL}/#!/resetPassword/${encodeURIComponent(resetKey)}`, player.email);
+                    return MailerService.sendEmail(`Password Reset`, `Your reset key is: ${resetKey}\n You may reset your password at ${MailerService.LADDER_URL}/#!/resetPassword/${encodeURIComponent(resetKey)}`, player.email);
                 })
                 .then(resolve)
                 .catch(function(err) {

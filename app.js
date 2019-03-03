@@ -1,4 +1,13 @@
 require('dotenv').config({path: 'config/application.env'});
+
+// Mongo
+require('./models/index.js');
+require('mongoose').connect(process.env.MONGODB_URI, {
+    useCreateIndex: true,
+    useNewUrlParser: true,
+    promiseLibrary: global.Promise
+});
+
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
@@ -13,23 +22,13 @@ const favicon = require('serve-favicon');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 
-// Mongo
-const mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
+const SocketBank = require('./singletons/SocketBank');
+const AuthService = require('./services/AuthService');
 
-require('./models/Authorization');
-require('./models/Player');
-require('./models/Team');
-require('./models/Challenge');
-require('./models/TeamChallenge');
-require('./models/Alert');
-
-if (!process.env.MONGODB_URI) {
-    process.env.MONGODB_URI = 'mongodb://127.0.0.1/sparcPongDb';
-	process.env.LADDER_URL = `http://127.0.0.1:${process.env.PORT}`;
-    console.log(`Defaulting to local mongodb instance at ${process.env.MONGODB_URI}`);
-}
-mongoose.connect(process.env.MONGODB_URI);
+// Start Server
+server.listen(process.env.PORT, () => {
+	console.log(`Server is listening on port ${process.env.PORT}`);
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
