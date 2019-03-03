@@ -9,6 +9,7 @@ const Alert = mongoose.model('Alert');
 const NameService = require('../services/NameService');
 const EmailService = require('../services/EmailService');
 const AuthService = require('../services/AuthService');
+const SocketService = require('../services/SocketService');
 
 /**
  * Creates new player
@@ -64,7 +65,7 @@ router.post('/', function(req, res, next) {
 			return Authorization.attachToPlayerWithPassword(createdPlayer, playerPassword)
         })
 		.then(function() {
-            req.app.io.sockets.emit('player:new', playerUsername);
+            SocketService.IO.sockets.emit('player:new', playerUsername);
             console.log('Successfully created a new player.');
             res.json({message: 'Player created!'});
 		})
@@ -93,7 +94,7 @@ router.post('/change/username', auth.jwtAuthProtected, function(req, res, next) 
             return player.save();
         })
 		.then(function() {
-            req.app.io.sockets.emit('player:change:username');
+            SocketService.IO.sockets.emit('player:change:username');
             res.json({message: `Successfully changed your username to ${newUsername}`});
 		})
 		.catch(next);
@@ -114,7 +115,7 @@ router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) 
 
     AuthService.resetPasswordByExistingPassword(newPassword, oldPassword, clientId)
         .then(function() {
-            req.app.io.sockets.emit('player:change:password');
+            SocketService.IO.sockets.emit('player:change:password');
             res.json({message: 'Successfully changed your password'});
         })
         .catch(next);
@@ -147,7 +148,7 @@ router.post('/change/email', auth.jwtAuthProtected, function(req, res, next) {
 			return player.save();
 		})
 		.then(function() {
-            req.app.io.sockets.emit('player:change:email');
+            SocketService.IO.sockets.emit('player:change:email');
             res.json({message: `Successfully changed your email to ${newEmail}!`});
 		})
 		.catch(next);
@@ -169,7 +170,7 @@ router.post('/change/email/remove', auth.jwtAuthProtected, function(req, res, ne
             return player.save();
         })
 		.then(function() {
-			req.app.io.sockets.emit('player:change:email');
+			SocketService.IO.sockets.emit('player:change:email');
 			res.json({message: 'Successfully removed your email!'});
 		})
 		.catch(next);

@@ -14,7 +14,7 @@ router.post('/', function(req, res, next) {
     let challengeeId = req.body.challengeeId;
 	let clientId = AuthService.verifyToken(req.token).playerId;
 
-	PlayerChallengeService.doChallenge(challengeeId, clientId, req)
+	PlayerChallengeService.doChallenge(challengeeId, clientId)
 		.then(function() {
             res.json({message: 'Challenge issued!'});
 		})
@@ -55,7 +55,7 @@ router.delete('/revoke', function(req, res, next) {
 	let challengeId = req.body.challengeId;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-    PlayerChallengeService.doRevoke(challengeId, clientId, req)
+    PlayerChallengeService.doRevoke(challengeId, clientId)
 		.then(function() {
             res.json({message: 'Successfully revoked challenge.'});
 		})
@@ -74,7 +74,7 @@ router.post('/resolve', function(req, res, next) {
 	let challengeeScore = req.body.challengeeScore;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-	PlayerChallengeService.doResolve(challengeId, challengerScore, challengeeScore, clientId, req)
+	PlayerChallengeService.doResolve(challengeId, challengerScore, challengeeScore, clientId)
 		.then(function() {
             res.json({message: 'Successfully resolved challenge.'});
 		})
@@ -89,7 +89,7 @@ router.post('/forfeit', function(req, res, next) {
 	let challengeId = req.body.challengeId;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-	PlayerChallengeService.doForfeit(challengeId, clientId, req)
+	PlayerChallengeService.doForfeit(challengeId, clientId)
         .then(function() {
             res.json({message: 'Challenge successfully forfeited.'});
         })

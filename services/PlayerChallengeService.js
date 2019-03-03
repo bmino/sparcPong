@@ -4,11 +4,12 @@ const Challenge = mongoose.model('Challenge');
 const ChallengeService = require('./ChallengeService');
 const MailerService = require('./MailerService');
 const Util = require('./Util');
+const SocketService = require('./SocketService');
 
 const PlayerChallengeService = {
     ALLOWED_CHALLENGE_DAYS: process.env.ALLOWED_CHALLENGE_DAYS || 4,
 
-    doChallenge(challengeeId, clientId, req) {
+    doChallenge(challengeeId, clientId) {
         if (!clientId || !challengeeId) return Promise.reject(new Error('Two players are required for a challenge.'));
         if (clientId === challengeeId) return Promise.reject(new Error('Players cannot challenge themselves.'));
 
@@ -20,12 +21,12 @@ const PlayerChallengeService = {
             .then(Challenge.createByPlayers)
             .then(function(challenge) {
                 MailerService.newChallenge(challenge._id);
-                req.app.io.sockets.emit('challenge:issued');
+                SocketService.IO.sockets.emit('challenge:issued');
                 return challenge;
             });
     },
 
-    doForfeit(challengeId, clientId, req) {
+    doForfeit(challengeId, clientId) {
         return Challenge.findById(challengeId).exec()
             .then(function(challenge) {
                 if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
@@ -36,11 +37,11 @@ const PlayerChallengeService = {
             .then(ChallengeService.swapRanks)
             .then(function() {
                 MailerService.forfeitedChallenge(challengeId);
-                req.app.io.sockets.emit('challenge:forfeited');
+                SocketService.IO.sockets.emit('challenge:forfeited');
             });
     },
 
-    doRevoke(challengeId, clientId, req) {
+    doRevoke(challengeId, clientId) {
         return Challenge.findById(challengeId).exec()
             .then(function(challenge) {
                 if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
@@ -49,11 +50,11 @@ const PlayerChallengeService = {
             .then(Challenge.removeByDocument)
             .then(function(challenge) {
                 MailerService.revokedChallenge(challenge.challenger, challenge.challengee);
-                req.app.io.sockets.emit('challenge:revoked');
+                SocketService.IO.sockets.emit('challenge:revoked');
             });
     },
 
-    doResolve(challengeId, challengerScore, challengeeScore, clientId, req) {
+    doResolve(challengeId, challengerScore, challengeeScore, clientId) {
         if (!challengeId) return Promise.reject(new Error('This is not a valid challenge.'));
 
         return Challenge.findById(challengeId).exec()
@@ -70,7 +71,7 @@ const PlayerChallengeService = {
             })
             .then(function() {
                 MailerService.resolvedChallenge(challengeId);
-                req.app.io.sockets.emit('challenge:resolved');
+                SocketService.IO.sockets.emit('challenge:resolved');
             });
     },
 

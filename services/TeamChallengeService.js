@@ -5,11 +5,12 @@ const TeamChallenge = mongoose.model('TeamChallenge');
 const ChallengeService = require('./ChallengeService');
 const MailerService = require('./MailerService');
 const Util = require('./Util');
+const SocketService = require('./SocketService');
 
 const TeamChallengeService = {
     ALLOWED_CHALLENGE_DAYS_TEAM: process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5,
 
-    doChallenge(challengeeId, clientId, req) {
+    doChallenge(challengeeId, clientId) {
         return Promise.all([
             Team.getTeamsByPlayerId(clientId),
             Team.findById(challengeeId).exec()
@@ -28,11 +29,11 @@ const TeamChallengeService = {
             })
             .then(function(challenge) {
                 MailerService.newTeamChallenge(challenge._id);
-                req.app.io.sockets.emit('challenge:team:issued');
+                SocketService.IO.sockets.emit('challenge:team:issued');
             });
     },
 
-    resolveChallenge(challengeId, challengerScore, challengeeScore, clientId, req) {
+    resolveChallenge(challengeId, challengerScore, challengeeScore, clientId) {
         if (!challengeId) return Promise.reject(new Error('This is not a valid challenge.'));
 
         return TeamChallenge.findById(challengeId).exec()
@@ -49,11 +50,11 @@ const TeamChallengeService = {
             })
             .then(function() {
                 MailerService.resolvedTeamChallenge(challengeId);
-                req.app.io.sockets.emit('challenge:team:resolved');
+                SocketService.IO.sockets.emit('challenge:team:resolved');
             });
     },
 
-    doRevoke(challengeId, clientId, req) {
+    doRevoke(challengeId, clientId) {
         if (!challengeId) return Promise.reject(new Error('This is not a valid challenge id.'));
 
         return TeamChallenge.findById(challengeId).exec()
@@ -64,11 +65,11 @@ const TeamChallengeService = {
             .then(TeamChallenge.removeByDocument)
             .then(function(challenge) {
                 MailerService.revokedTeamChallenge(challenge.challenger, challenge.challengee);
-                req.app.io.sockets.emit('challenge:team:revoked');
+                SocketService.IO.sockets.emit('challenge:team:revoked');
             });
     },
 
-    doForfeit(challengeId, clientId, req) {
+    doForfeit(challengeId, clientId) {
         if (!challengeId) return Promise.reject(new Error('This is not a valid challenge id.'));
 
         console.log(`Forfeiting challenge id [${challengeId}]`);
@@ -82,7 +83,7 @@ const TeamChallengeService = {
             .then(ChallengeService.swapRanks)
             .then(function() {
                 MailerService.forfeitedTeamChallenge(challengeId);
-                req.app.io.sockets.emit('challenge:team:forfeited');
+                SocketService.IO.sockets.emit('challenge:team:forfeited');
             });
     },
 

@@ -6,7 +6,7 @@ const ManualTaskService = require('../services/ManualTaskService');
 router.get('/challenge', function(req, res, next) {
     if (!req.query.key || req.query.key !== process.env.JWT_SECRET_KEY) return res.json('Invalid key');
 
-    ManualTaskService.autoChallenge(req)
+    ManualTaskService.autoChallenge()
         .then(function(issued) {
             let msg = `Issued ${issued} challenges`;
             console.log(`[Manual] - ${msg}`);
@@ -19,8 +19,8 @@ router.get('/forfeit', function(req, res, next) {
 	if (!req.query.key || req.query.key !== process.env.JWT_SECRET_KEY) return res.json('Invalid key');
 
 	Promise.all([
-        ManualTaskService.autoForfeitSingles(req),
-        ManualTaskService.autoForfeitDoubles(req)
+        ManualTaskService.autoForfeitSingles(),
+        ManualTaskService.autoForfeitDoubles()
     ])
         .then(function(results) {
             let singlesResults = results[0];
@@ -36,7 +36,7 @@ router.get('/deactivate', function(req, res, next) {
     if (!req.query.key || req.query.key !== process.env.JWT_SECRET_KEY) return res.json('Invalid key');
     if (!req.query.id) return res.json('Missing id');
 
-    return ManualTaskService.deactivatePlayer(req.query.id, req)
+    return ManualTaskService.deactivatePlayer(req.query.id)
         .then(function() {
             let msg = 'Deactivated player';
             console.log(`[Manual] - ${msg}`);

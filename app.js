@@ -11,15 +11,12 @@ require('mongoose').connect(process.env.MONGODB_URI, {
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
-app.io = io;
 const path = require('path');
 const favicon = require('serve-favicon');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-
-const SocketBank = require('./singletons/SocketBank');
-const AuthService = require('./services/AuthService');
+const SocketService = require('./services/SocketService');
+SocketService.init(require('socket.io')(server));
 
 // Start Server
 server.listen(process.env.PORT, () => {
@@ -67,60 +64,5 @@ app.use(function(err, req, res, next) {
 	res.json(err.message);
 });
 
-
-// Socket Events
-io.on('connection', function(socket) {
-	console.log('New socket connection...');
-	SocketBank.addSocket(socket);
-
-	// Notify all clients of presence
-	io.sockets.emit('client:enter', SocketBank.getClientCount());
-
-	// Give initial list of online users
-	socket.emit('client:online', SocketBank.getOnlineClientIds());
-
-	socket.on('disconnect', function() {
-		console.log('Disconnected socket connection...');
-		SocketBank.removeSocket(socket);
-		io.sockets.emit('client:online', SocketBank.getOnlineClientIds());
-		io.sockets.emit('client:leave', SocketBank.getClientCount());
-	});
-
-	socket.on('login', function(credentials) {
-		console.log('Received \'login\' socket event.');
-		let userId = credentials.playerId;
-		let password = credentials.password;
-
-		AuthService.login(userId, password)
-			.then(function(token) {
-                SocketBank.loginUser(userId, socket);
-                io.sockets.emit('client:online', SocketBank.getOnlineClientIds());
-				socket.emit('login:success', token);
-			})
-			.catch(function(err) {
-				console.error(err);
-				socket.emit('login:error', err.message);
-			});
-	});
-
-	socket.on('flash', function(token) {
-        console.log('Received \'flash\' socket event.');
-		AuthService.flash(token)
-			.then(function(payload) {
-                SocketBank.loginUser(payload.playerId, socket);
-                io.sockets.emit('client:online', SocketBank.getOnlineClientIds());
-                socket.emit('flash:success', token);
-            })
-			.catch(function(err) {
-				socket.emit('flash:error', err.message);
-			});
-	});
-
-	socket.on('logout', function(userId) {
-		console.log('Received \'logout\' socket event.');
-		SocketBank.logoffUser(userId, socket);
-		io.sockets.emit('client:online', SocketBank.getOnlineClientIds());
-	});
-});
 
 module.exports = app;

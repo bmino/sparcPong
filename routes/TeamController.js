@@ -6,6 +6,7 @@ const Team = mongoose.model('Team');
 const TeamChallenge = mongoose.model('TeamChallenge');
 const NameService = require('../services/NameService');
 const TeamService = require('../services/TeamService');
+const SocketService = require('../services/SocketService');
 
 /**
  * Create new team
@@ -42,7 +43,7 @@ router.post('/', function(req, res, next) {
             return team.save();
         })
 		.then(function() {
-			req.app.io.sockets.emit('team:new', teamUsername);
+			SocketService.IO.sockets.emit('team:new', teamUsername);
 			console.log('Successfully created a new team.');
 			res.json({message: 'Team created!'});
 		})
@@ -73,7 +74,7 @@ router.post('/change/username', function(req, res, next) {
             return team.save();
         })
 		.then(function() {
-            req.app.io.sockets.emit('team:change:username');
+            SocketService.IO.sockets.emit('team:change:username');
             res.json({message: `Successfully changed your team name to ${newUsername}!`});
 		})
 		.catch(next);
