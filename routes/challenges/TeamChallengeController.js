@@ -2,9 +2,6 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const TeamChallenge = mongoose.model('TeamChallenge');
-const Team = mongoose.model('Team');
-const MailerService = require('../../services/MailerService');
-const ChallengeService = require('../../services/ChallengeService');
 const TeamChallengeService = require('../../services/TeamChallengeService');
 const AuthService = require('../../services/AuthService');
 
@@ -17,31 +14,12 @@ router.post('/', function(req, res, next) {
 	let challengeeId = req.body.challengeeId;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-	// Grabs team info on both challenge participants
-	let challengerTeamsPromise = Team.getTeamsByPlayerId(clientId);
-	let challengeeTeamPromise =	Team.findById(challengeeId).exec();
-
-	Promise.all([challengerTeamsPromise, challengeeTeamPromise])
-		.then(function(results) {
-			let playerTeams = results[0];
-			let challengeeTeam = results[1];
-			if (!playerTeams || playerTeams.length === 0) return Promise.reject(new Error('Player must be a member of a team.'));
-			return TeamChallengeService.verifyAllowedToChallenge([playerTeams[0], challengeeTeam]);
-		})
-		.then(function(teams) {
-            if (!teams[0].hasMemberByPlayerId(clientId)) {
-                return Promise.reject(new Error(`You must be a member of the challenging team, "${teams[0].username}"`));
-            }
-            return TeamChallenge.createByTeams(teams);
-        })
-		.then(function(challenge) {
-            MailerService.newTeamChallenge(challenge._id);
-            req.app.io.sockets.emit('challenge:team:issued');
+	TeamChallengeService.doChallenge(challengeeId, clientId, req)
+		.then(function() {
             res.json({message: 'Challenge issued!'});
 		})
 		.catch(next);
 });
-
 
 /**
  * Get all challenges involving a team.
@@ -69,26 +47,16 @@ router.get('/:teamId', function(req, res, next) {
 
 });
 
-
 /**
- * Revoke wrongly issued challenge.
+ * Revoke challenge.
  * @param: challengeId
  */
 router.delete('/revoke', function(req, res, next) {
 	let challengeId = req.body.challengeId;
     let clientId = AuthService.verifyToken(req.token).playerId;
-	
-	if (!challengeId) return next(new Error('This is not a valid challenge id.'));
 
-	TeamChallenge.findById(challengeId).exec()
-		.then(function(challenge) {
-            if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
-            return TeamChallengeService.verifyAllowedToRevoke(challenge, clientId);
-        })
-		.then(TeamChallenge.removeByDocument)
-		.then(function(challenge) {
-            MailerService.revokedTeamChallenge(challenge.challenger, challenge.challengee);
-            req.app.io.sockets.emit('challenge:team:revoked');
+	TeamChallengeService.doRevoke(challengeId, clientId, req)
+		.then(function() {
             res.json({message: 'Successfully revoked challenge.'});
 		})
 		.catch(next);
@@ -105,24 +73,9 @@ router.post('/resolve', function(req, res, next) {
 	let challengerScore = req.body.challengerScore;
 	let challengeeScore = req.body.challengeeScore;
     let clientId = AuthService.verifyToken(req.token).playerId;
-	
-	if (!challengeId) return next(new Error('This is not a valid challenge.'));
 
-	TeamChallenge.findById(challengeId).exec()
-		.then(function(teamChallenge) {
-            return TeamChallengeService.verifyAllowedToResolve(teamChallenge, clientId);
-		})
-		.then(TeamChallengeService.verifyForfeitIsNotRequired)
-		.then(function(teamChallenge) {
-			return ChallengeService.setScore(teamChallenge, challengerScore, challengeeScore);
-		})
-        .then(TeamChallengeService.updateLastGames)
-		.then(function(teamChallenge) {
-			if (challengerScore > challengeeScore) return ChallengeService.swapRanks(teamChallenge);
-        })
+	TeamChallengeService.resolveChallenge(challengeId, challengerScore, challengeeScore, clientId, req)
 		.then(function() {
-            MailerService.resolvedTeamChallenge(challengeId);
-			req.app.io.sockets.emit('challenge:team:resolved');
 			res.json({message: 'Successfully resolved challenge.'});
 		})
 		.catch(next);
@@ -142,7 +95,6 @@ router.post('/forfeit', function(req, res, next) {
 		})
 		.catch(next);
 });
-
 
 
 module.exports = router;

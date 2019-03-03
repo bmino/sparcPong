@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Player = mongoose.model('Player');
+const Team = mongoose.model('Team');
 const TeamChallenge = mongoose.model('TeamChallenge');
 const ChallengeService = require('./ChallengeService');
 const MailerService = require('./MailerService');
@@ -7,6 +8,65 @@ const Util = require('./Util');
 
 const TeamChallengeService = {
     ALLOWED_CHALLENGE_DAYS_TEAM: process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5,
+
+    doChallenge(challengeeId, clientId, req) {
+        return Promise.all([
+            Team.getTeamsByPlayerId(clientId),
+            Team.findById(challengeeId).exec()
+        ])
+            .then(function(results) {
+                let playerTeams = results[0];
+                let challengeeTeam = results[1];
+                if (!playerTeams || playerTeams.length === 0) return Promise.reject(new Error('Player must be a member of a team.'));
+                return TeamChallengeService.verifyAllowedToChallenge([playerTeams[0], challengeeTeam]);
+            })
+            .then(function(teams) {
+                if (!teams[0].hasMemberByPlayerId(clientId)) {
+                    return Promise.reject(new Error(`You must be a member of the challenging team, "${teams[0].username}"`));
+                }
+                return TeamChallenge.createByTeams(teams);
+            })
+            .then(function(challenge) {
+                MailerService.newTeamChallenge(challenge._id);
+                req.app.io.sockets.emit('challenge:team:issued');
+            });
+    },
+
+    resolveChallenge(challengeId, challengerScore, challengeeScore, clientId, req) {
+        if (!challengeId) return Promise.reject(new Error('This is not a valid challenge.'));
+
+        return TeamChallenge.findById(challengeId).exec()
+            .then(function(teamChallenge) {
+                return TeamChallengeService.verifyAllowedToResolve(teamChallenge, clientId);
+            })
+            .then(TeamChallengeService.verifyForfeitIsNotRequired)
+            .then(function(teamChallenge) {
+                return ChallengeService.setScore(teamChallenge, challengerScore, challengeeScore);
+            })
+            .then(TeamChallengeService.updateLastGames)
+            .then(function(teamChallenge) {
+                if (challengerScore > challengeeScore) return ChallengeService.swapRanks(teamChallenge);
+            })
+            .then(function() {
+                MailerService.resolvedTeamChallenge(challengeId);
+                req.app.io.sockets.emit('challenge:team:resolved');
+            });
+    },
+
+    doRevoke(challengeId, clientId, req) {
+        if (!challengeId) return Promise.reject(new Error('This is not a valid challenge id.'));
+
+        return TeamChallenge.findById(challengeId).exec()
+            .then(function(challenge) {
+                if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
+                return TeamChallengeService.verifyAllowedToRevoke(challenge, clientId);
+            })
+            .then(TeamChallenge.removeByDocument)
+            .then(function(challenge) {
+                MailerService.revokedTeamChallenge(challenge.challenger, challenge.challengee);
+                req.app.io.sockets.emit('challenge:team:revoked');
+            });
+    },
 
     doForfeit(challengeId, clientId, req) {
         if (!challengeId) return Promise.reject(new Error('This is not a valid challenge id.'));
