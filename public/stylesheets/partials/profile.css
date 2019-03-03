@@ -1,13 +1,13 @@
 .partial-profile span.username {
-	
+
 }
 
 .partial-profile .score {
-	/* float: right; */
+    /* float: right; */
 }
 
 .partial-profile .userLabel {
-	display: inline-block;
-	text-align: right;
-	width: 50px;
+    display: inline-block;
+    text-align: right;
+    width: 50px;
 }

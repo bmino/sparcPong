@@ -1,42 +1,42 @@
 angular
-	.module('directives')
-	.directive('timeGap', timeGap);
+    .module('directives')
+    .directive('timeGap', timeGap);
 
 timeGap.$inject = ['timeService'];
 
 function timeGap(timeService) {
 
-	return {
-		restrict: 'E',
-		scope: {
-			date: '=',
-			type: '@'
-		},
-		link: function(scope, elem, attrs) {
-			
-			let oDate = scope.date ? timeService.parseDate(scope.date) : null;
+    return {
+        restrict: 'E',
+        scope: {
+            date: '=',
+            type: '@'
+        },
+        link: function(scope, elem, attrs) {
+
+            let oDate = scope.date ? timeService.parseDate(scope.date) : null;
             if (oDate) updateLater();
 
-			function updateTime() {
-				let elapsed;
-				if (scope.type === 'since')
-					elapsed = timeService.timeBetween(oDate, new Date());
-				else if (scope.type === 'until')
-					elapsed = timeService.timeBetween(new Date(), oDate);
-				else {
-					elapsed = "ERROR";
-					console.log("You must specify a type of 'since' or 'until'");
-				}
-				elem.text(elapsed);
-				angular.element(elem).addClass(dangerLevel(scope.date));
-			}
-			
-			function updateLater() {
-				updateTime();
-				setTimeout(function() {
-					updateLater();
-				}, 1000);
-			}
+            function updateTime() {
+                let elapsed;
+                if (scope.type === 'since')
+                    elapsed = timeService.timeBetween(oDate, new Date());
+                else if (scope.type === 'until')
+                    elapsed = timeService.timeBetween(new Date(), oDate);
+                else {
+                    elapsed = "ERROR";
+                    console.log("You must specify a type of 'since' or 'until'");
+                }
+                elem.text(elapsed);
+                angular.element(elem).addClass(dangerLevel(scope.date));
+            }
+
+            function updateLater() {
+                updateTime();
+                setTimeout(function() {
+                    updateLater();
+                }, 1000);
+            }
 
             function dangerLevel(gameTime) {
                 let hours = timeService.hoursBetween(new Date(gameTime), new Date());
@@ -48,7 +48,7 @@ function timeGap(timeService) {
                     return 'alert-danger';
             }
 
-		}
-	}
+        }
+    }
 
 }

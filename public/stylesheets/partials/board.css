@@ -1,39 +1,39 @@
 .partial-board li .rank {
-	display: inline-block;
-	width: 2.15em;
-	text-align: center;
-	border: 1px solid black;
-	border-radius: 5px;
-	margin-right: 8px;
+    display: inline-block;
+    width: 2.15em;
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-right: 8px;
 }
 
 .partial-board li .username {
-	white-space: nowrap;
-	overflow: hidden;
+    white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
     display: inline-block;
     vertical-align: middle;
-	/* Remaining space without rank and challenge button */
-	/* Change this when an element is added to the board */
-	width: auto;
+    /* Remaining space without rank and challenge button */
+    /* Change this when an element is added to the board */
+    width: auto;
     max-width: calc(100% - 150px);
 }
 
 .partial-board li time-gap {
-	padding: 3px;
-	border-radius: 2px;
+    padding: 3px;
+    border-radius: 2px;
 }
 
 
 .partial-board .li .glyphicon-fullscreen {
-	cursor: pointer;
-	line-height: inherit;
+    cursor: pointer;
+    line-height: inherit;
 }
 
 .partial-board h1 {
-	display: inline;
+    display: inline;
 }
 
 .partial-board a.btn {
-	color: inherit;
+    color: inherit;
 }

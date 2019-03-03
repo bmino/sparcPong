@@ -11,14 +11,14 @@ const AuthService = require('../../services/AuthService');
  * @param: challengeeId
  */
 router.post('/', function(req, res, next) {
-	let challengeeId = req.body.challengeeId;
+    let challengeeId = req.body.challengeeId;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-	TeamChallengeService.doChallenge(challengeeId, clientId)
-		.then(function() {
+    TeamChallengeService.doChallenge(challengeeId, clientId)
+        .then(function() {
             res.json({message: 'Challenge issued!'});
-		})
-		.catch(next);
+        })
+        .catch(next);
 });
 
 /**
@@ -26,24 +26,24 @@ router.post('/', function(req, res, next) {
  * @param: teamId
  */
 router.get('/:teamId', function(req, res, next) {
-	let teamId = req.params.teamId;
+    let teamId = req.params.teamId;
 
-	if (!teamId) return next(new Error('This is not a valid team.'));
+    if (!teamId) return next(new Error('This is not a valid team.'));
 
-	let resolvedChallenges = TeamChallenge.getResolved(teamId)
-		.then(TeamChallenge.populateTeams);
+    let resolvedChallenges = TeamChallenge.getResolved(teamId)
+        .then(TeamChallenge.populateTeams);
 
-	let outgoingChallenges = TeamChallenge.getOutgoing(teamId)
-		.then(TeamChallenge.populateTeamsAndTeamMembers);
+    let outgoingChallenges = TeamChallenge.getOutgoing(teamId)
+        .then(TeamChallenge.populateTeamsAndTeamMembers);
 
-	let incomingChallenges = TeamChallenge.getIncoming(teamId)
-		.then(TeamChallenge.populateTeamsAndTeamMembers);
+    let incomingChallenges = TeamChallenge.getIncoming(teamId)
+        .then(TeamChallenge.populateTeamsAndTeamMembers);
 
-	Promise.all([resolvedChallenges, outgoingChallenges, incomingChallenges])
-		.then(function(challenges) {
+    Promise.all([resolvedChallenges, outgoingChallenges, incomingChallenges])
+        .then(function(challenges) {
             res.json({message: {resolved: challenges[0], outgoing: challenges[1], incoming: challenges[2]}});
-		})
-		.catch(next);
+        })
+        .catch(next);
 
 });
 
@@ -52,14 +52,14 @@ router.get('/:teamId', function(req, res, next) {
  * @param: challengeId
  */
 router.delete('/revoke', function(req, res, next) {
-	let challengeId = req.body.challengeId;
+    let challengeId = req.body.challengeId;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-	TeamChallengeService.doRevoke(challengeId, clientId)
-		.then(function() {
+    TeamChallengeService.doRevoke(challengeId, clientId)
+        .then(function() {
             res.json({message: 'Successfully revoked challenge.'});
-		})
-		.catch(next);
+        })
+        .catch(next);
 });
 
 /**
@@ -69,16 +69,16 @@ router.delete('/revoke', function(req, res, next) {
  * @param: challengeeScore
  */
 router.post('/resolve', function(req, res, next) {
-	let challengeId = req.body.challengeId;
-	let challengerScore = req.body.challengerScore;
-	let challengeeScore = req.body.challengeeScore;
+    let challengeId = req.body.challengeId;
+    let challengerScore = req.body.challengerScore;
+    let challengeeScore = req.body.challengeeScore;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-	TeamChallengeService.resolveChallenge(challengeId, challengerScore, challengeeScore, clientId)
-		.then(function() {
-			res.json({message: 'Successfully resolved challenge.'});
-		})
-		.catch(next);
+    TeamChallengeService.resolveChallenge(challengeId, challengerScore, challengeeScore, clientId)
+        .then(function() {
+            res.json({message: 'Successfully resolved challenge.'});
+        })
+        .catch(next);
 });
 
 /**
@@ -86,14 +86,14 @@ router.post('/resolve', function(req, res, next) {
  * @param: challengeId
  */
 router.post('/forfeit', function(req, res, next) {
-	let challengeId = req.body.challengeId;
+    let challengeId = req.body.challengeId;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
     TeamChallengeService.doForfeit(challengeId, clientId)
-		.then(function() {
-			res.json({message: 'Challenge successfully forfeited.'});
-		})
-		.catch(next);
+        .then(function() {
+            res.json({message: 'Challenge successfully forfeited.'});
+        })
+        .catch(next);
 });
 
 

@@ -1,44 +1,44 @@
 angular
-	.module('controllers')
-	.controller('changeUsernameController', ChangeUsernameController);
+    .module('controllers')
+    .controller('changeUsernameController', ChangeUsernameController);
 
 ChangeUsernameController.$inject = ['$scope', 'jwtService', 'modalService', 'playerService'];
 
 function ChangeUsernameController($scope, jwtService, modalService, playerService) {
-	
-	$scope.newUsername = '';
 
-	function init() {
-		let playerId = jwtService.getDecodedToken().playerId;
+    $scope.newUsername = '';
 
-		playerService.getPlayer(playerId)
-			.then(populateUsernameField)
-			.catch(console.log);
-	}
+    function init() {
+        let playerId = jwtService.getDecodedToken().playerId;
 
-	function populateUsernameField(player) {
-		if (!player) console.log('Error fetching player.');
-		else $scope.newUsername = player.username;
-	}
-	
-	$scope.validateUsername = function() {
-		let modalOptions;
-		playerService.changeUsername($scope.newUsername)
-			.then(function(success) {
-				modalOptions = {
-					headerText: 'Change Username',
-					bodyText: success
-				};
-				modalService.showAlertModal({}, modalOptions);
-			})
-			.catch(function(error) {
-				modalOptions = {
-					headerText: 'Change Username',
-					bodyText: error
-				};
-				modalService.showAlertModal({}, modalOptions);
-			});
-	};
+        playerService.getPlayer(playerId)
+            .then(populateUsernameField)
+            .catch(console.log);
+    }
+
+    function populateUsernameField(player) {
+        if (!player) console.log('Error fetching player.');
+        else $scope.newUsername = player.username;
+    }
+
+    $scope.validateUsername = function() {
+        let modalOptions;
+        playerService.changeUsername($scope.newUsername)
+            .then(function(success) {
+                modalOptions = {
+                    headerText: 'Change Username',
+                    bodyText: success
+                };
+                modalService.showAlertModal({}, modalOptions);
+            })
+            .catch(function(error) {
+                modalOptions = {
+                    headerText: 'Change Username',
+                    bodyText: error
+                };
+                modalService.showAlertModal({}, modalOptions);
+            });
+    };
 
     init();
 

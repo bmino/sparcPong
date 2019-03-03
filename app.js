@@ -20,7 +20,7 @@ SocketService.init(require('socket.io')(server));
 
 // Start Server
 server.listen(process.env.PORT, () => {
-	console.log(`Server is listening on port ${process.env.PORT}`);
+    console.log(`Server is listening on port ${process.env.PORT}`);
 });
 
 app.set('views', path.join(__dirname, 'views'));
@@ -52,16 +52,16 @@ app.use('/manual',							require('./routes/ManualTaskController'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-	let err = new Error('Not Found');
-	err.status = 404;
-	next(err);
+    let err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-	console.error(err);
-	res.status(err.status || 500);
-	res.json(err.message);
+    console.error(err);
+    res.status(err.status || 500);
+    res.json(err.message);
 });
 
 
