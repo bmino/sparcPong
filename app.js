@@ -13,10 +13,6 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 app.io = io;
-if (!process.env.PORT) process.env.PORT = 3000;
-server.listen(process.env.PORT, () => {
-    console.log(`Server is listening on port ${process.env.PORT}`);
-});
 const path = require('path');
 const favicon = require('serve-favicon');
 const morgan = require('morgan');
@@ -30,24 +26,21 @@ server.listen(process.env.PORT, () => {
 	console.log(`Server is listening on port ${process.env.PORT}`);
 });
 
-// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(favicon(path.join(__dirname, 'public/images', 'favicon.ico')));
-if (process.env.MORGAN_FORMAT) {
-	app.use(morgan(process.env.MORGAN_FORMAT));
-}
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+if (process.env.MORGAN_FORMAT) app.use(morgan(process.env.MORGAN_FORMAT));
 
-// Include scripts
-app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
 // JWT Security
 const auth = require('./middleware/jwtMiddleware');
 app.use(['/api/team/*', '/api/challenge/*', '/api/playerAlerts/*', '/api/envBridge/*'], auth.jwtAuthProtected);
+
+app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
 app.use('/',								require('./routes/EjsViewController'));
 app.use('/auth',							require('./routes/AuthorizationController'));
@@ -58,6 +51,7 @@ app.use('/api/challenge/team',				require('./routes/challenges/TeamChallengeCont
 app.use('/api/playerAlerts',				require('./routes/AlertController'));
 app.use('/api/envBridge',					require('./routes/EnvironmentBridgeController'));
 app.use('/manual',							require('./routes/ManualTaskController'));
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -73,10 +67,6 @@ app.use(function(err, req, res, next) {
 	res.json(err.message);
 });
 
-
-
-const SocketBank = require('./singletons/SocketBank');
-const AuthService = require('./services/AuthService');
 
 // Socket Events
 io.on('connection', function(socket) {
