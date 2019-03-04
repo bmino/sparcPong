@@ -15,8 +15,8 @@ function ifClientOnline(loginService, jwtService) {
 
     function link(scope, elem, attrs) {
         scope.$watchGroup([loginService.isLoggedIn, 'ifClientOnline'], function(watched) {
-            var isLogged = watched[0];
-            var idsToCheck = scope.ifClientOnline;
+            let isLogged = watched[0];
+            let idsToCheck = scope.ifClientOnline;
 
             // Nobody is logged in
             if (!isLogged) return elem.hide();

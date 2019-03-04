@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var teamSchema = new Schema({
+let teamSchema = new Schema({
 	username: { type: String, required: true, unique: true },
 	leader: { type: Schema.ObjectId, ref: 'Player', required: true },
 	partner: { type: Schema.ObjectId, ref: 'Player', required: false },
@@ -11,7 +11,7 @@ var teamSchema = new Schema({
 });
 
 teamSchema.methods.hasMemberByPlayerId = function(playerId) {
-    console.log('Checking if player id ' + playerId + ' is on team ' + this.username);
+    console.log(`Checking if player id ${playerId} is on team ${this.username}`);
     if (this.leader.toString() === playerId.toString()) return true;
     if (this.partner.toString() === playerId.toString()) return true;
     return false;
@@ -22,7 +22,7 @@ teamSchema.statics.getTeamsByPlayerId = function(playerId) {
 };
 
 teamSchema.statics.usernameExists = function(username) {
-    console.log('Checking if team username, ' + username + ', exists.');
+    console.log(`Checking if team username, ${username}, exists.`);
     return new Promise(function (resolve, reject) {
         Team.count({username: username}).exec()
             .then(function(count) {
@@ -38,17 +38,17 @@ teamSchema.statics.lowestRank = function() {
     return new Promise(function(resolve, reject) {
         Team.find().sort({'rank': -1}).limit(1).exec()
             .then(function (lowestRankTeam) {
-                var lowestRank = 0;
+                let lowestRank = 0;
                 if (lowestRankTeam && lowestRankTeam.length > 0) {
                     lowestRank = lowestRankTeam[0].rank;
                 }
-                console.log('Found lowest rank of ' + lowestRank);
+                console.log(`Found lowest rank of ${lowestRank}`);
                 return resolve(lowestRank);
             })
             .catch(reject);
     });
 };
 
-var Team = mongoose.model('Team', teamSchema);
+const Team = mongoose.model('Team', teamSchema);
 
 module.exports = Team;

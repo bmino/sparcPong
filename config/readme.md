@@ -62,7 +62,7 @@ Application Properties
 
 | Property Name | Default | Description |
 | ------------- | ------- | ----------- |
-| PORT | 3000 | Port the node server runs on |
-| MONGODB_URI | mongodb://127.0.0.1/sparcPongDb | Mongo connection uri |
+| PORT | *none* | Port the node server runs on |
+| MONGODB_URI | *none* | Mongo connection uri. A local string could be mongodb://127.0.0.1/sparcPongDb |
 | MORGAN_FORMAT | none | Morgan logging predefined type |
-| LADDER_URL | *none* | Root url where the ladder is hosted. Defaults to localhost when MONGODB_URL is not defined. |
+| LADDER_URL | http://localhost:[PORT] | Root url where the ladder is hosted. Defaults to localhost and the port specified via `process.env.PORT`. |

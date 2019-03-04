@@ -6,9 +6,9 @@ JwtService.$inject = ['$http', '$cookies', 'jwtHelper'];
 
 function JwtService($http, $cookies, jwtHelper) {
     
-    var service = this;
+    let service = this;
 
-    var TOKEN_KEY = 'SPARC_PONG_AUTHORIZATION_TOKEN';
+    let TOKEN_KEY = 'SPARC_PONG_AUTHORIZATION_TOKEN';
 
     service.getToken = function() {
         return $cookies.get(TOKEN_KEY);
@@ -23,7 +23,7 @@ function JwtService($http, $cookies, jwtHelper) {
     };
 
     service.getDecodedToken = function() {
-        var token = $cookies.get(TOKEN_KEY);
+        let token = $cookies.get(TOKEN_KEY);
         if (!token) return null;
         return jwtHelper.decodeToken(token);
     };

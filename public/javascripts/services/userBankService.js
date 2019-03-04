@@ -6,7 +6,7 @@ UserBankService.$inject = [];
 
 function UserBankService() {
     
-    var service = this;
+    let service = this;
 
     service.USER_COUNT = 0;
     service.LOGGED_IN_USERS = [];
@@ -29,7 +29,7 @@ function UserBankService() {
     };
 
     service.isOnlineByPlayerIds = function() {
-        var found = false;
+        let found = false;
         angular.forEach(arguments, function(pid) {
             if (service.LOGGED_IN_USERS.indexOf(pid) >= 0) return found = true;
         });

@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var playerSchema = new Schema({
+let playerSchema = new Schema({
 	username: { type: String, required: true, unique: true },
 	firstName: { type: String, required: true },
 	lastName: { type: String, required: true },
@@ -23,7 +23,7 @@ playerSchema.statics.findByAuthorization = function(authorization) {
 };
 
 playerSchema.statics.usernameExists = function(username) {
-    console.log('Checking if player username, ' + username + ', exists.');
+    console.log(`Checking if player username exists: ${username}`);
     return new Promise(function (resolve, reject) {
         Player.count({username: username}).exec()
 			.then(function(count) {
@@ -35,7 +35,7 @@ playerSchema.statics.usernameExists = function(username) {
 };
 
 playerSchema.statics.emailExists = function(email) {
-    console.log('Checking if email, '+ email +', exists.');
+    console.log(`Checking if email exists: ${email}`);
     return new Promise(function(resolve, reject) {
         Player.count({email: email}).exec()
 			.then(function(count) {
@@ -50,17 +50,17 @@ playerSchema.statics.lowestRank = function() {
     return new Promise(function(resolve, reject) {
         return Player.find().sort({'rank': -1}).limit(1).exec()
             .then(function (lowestRankPlayer) {
-                var lowestRank = 0;
+                let lowestRank = 0;
                 if (lowestRankPlayer && lowestRankPlayer.length > 0) {
                     lowestRank = lowestRankPlayer[0].rank;
                 }
-                console.log('Found lowest rank of ' + lowestRank);
+                console.log(`Found lowest rank of ${lowestRank}`);
                 return resolve(lowestRank);
             })
 			.catch(reject);
     });
 };
 
-var Player = mongoose.model('Player', playerSchema);
+const Player = mongoose.model('Player', playerSchema);
 
 module.exports = Player;

@@ -6,10 +6,10 @@ LoginService.$inject = ['$http', 'socket', 'jwtService'];
 
 function LoginService($http, socket, jwtService) {
 
-    var service = this;
+    let service = this;
 
     service.enablePasswordReset = function(playerId) {
-        var request = $http({
+        let request = $http({
             method: 'post',
             url: 'auth/password/reset/enable',
             data: {
@@ -20,7 +20,7 @@ function LoginService($http, socket, jwtService) {
     };
 
     service.changePasswordWithResetKey = function(newPassword, resetKey) {
-        var request = $http({
+        let request = $http({
             method: 'post',
             url: 'auth/password/reset/change',
             data: {
@@ -32,7 +32,7 @@ function LoginService($http, socket, jwtService) {
     };
 
     service.getLogins = function () {
-        var request = $http({
+        let request = $http({
             method: 'get',
             url: 'auth/logins'
         });
@@ -42,7 +42,7 @@ function LoginService($http, socket, jwtService) {
     service.attemptRelogin = function () {
         console.log('Attempting relogin');
         if (!service.isLoggedIn()) return;
-        var currentToken = jwtService.getToken();
+        let currentToken = jwtService.getToken();
         jwtService.setHeaders(currentToken);
         socket.emit('flash', currentToken);
     };
@@ -58,7 +58,7 @@ function LoginService($http, socket, jwtService) {
     };
 
     service.isLoggedIn = function () {
-        var token = jwtService.getToken();
+        let token = jwtService.getToken();
         return token !== null && token !== undefined;
     };
 

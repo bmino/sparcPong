@@ -1,29 +1,29 @@
 angular
-	.module('directives')
-	.directive('rankedMatchDisplay', RankedMatchDisplay);
+    .module('directives')
+    .directive('rankedMatchDisplay', RankedMatchDisplay);
 
 RankedMatchDisplay.$inject = [];
 
 function RankedMatchDisplay() {
 
-	return {
-		scope: {
-			challenge: '=',
-			playerId: '=',
-			type: '@'
-		},
-		template:
-			'<span ng-bind="playerWon() ? \'Won vs\' : \'Lost vs\'"></span> ' +
-			'<a ng-href="#!/profile/{{type}}/{{getOpponent()._id}}"><span ng-bind="getOpponent().username" ng-class="{strike: !getOpponent().active}"></span></a> ' +
-			'<span ng-bind="getScore()"></span>' +
-			'<br />' +
-			'<span ng-bind="challenge.updatedAt | mongoDate"></span>',
+    return {
+        scope: {
+            challenge: '=',
+            playerId: '=',
+            type: '@'
+        },
+        template:
+            '<span ng-bind="playerWon() ? \'Won vs\' : \'Lost vs\'"></span> ' +
+            '<a ng-href="#!/profile/{{type}}/{{getOpponent()._id}}"><span ng-bind="getOpponent().username" ng-class="{strike: !getOpponent().active}"></span></a> ' +
+            '<span ng-bind="getScore()"></span>' +
+            '<br />' +
+            '<span ng-bind="challenge.updatedAt | mongoDate"></span>',
 
-		link: link
-	};
+        link: link
+    };
 
 
-	function link(scope, elem, attrs) {
+    function link(scope, elem, attrs) {
         scope.getOpponent = function() {
             return scope.challenge.challenger._id === scope.playerId ? scope.challenge.challengee : scope.challenge.challenger;
         };
@@ -33,9 +33,9 @@ function RankedMatchDisplay() {
         };
 
         scope.getScore = function() {
-        	if (hasForfeit()) return 'via forfeit';
-        	return '(' + getPlayerScore() + '-' + getOpponentScore() + ')';
-		};
+            if (hasForfeit()) return 'via forfeit';
+            return '(' + getPlayerScore() + '-' + getOpponentScore() + ')';
+        };
 
 
         function hasForfeit() {
@@ -49,11 +49,11 @@ function RankedMatchDisplay() {
 
         function getPlayerScore() {
             return scope.challenge.challenger._id === scope.playerId ? scope.challenge.challengerScore : scope.challenge.challengeeScore;
-		}
+        }
 
         function getOpponentScore() {
             return scope.challenge.challengee._id === scope.playerId ? scope.challenge.challengerScore : scope.challenge.challengeeScore;
         }
-	}
+    }
 
 }

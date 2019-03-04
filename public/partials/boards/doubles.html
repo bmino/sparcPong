@@ -1,21 +1,21 @@
 <div class="partial-board">
-	<div class="page-header">
-		<h1>Doubles</h1>
-		<a class="btn btn-default pull-right" href="#!/signUp/team">
-			Create a Team
-		</a>
-	</div>
-	<!-- Each Tier -->
-	<div ng-repeat="t in tiers" ng-show="(teams | tier: t).length">
-		<label>Tier: {{t}}</label>
-		<ul class="list-group">
-			<!-- Each Team -->
-			<li class="list-group-item" ng-repeat="team in teams | tier: t | orderBy: 'rank'">
-				<div class="rank" ng-bind="team.rank"></div>
-				<span if-online="[team.leader, team.partner]" class="online-indicator"></span>
-				<a class="username" ng-href="#!/profile/team/{{team._id}}" ng-bind="team.username"></a>
-				<button class="btn btn-primary sp-button challengeButton" ng-click="challengeTeam(team._id)">Challenge</button>
-			</li>
-		</ul>
-	</div>
+    <div class="page-header">
+        <h1>Doubles</h1>
+        <a class="btn btn-default pull-right" href="#!/signUp/team">
+            Create a Team
+        </a>
+    </div>
+    <!-- Each Tier -->
+    <div ng-repeat="t in tiers" ng-show="(teams | tier: t).length">
+        <label>Tier: {{t}}</label>
+        <ul class="list-group">
+            <!-- Each Team -->
+            <li class="list-group-item" ng-repeat="team in teams | tier: t | orderBy: 'rank'">
+                <div class="rank" ng-bind="team.rank"></div>
+                <span if-online="[team.leader, team.partner]" class="online-indicator"></span>
+                <a class="username" ng-href="#!/profile/team/{{team._id}}" ng-bind="team.username"></a>
+                <button class="btn btn-primary sp-button challengeButton" ng-click="challengeTeam(team._id)">Challenge</button>
+            </li>
+        </ul>
+    </div>
 </div>

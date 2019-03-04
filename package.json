@@ -1,13 +1,13 @@
 {
   "name": "sparc-pong",
-  "version": "3.3.2",
+  "version": "3.4.0",
   "private": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/bmino/sparcPong.git"
   },
   "engines": {
-    "node": "11.8.0",
+    "node": "11.10.0",
     "npm": "6.7.0"
   },
   "scripts": {
@@ -26,8 +26,8 @@
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "jquery": "^3.3.1",
-    "jsonwebtoken": "^8.4.0",
-    "mongoose": "^5.4.13",
+    "jsonwebtoken": "^8.5.0",
+    "mongoose": "^5.4.16",
     "morgan": "^1.9.1",
     "nodemailer": "^5.1.1",
     "serve-favicon": "^2.5.0",

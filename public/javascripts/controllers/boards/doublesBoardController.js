@@ -16,8 +16,8 @@ function DoublesBoardController($scope, jwtService, socket, modalService, timeSe
     }
 
     function generateTiers(tiers) {
-        var arr = [];
-        for (var t = 1; t < tiers; t++) {
+        let arr = [];
+        for (let t = 1; t < tiers; t++) {
             arr.push(t);
         }
         $scope.tiers = arr;
@@ -33,7 +33,7 @@ function DoublesBoardController($scope, jwtService, socket, modalService, timeSe
 
     /* Should be covered by back end check, but just in case */
     function sanitizeUsernames(group) {
-        for (var i = 0; i < group.length; i++) {
+        for (let i = 0; i < group.length; i++) {
             group[i]['username'].replace(/&/g, '&amp;')
                 .replace(/>/g, '&gt;')
                 .replace(/</g, '&lt;')
@@ -42,7 +42,7 @@ function DoublesBoardController($scope, jwtService, socket, modalService, timeSe
     }
 
     $scope.dangerLevel = function (gameTime) {
-        var hours = timeService.hoursBetween(new Date(gameTime), new Date());
+        let hours = timeService.hoursBetween(new Date(gameTime), new Date());
         if (hours <= 48)
             return 'alert-success';
         if (hours > 48 && hours <= 72)
@@ -58,7 +58,7 @@ function DoublesBoardController($scope, jwtService, socket, modalService, timeSe
 
 
     function goodChallenge(success) {
-        var modalOptions = {
+        let modalOptions = {
             headerText: 'Team Challenge',
             bodyText: success
         };
@@ -66,7 +66,7 @@ function DoublesBoardController($scope, jwtService, socket, modalService, timeSe
     }
 
     function badChallenge(error) {
-        var modalOptions = {
+        let modalOptions = {
             headerText: 'Team Challenge',
             bodyText: error
         };
