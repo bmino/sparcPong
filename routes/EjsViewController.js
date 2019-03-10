@@ -5,7 +5,7 @@ const version = require('../package.json').version;
 /**
  * Get home page
  */
-router.get('/', function(req, res, next) {
+router.get('/', (req, res, next) => {
     res.render('index', {
         version: version
     });

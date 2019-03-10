@@ -17,7 +17,7 @@ const AuthService = require('../services/AuthService');
  * @param: phone
  * @param: email
  */
-router.post('/', function(req, res, next) {
+router.post('/', (req, res, next) => {
     if ((req.body.username && typeof req.body.username !== 'string') ||
         (req.body.password && typeof req.body.password !== 'string') ||
         (req.body.firstName && typeof req.body.firstName !== 'string') ||
@@ -34,7 +34,7 @@ router.post('/', function(req, res, next) {
     let playerEmail = req.body.email.trim();
 
     PlayerService.createPlayer(playerUsername, playerPassword, playerFirstName, playerLastName, playerPhone, playerEmail)
-        .then(function() {
+        .then(() => {
             res.json({message: 'Player created!'});
         })
         .catch(next);
@@ -45,14 +45,14 @@ router.post('/', function(req, res, next) {
  *
  * @param: newName
  */
-router.post('/change/username', auth.jwtAuthProtected, function(req, res, next) {
+router.post('/change/username', auth.jwtAuthProtected, (req, res, next) => {
     let newUsername = req.body.newUsername ? req.body.newUsername.trim() : null;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
     if (!clientId) return next(new Error('You must provide a valid player id.'));
 
     PlayerService.changeUsername(newUsername, clientId)
-        .then(function() {
+        .then(() => {
             res.json({message: `Successfully changed your username to ${newUsername}`});
         })
         .catch(next);
@@ -64,13 +64,13 @@ router.post('/change/username', auth.jwtAuthProtected, function(req, res, next) 
  * @param: oldPassword
  * @param: newPassword
  */
-router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) {
+router.post('/change/password', auth.jwtAuthProtected, (req, res, next) => {
     let oldPassword = req.body.oldPassword ? req.body.oldPassword.trim() : '';
     let newPassword = req.body.newPassword ? req.body.newPassword.trim() : '';
     let clientId = AuthService.verifyToken(req.token).playerId;
 
     PlayerService.changePassword(oldPassword, newPassword, clientId)
-        .then(function() {
+        .then(() => {
             res.json({message: 'Successfully changed your password'});
         })
         .catch(next);
@@ -82,12 +82,12 @@ router.post('/change/password', auth.jwtAuthProtected, function(req, res, next) 
  *
  * @param: newEmail
  */
-router.post('/change/email', auth.jwtAuthProtected, function(req, res, next) {
+router.post('/change/email', auth.jwtAuthProtected, (req, res, next) => {
     let newEmail = req.body.newEmail ? req.body.newEmail.trim() : null;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
     PlayerService.changeEmail(newEmail, clientId)
-        .then(function() {
+        .then(() => {
             res.json({message: `Successfully changed your email to ${newEmail}!`});
         })
         .catch(next);
@@ -96,11 +96,11 @@ router.post('/change/email', auth.jwtAuthProtected, function(req, res, next) {
 /**
  * Removes player email
  */
-router.post('/change/email/remove', auth.jwtAuthProtected, function(req, res, next) {
+router.post('/change/email/remove', auth.jwtAuthProtected, (req, res, next) => {
     let clientId = AuthService.verifyToken(req.token).playerId;
 
     PlayerService.removeEmail(clientId)
-        .then(function() {
+        .then(() => {
             res.json({message: 'Successfully removed your email!'});
         })
         .catch(next);
@@ -110,9 +110,9 @@ router.post('/change/email/remove', auth.jwtAuthProtected, function(req, res, ne
 /**
  * Get player listing
  */
-router.get('/', auth.jwtAuthProtected, function(req, res, next) {
+router.get('/', auth.jwtAuthProtected, (req, res, next) => {
     Player.find({active: true}).exec()
-        .then(function(players) {
+        .then((players) => {
             res.json({message: players});
         })
         .catch(next);
@@ -123,12 +123,12 @@ router.get('/', auth.jwtAuthProtected, function(req, res, next) {
  *
  * @param: playerId
  */
-router.get('/fetch/:playerId', auth.jwtAuthProtected, function(req, res, next) {
+router.get('/fetch/:playerId', auth.jwtAuthProtected, (req, res, next) => {
     let playerId = req.params.playerId;
     if (!playerId) return next(new Error('You must specify a player id.'));
 
     Player.findById(playerId).exec()
-        .then(function(player) {
+        .then((player) => {
             if (!player) return Promise.reject(new Error('No player was found for that id.'));
             res.json({message: player});
         })
@@ -141,15 +141,15 @@ router.get('/fetch/:playerId', auth.jwtAuthProtected, function(req, res, next) {
  *
  * @param: playerId
  */
-router.get('/record/:playerId', auth.jwtAuthProtected, function(req, res, next) {
+router.get('/record/:playerId', auth.jwtAuthProtected, (req, res, next) => {
     let playerId = req.params.playerId;
     if (!playerId) return next(new Error('You must specify a player id.'));
 
     Challenge.getResolved(playerId)
-        .then(function(challenges) {
+        .then((challenges) => {
             let wins = 0;
             let losses = 0;
-            challenges.forEach(function(challenge) {
+            challenges.forEach((challenge) => {
                 if (challenge.winner.toString() === playerId.toString()) wins++;
                 else losses++;
             });

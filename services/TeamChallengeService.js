@@ -15,19 +15,19 @@ const TeamChallengeService = {
             Team.getTeamsByPlayerId(clientId),
             Team.findById(challengeeId).exec()
         ])
-            .then(function(results) {
+            .then((results) => {
                 let playerTeams = results[0];
                 let challengeeTeam = results[1];
                 if (!playerTeams || playerTeams.length === 0) return Promise.reject(new Error('Player must be a member of a team.'));
                 return TeamChallengeService.verifyAllowedToChallenge([playerTeams[0], challengeeTeam]);
             })
-            .then(function(teams) {
+            .then((teams) => {
                 if (!teams[0].hasMemberByPlayerId(clientId)) {
                     return Promise.reject(new Error(`You must be a member of the challenging team, "${teams[0].username}"`));
                 }
                 return TeamChallenge.createByTeams(teams);
             })
-            .then(function(challenge) {
+            .then((challenge) => {
                 MailerService.newTeamChallenge(challenge._id);
                 SocketService.IO.sockets.emit('challenge:team:issued');
             });
@@ -37,18 +37,18 @@ const TeamChallengeService = {
         if (!challengeId) return Promise.reject(new Error('This is not a valid challenge.'));
 
         return TeamChallenge.findById(challengeId).exec()
-            .then(function(teamChallenge) {
+            .then((teamChallenge) => {
                 return TeamChallengeService.verifyAllowedToResolve(teamChallenge, clientId);
             })
             .then(TeamChallengeService.verifyForfeitIsNotRequired)
-            .then(function(teamChallenge) {
+            .then((teamChallenge) => {
                 return ChallengeService.setScore(teamChallenge, challengerScore, challengeeScore);
             })
             .then(TeamChallengeService.updateLastGames)
-            .then(function(teamChallenge) {
+            .then((teamChallenge) => {
                 if (challengerScore > challengeeScore) return ChallengeService.swapRanks(teamChallenge);
             })
-            .then(function() {
+            .then(() => {
                 MailerService.resolvedTeamChallenge(challengeId);
                 SocketService.IO.sockets.emit('challenge:team:resolved');
             });
@@ -58,12 +58,12 @@ const TeamChallengeService = {
         if (!challengeId) return Promise.reject(new Error('This is not a valid challenge id.'));
 
         return TeamChallenge.findById(challengeId).exec()
-            .then(function(challenge) {
+            .then((challenge) => {
                 if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
                 return TeamChallengeService.verifyAllowedToRevoke(challenge, clientId);
             })
             .then(TeamChallenge.removeByDocument)
-            .then(function(challenge) {
+            .then((challenge) => {
                 MailerService.revokedTeamChallenge(challenge.challenger, challenge.challengee);
                 SocketService.IO.sockets.emit('challenge:team:revoked');
             });
@@ -75,13 +75,13 @@ const TeamChallengeService = {
         console.log(`Forfeiting challenge id [${challengeId}]`);
 
         return TeamChallenge.findById(challengeId).exec()
-            .then(function(teamChallenge) {
+            .then((teamChallenge) => {
                 return TeamChallengeService.verifyAllowedToForfeit(teamChallenge, clientId);
             })
             .then(ChallengeService.setForfeit)
             .then(TeamChallengeService.updateLastGames)
             .then(ChallengeService.swapRanks)
-            .then(function() {
+            .then(() => {
                 MailerService.forfeitedTeamChallenge(challengeId);
                 SocketService.IO.sockets.emit('challenge:team:forfeited');
             });
@@ -90,7 +90,7 @@ const TeamChallengeService = {
     verifyAllowedToChallenge(teams) {
         let challenger = teams[0];
         let challengee = teams[1];
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             let activePlayerCheck = TeamChallengeService.verifyActivePlayers(teams);
             let existingChallengesCheck = TeamChallengeService.verifyChallengesBetweenTeams(teams);
             let rankCheck = ChallengeService.verifyRank(challenger, challengee);
@@ -99,7 +99,7 @@ const TeamChallengeService = {
             let businessDayCheck = ChallengeService.verifyBusinessDay();
 
             return Promise.all([activePlayerCheck, existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
-                .then(function() {return resolve(teams);})
+                .then(() => resolve(teams))
                 .catch(reject);
         });
     },
@@ -120,7 +120,7 @@ const TeamChallengeService = {
         let challenger = teams[0];
         let challengee = teams[1];
 
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             if (challenger._id.toString() === challengee._id.toString()) return reject(new Error('Teams can not challenge themselves.'));
             let challengerIncoming = TeamChallenge.count({challengee: challenger._id, winner: null}).exec();
             let challengerOutgoing = TeamChallenge.count({challenger: challenger._id, winner: null}).exec();
@@ -129,7 +129,7 @@ const TeamChallengeService = {
             let challengesBetween  = TeamChallenge.getUnresolvedBetweenTeams(teams);
 
             return Promise.all([challengerIncoming, challengerOutgoing, challengeeIncoming, challengeeOutgoing, challengesBetween])
-                .then(function (counts) {
+                .then((counts) => {
                     if (counts[0] >= ChallengeService.ALLOWED_INCOMING) return reject(new Error(`${challenger.username} cannot have more than ${ChallengeService.ALLOWED_INCOMING} incoming challenges.`));
                     if (counts[1] >= ChallengeService.ALLOWED_OUTGOING) return reject(new Error(`${challenger.username} cannot have more than ${ChallengeService.ALLOWED_OUTGOING} outgoing challenges.`));
                     if (counts[2] >= ChallengeService.ALLOWED_INCOMING) return reject(new Error(`${challengee.username} cannot have more than ${ChallengeService.ALLOWED_INCOMING} incoming challenges.`));
@@ -144,9 +144,9 @@ const TeamChallengeService = {
     },
 
     verifyAllowedToResolve(teamChallenge, playerId) {
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             TeamChallenge.populate(teamChallenge, 'challenger challengee')
-                .then(function(populatedTeamChallenge) {
+                .then((populatedTeamChallenge) => {
                     if (populatedTeamChallenge.challenger.hasMemberByPlayerId(playerId)) {
                         return resolve(teamChallenge);
                     }
@@ -160,9 +160,9 @@ const TeamChallengeService = {
     },
 
     verifyAllowedToForfeit(teamChallenge, playerId) {
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             TeamChallenge.populate(teamChallenge, 'challengee')
-                .then(function(populatedTeamChallenge) {
+                .then((populatedTeamChallenge) => {
                     if (populatedTeamChallenge.challengee.hasMemberByPlayerId(playerId)) {
                         return resolve(teamChallenge);
                     }
@@ -173,9 +173,9 @@ const TeamChallengeService = {
     },
 
     verifyAllowedToRevoke(teamChallenge, playerId) {
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             TeamChallenge.populate(teamChallenge, 'challenger')
-                .then(function(populatedTeamChallenge) {
+                .then((populatedTeamChallenge) => {
                     if (populatedTeamChallenge.challenger.hasMemberByPlayerId(playerId)) {
                         return resolve(teamChallenge);
                     }
@@ -187,7 +187,7 @@ const TeamChallengeService = {
 
     verifyForfeitIsNotRequired(challenge) {
         console.log('Verifying team challenge forfeit');
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             let dateIssued = challenge.createdAt;
             let expires = Util.addBusinessDays(dateIssued, TeamChallengeService.ALLOWED_CHALLENGE_DAYS_TEAM);
             if (expires < new Date()) return reject(new Error('This challenge has expired. It must be forfeited.'));
@@ -197,9 +197,9 @@ const TeamChallengeService = {
 
     updateLastGames(challenge) {
         console.log(`Updating last games for the challenge with id of [${challenge._id}]`);
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             return TeamChallenge.populateById(challenge._id)
-                .then(function(c) {
+                .then((c) => {
                     let setTimeOption = {$set: {lastGame: c.updatedAt}};
                     let challengerLeaderUpdate = Player.findByIdAndUpdate(c.challenger.leader._id, setTimeOption).exec();
                     let challengerPartnerUpdate = Player.findByIdAndUpdate(c.challenger.partner._id, setTimeOption).exec();
@@ -207,7 +207,7 @@ const TeamChallengeService = {
                     let challengeePartnerUpdate = Player.findByIdAndUpdate(c.challengee.partner._id, setTimeOption).exec();
 
                     return Promise.all([challengerLeaderUpdate, challengerPartnerUpdate, challengeeLeaderUpdate, challengeePartnerUpdate])
-                        .then(function() {return resolve(challenge);})
+                        .then(() => {return resolve(challenge);})
                         .catch(reject);
                 });
 

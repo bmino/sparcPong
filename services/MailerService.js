@@ -27,7 +27,7 @@ const MailerService = {
         console.log(`Checking email permissions for a new team challenge`);
 
         TeamChallenge.populateById(teamChallengeId, true)
-            .then(function(challenge) {
+            .then((challenge) => {
                 let challenger = challenge.challenger;
                 let challengee = challenge.challengee;
                 if (challengee.leader.email && challengee.leader.alerts.team.challenged) {
@@ -45,15 +45,15 @@ const MailerService = {
 
         let challengerPromise = Team.findById(teamChallengerId).exec();
         let challengeePromise = Team.findById(teamChallengeeId).exec();
-        let challengeeLeaderPromise = challengeePromise.then(function(challengee) {
+        let challengeeLeaderPromise = challengeePromise.then((challengee) => {
             return Player.findById(challengee.leader).populate(`alerts`).exec();
         });
-        let challengeePartnerPromise = challengeePromise.then(function(challengee) {
+        let challengeePartnerPromise = challengeePromise.then((challengee) => {
             return Player.findById(challengee.partner).populate(`alerts`).exec();
         });
 
         Promise.all([challengeeLeaderPromise, challengeePartnerPromise, challengerPromise])
-            .then(function(values) {
+            .then((values) => {
                 let leader = values[0];
                 let partner = values[1];
                 let challengerTeam = values[2];
@@ -72,7 +72,7 @@ const MailerService = {
         console.log(`Checking email permissions for a resolved team challenge`);
 
         TeamChallenge.populateById(teamChallengeId, true)
-            .then(function(teamChallenge) {
+            .then((teamChallenge) => {
                 let winner = teamChallenge.getWinner();
                 let loser = teamChallenge.getLoser();
                 let loserLeader = loser.leader;
@@ -100,7 +100,7 @@ const MailerService = {
         console.log(`Checking email permissions for a forfeited team challenge`);
 
         TeamChallenge.populateById(teamChallengeId, true)
-            .then(function(team) {
+            .then((team) => {
                 if (team.challenger.leader.email && team.challenger.leader.alerts.team.forfeited) {
                     MailerService.sendEmail(`Forfeited Doubles Challenge`, `That lil chicken of a team "${team.challengee.username}" forfeited your challenge. You win by default!`, team.challenger.leader.email);
                 }
@@ -115,7 +115,7 @@ const MailerService = {
         console.log(`Checking email permission for a new challenge`);
 
         Challenge.populateById(challengeId, true)
-            .then(function(challenge) {
+            .then((challenge) => {
                 if (challenge.challengee.email && challenge.challengee.alerts.challenged) {
                     MailerService.sendEmail(`New Challenge`, `You have been challenged by "${challenge.challenger.username}." Log in at ${MailerService.LADDER_URL} to deal with that scrub!`, challenge.challengee.email);
                 }
@@ -130,7 +130,7 @@ const MailerService = {
             Player.findById(challengerId).populate(`alerts`).exec(),
             Player.findById(challengeeId).populate(`alerts`).exec()
         ])
-            .then(function(players) {
+            .then((players) => {
                 let challenger = players[0];
                 let challengee = players[1];
                 if (challengee.email && challengee.alerts.revoked) {
@@ -144,7 +144,7 @@ const MailerService = {
         console.log(`Checking email permission for a resolved challenge`);
 
         Challenge.populateById(challengeId, true)
-            .then(function(challenge) {
+            .then((challenge) => {
                 let loser = challenge.getLoser();
                 let winner = challenge.getWinner();
 
@@ -162,7 +162,7 @@ const MailerService = {
         console.log(`Checking email permission for a forfeited challenge`);
 
         Challenge.populateById(challengeId, true)
-            .then(function(challenge) {
+            .then((challenge) => {
                 if (challenge.challenger.email && challenge.challenger.alerts.forfeited) {
                     MailerService.sendEmail(`Forfeited Challenge`, `That lil weasel, "${challenge.challengee.username}" forfeited your challenge. You win by default!`, challenge.challenger.email);
                 }
@@ -172,7 +172,7 @@ const MailerService = {
 
     newAutoChallenge(challengeId) {
         Challenge.populateById(challengeId, true)
-            .then(function(challenge) {
+            .then((challenge) => {
                 MailerService.sendEmail(`New Auto Challenge`, `A challenge has been automatically issued on your behalf against "${challenge.challengee.username}." Log in at ${MailerService.LADDER_URL} to wreck that hooligan!`, challenge.challenger.email);
             })
             .catch(console.log);
@@ -181,16 +181,16 @@ const MailerService = {
     resetPassword(resetKey) {
         console.log(`Checking email for password reset.`);
 
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             Authorization.findByResetKey(resetKey)
                 .then(Player.findByAuthorization)
-                .then(function(player) {
+                .then((player) => {
                     if (!player) return reject(new Error(`Player could not be found`));
                     if (!player.email) return reject(new Error(`Could not find an email for this player.`));
                     return MailerService.sendEmail(`Password Reset`, `Your reset key is: ${resetKey}\n You may reset your password at ${MailerService.LADDER_URL}/#!/resetPassword/${encodeURIComponent(resetKey)}`, player.email);
                 })
                 .then(resolve)
-                .catch(function(err) {
+                .catch((err) => {
                     console.error(err);
                     return reject(new Error(`Error sending password reset email`));
                 });
@@ -200,7 +200,7 @@ const MailerService = {
     sendEmail(subject, message, address) {
         console.log(`Trying to send "${subject}" email to ${address}`);
 
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             let mailOptions = {
                 to: address,
                 from: `${MailerService.EMAIL_TITLE} <${process.env.EMAIL_ADDRESS}>`,
@@ -208,7 +208,7 @@ const MailerService = {
                 text: message
             };
 
-            MailerService.transporter.sendMail(mailOptions, function(error, response) {
+            MailerService.transporter.sendMail(mailOptions, (error, response) => {
                 if (error) return reject(error);
                 console.log(`${subject} email sent to ${address}`);
                 return resolve(address);

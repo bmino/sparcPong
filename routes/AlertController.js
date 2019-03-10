@@ -8,13 +8,13 @@ const AuthService = require('../services/AuthService');
 /**
  * Get player alerts
  */
-router.get('/', function(req, res, next) {
+router.get('/', (req, res, next) => {
     let clientId = AuthService.verifyToken(req.token).playerId;
 
 	if (!clientId) return next(new Error('You must provide a valid player id.'));
 
 	Player.findById(clientId).populate('alerts').exec()
-		.then(function(player) {
+		.then((player) => {
 			if (!player || !player.alerts) return Promise.reject(new Error("Could not find the player's alert settings."));
 			let alerts = {};
 
@@ -34,7 +34,7 @@ router.get('/', function(req, res, next) {
  * Update player alerts
  * @param: alerts
  */
-router.post('/', function(req, res, next) {
+router.post('/', (req, res, next) => {
     let newAlerts = req.body.alerts;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
@@ -42,7 +42,7 @@ router.post('/', function(req, res, next) {
 	if (!newAlerts) return next(new Error('Uh oh, the alert preferences got lost along the way.'));
 	
 	Player.findById(clientId).populate('alerts').exec()
-		.then(function(player) {
+		.then((player) => {
             if (!player || !player.alerts) return Promise.reject(new Error("Could not find the player's alert settings."));
 
             player.alerts.challenged = newAlerts.challenged ;
@@ -57,7 +57,7 @@ router.post('/', function(req, res, next) {
 
             return player.alerts.save();
         })
-		.then(function() {
+		.then(() => {
 			res.json({message: 'Alerts updated successfully!'});
 		})
 		.catch(next);

@@ -27,16 +27,16 @@ const TeamService = {
             Player.emailExists(email),
             Player.lowestRank()
         ])
-            .then(function(values) {
+            .then((values) => {
                 // Set initial rank and persist player
                 player.rank = values[6] + 1;
                 return player.save();
             })
             .then(Alert.attachToPlayer)
-            .then(function(createdPlayer) {
+            .then((createdPlayer) => {
                 return Authorization.attachToPlayerWithPassword(createdPlayer, password)
             })
-            .then(function() {
+            .then(() => {
                 SocketService.IO.sockets.emit('player:new', username);
                 console.log('Successfully created a new player.');
             });
@@ -47,15 +47,15 @@ const TeamService = {
 
         return NameService.verifyUsername(newUsername)
             .then(Player.usernameExists)
-            .then(function() {
+            .then(() => {
                 return Player.findById(clientId).exec()
             })
-            .then(function(player) {
+            .then((player) => {
                 if (!player) return Promise.reject(new Error('Could not find your account.'));
                 player.username = newUsername;
                 return player.save();
             })
-            .then(function() {
+            .then(() => {
                 SocketService.IO.sockets.emit('player:change:username');
             });
     },
@@ -64,7 +64,7 @@ const TeamService = {
         if (!clientId) return Promise.reject(new Error('You must provide a valid player id.'));
 
         return AuthService.resetPasswordByExistingPassword(newPassword, oldPassword, clientId)
-            .then(function() {
+            .then(() => {
                 SocketService.IO.sockets.emit('player:change:password');
             });
     },
@@ -76,16 +76,16 @@ const TeamService = {
 
         return EmailService.verifyEmail(newEmail)
             .then(Player.emailExists)
-            .then(function() {
+            .then(() => {
                 return Player.findById(clientId).exec();
             })
-            .then(function(player) {
+            .then((player) => {
                 if (!player) return Promise.reject(new Error('Could not find your current account.'));
                 console.log('Changing player email.');
                 player.email = newEmail;
                 return player.save();
             })
-            .then(function() {
+            .then(() => {
                 SocketService.IO.sockets.emit('player:change:email');
             });
     },
@@ -94,12 +94,12 @@ const TeamService = {
         if (!clientId) return Promise.reject(new Error('You must provide a valid player id.'));
 
         return Player.findById(clientId).exec()
-            .then(function(player) {
+            .then((player) => {
                 if (!player) return Promise.reject(new Error('Could not find your current account.'));
                 player.email = '';
                 return player.save();
             })
-            .then(function() {
+            .then(() => {
                 SocketService.IO.sockets.emit('player:change:email');
             });
     }

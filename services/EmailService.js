@@ -3,7 +3,7 @@ const EmailService = {
     verifyEmail(email) {
         console.log(`Verifying email of ${email}`);
 
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             if (!email) return reject(new Error('You must give an email.'));
 
             // Needs one @ symbol

@@ -23,9 +23,9 @@ teamSchema.statics.getTeamsByPlayerId = function(playerId) {
 
 teamSchema.statics.usernameExists = function(username) {
     console.log(`Checking if team username, ${username}, exists.`);
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
         Team.count({username: username}).exec()
-            .then(function(count) {
+            .then((count) => {
                 if (count !== 0) return reject(new Error('Team username already exists.'));
                 return resolve(username);
             })
@@ -35,9 +35,9 @@ teamSchema.statics.usernameExists = function(username) {
 
 teamSchema.statics.lowestRank = function() {
     console.log('Finding lowest team rank.');
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         Team.find().sort({'rank': -1}).limit(1).exec()
-            .then(function (lowestRankTeam) {
+            .then((lowestRankTeam) => {
                 let lowestRank = 0;
                 if (lowestRankTeam && lowestRankTeam.length > 0) {
                     lowestRank = lowestRankTeam[0].rank;

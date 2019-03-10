@@ -12,13 +12,13 @@ const TeamService = require('../services/TeamService');
  * @param: leaderId
  * @param: partnerId
  */
-router.post('/', function(req, res, next) {
+router.post('/', (req, res, next) => {
     let username = req.body.username;
     let leaderId = req.body.leaderId;
     let partnerId = req.body.partnerId;
 
     TeamService.createTeam(username, leaderId, partnerId)
-        .then(function() {
+        .then(() => {
             res.json({message: 'Team created!'});
         })
         .catch(next);
@@ -30,12 +30,12 @@ router.post('/', function(req, res, next) {
  * @param: teamId
  * @param: newUsername
  */
-router.post('/change/username', function(req, res, next) {
+router.post('/change/username', (req, res, next) => {
     let teamId = req.body.teamId;
     let newUsername = req.body.newUsername ? req.body.newUsername.trim() : null;
 
     TeamService.changeTeamName(teamId, newUsername)
-        .then(function() {
+        .then(() => {
             res.json({message: `Successfully changed your team name to ${newUsername}!`});
         })
         .catch(next);
@@ -45,9 +45,9 @@ router.post('/change/username', function(req, res, next) {
 /**
  * Get all teams
  */
-router.get('/', function(req, res, next) {
+router.get('/', (req, res, next) => {
     Team.find({})
-        .then(function(teams) {
+        .then((teams) => {
             res.json({message: teams});
         })
         .catch(next);
@@ -58,12 +58,12 @@ router.get('/', function(req, res, next) {
  *
  * @param: teamId
  */
-router.get('/fetch/:teamId', function(req, res, next) {
+router.get('/fetch/:teamId', (req, res, next) => {
     let teamId = req.params.teamId;
     if (!teamId) return next(new Error('You must specify a team id.'));
 
     Team.findById(teamId).populate('leader partner').exec()
-        .then(function(team) {
+        .then((team) => {
             res.json({message: team});
         })
         .catch(next);
@@ -74,12 +74,12 @@ router.get('/fetch/:teamId', function(req, res, next) {
  *
  * @param: playerId
  */
-router.get('/fetch/lookup/:playerId', function(req, res, next) {
+router.get('/fetch/lookup/:playerId', (req, res, next) => {
     let playerId = req.params.playerId;
     if (!playerId) return next(new Error('You must specify a player id.'));
 
     Team.getTeamsByPlayerId(playerId)
-        .then(function(teams) {
+        .then((teams) => {
             res.json({message: teams});
         })
         .catch(next);
@@ -91,15 +91,15 @@ router.get('/fetch/lookup/:playerId', function(req, res, next) {
  *
  * @param: teamId
  */
-router.get('/record/:teamId', function(req, res, next) {
+router.get('/record/:teamId', (req, res, next) => {
     let teamId = req.params.teamId;
     if (!teamId) return next(new Error('You must specify a team id.'));
 
     TeamChallenge.getResolved(teamId)
-        .then(function(challenges) {
+        .then((challenges) => {
             let wins = 0;
             let losses = 0;
-            challenges.forEach(function(challenge) {
+            challenges.forEach((challenge) => {
                 if (challenge.winner.toString() === teamId.toString()) wins++;
                 else losses++;
             });

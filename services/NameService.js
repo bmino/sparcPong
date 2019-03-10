@@ -5,7 +5,7 @@ const NameService = {
     verifyRealName(firstName, lastName) {
         console.log(`Verifying real name of ${firstName} ${lastName}`);
 
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
 
             if (!firstName || !lastName) return reject(new Error('You must give a first and last name.'));
 
@@ -29,7 +29,7 @@ const NameService = {
     verifyUsername(username) {
         console.log(`Verifying username of ${username}`);
 
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
 
             if (!username) return reject(new Error('You must give a username.'));
 
