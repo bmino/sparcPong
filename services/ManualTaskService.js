@@ -76,6 +76,20 @@ const ManualTaskService = {
             });
     },
 
+    activatePlayer(playerId) {
+        console.log('[Manual] - Activating player');
+
+        return Promise.all([
+            Player.findById(playerId),
+            Player.lowestRank()
+        ])
+            .then(([player, lowestRank]) => {
+                if (!player) return Promise.reject(new Error('Could not find player'));
+                if (player.active) return Promise.reject(new Error('Player is already active'));
+                return Player.findByIdAndUpdate(playerId, {active: true, rank: lowestRank+1}).exec();
+            });
+    },
+
     issueChallenges(players, challengerIndex, challengeeIndex, issued) {
         if (!issued) issued = 0;
 

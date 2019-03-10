@@ -45,5 +45,18 @@ router.get('/deactivate', function(req, res, next) {
         .catch(next);
 });
 
+router.get('/activate', function(req, res, next) {
+    if (!req.query.key || req.query.key !== process.env.JWT_SECRET_KEY) return res.json('Invalid key');
+    if (!req.query.id) return res.json('Missing id');
+
+    return ManualTaskService.activatePlayer(req.query.id)
+        .then(function() {
+            let msg = 'Activated player';
+            console.log(`[Manual] - ${msg}`);
+            res.json(msg);
+        })
+        .catch(next);
+});
+
 
 module.exports = router;
