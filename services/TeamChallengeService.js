@@ -91,24 +91,36 @@ const TeamChallengeService = {
         let challenger = teams[0];
         let challengee = teams[1];
         return new Promise(function(resolve, reject) {
-
+            let activePlayerCheck = TeamChallengeService.verifyActivePlayers(teams);
             let existingChallengesCheck = TeamChallengeService.verifyChallengesBetweenTeams(teams);
             let rankCheck = ChallengeService.verifyRank(challenger, challengee);
             let tierCheck = ChallengeService.verifyTier(challenger, challengee);
             let reissueTimeCheck = TeamChallenge.getResolvedBetweenTeams(teams).then(ChallengeService.verifyReissueTime);
             let businessDayCheck = ChallengeService.verifyBusinessDay();
 
-            return Promise.all([existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
+            return Promise.all([activePlayerCheck, existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
                 .then(function() {return resolve(teams);})
                 .catch(reject);
+        });
+    },
+
+    verifyActivePlayers(teams) {
+        return Promise.all([
+            Player.findById(teams[0].leader).exec(),
+            Player.findById(teams[0].partner).exec(),
+            Player.findById(teams[1].leader).exec(),
+            Player.findById(teams[1].partner).exec()])
+        .then(players => {
+            if (players.find(player => !player.active)) return Promise.reject(new Error('All players must have active accounts'));
+            return Promise.resolve(teams);
         });
     },
 
     verifyChallengesBetweenTeams(teams) {
         let challenger = teams[0];
         let challengee = teams[1];
-        return new Promise(function(resolve, reject) {
 
+        return new Promise(function(resolve, reject) {
             if (challenger._id.toString() === challengee._id.toString()) return reject(new Error('Teams can not challenge themselves.'));
             let challengerIncoming = TeamChallenge.count({challengee: challenger._id, winner: null}).exec();
             let challengerOutgoing = TeamChallenge.count({challenger: challenger._id, winner: null}).exec();

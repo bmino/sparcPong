@@ -80,17 +80,22 @@ const PlayerChallengeService = {
         let challengee = players[1];
 
         return new Promise(function(resolve, reject) {
-            if (!challenger.active || !challengee.active) return reject(new Error('Both players must have active accounts'));
+            let activePlayerCheck = PlayerChallengeService.verifyActivePlayers(players);
             let existingChallengesCheck = PlayerChallengeService.verifyChallengesBetweenPlayers(players);
             let rankCheck = ChallengeService.verifyRank(challenger, challengee);
             let tierCheck = ChallengeService.verifyTier(challenger, challengee);
             let reissueTimeCheck = Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime);
             let businessDayCheck = ChallengeService.verifyBusinessDay();
 
-            return Promise.all([existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
+            return Promise.all([activePlayerCheck, existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
                 .then(function() {return resolve(players);})
                 .catch(reject);
         });
+    },
+
+    verifyActivePlayers(players) {
+        if (players.find(player => !player.active)) return Promise.reject(new Error('Both players must have active accounts'));
+        return Promise.resolve(players);
     },
 
     verifyChallengesBetweenPlayers(players) {
