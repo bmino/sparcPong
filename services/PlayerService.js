@@ -71,8 +71,6 @@ const TeamService = {
 
     changeEmail(newEmail, clientId) {
         if (!clientId) return Promise.reject(new Error('You must provide a valid player id.'));
-        if (!newEmail || newEmail.length === 0) return Promise.reject(new Error('You must provide an email address.'));
-        if (newEmail.length > 50) return Promise.reject(new Error('Your email length cannot exceed 50 characters.'));
 
         return EmailService.verifyEmail(newEmail)
             .then(Player.emailExists)
