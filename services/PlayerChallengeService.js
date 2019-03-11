@@ -103,10 +103,10 @@ const PlayerChallengeService = {
         let challengee = players[1];
         return new Promise((resolve, reject) => {
 
-            let challengerIncoming = Challenge.count({challengee: challenger._id, winner: null}).exec();
-            let challengerOutgoing = Challenge.count({challenger: challenger._id, winner: null}).exec();
-            let challengeeIncoming = Challenge.count({challengee: challengee._id, winner: null}).exec();
-            let challengeeOutgoing = Challenge.count({challenger: challengee._id, winner: null}).exec();
+            let challengerIncoming = Challenge.countDocuments({challengee: challenger._id, winner: null}).exec();
+            let challengerOutgoing = Challenge.countDocuments({challenger: challenger._id, winner: null}).exec();
+            let challengeeIncoming = Challenge.countDocuments({challengee: challengee._id, winner: null}).exec();
+            let challengeeOutgoing = Challenge.countDocuments({challenger: challengee._id, winner: null}).exec();
             let challengesBetween  = Challenge.getUnresolvedBetweenPlayers(players);
 
             return Promise.all([challengerIncoming, challengerOutgoing, challengeeIncoming, challengeeOutgoing, challengesBetween])

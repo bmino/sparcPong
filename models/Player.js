@@ -25,7 +25,7 @@ playerSchema.statics.findByAuthorization = function(authorization) {
 playerSchema.statics.usernameExists = function(username) {
     console.log(`Checking if player username exists: ${username}`);
     return new Promise((resolve, reject) => {
-        Player.count({username: username}).exec()
+        Player.countDocuments({username: username}).exec()
 			.then((count)  => {
 				if (count !== 0) return reject(new Error('Player username already exists.'));
 				return resolve(username);
@@ -37,7 +37,7 @@ playerSchema.statics.usernameExists = function(username) {
 playerSchema.statics.emailExists = function(email) {
     console.log(`Checking if email exists: ${email}`);
     return new Promise((resolve, reject)  => {
-        Player.count({email: email}).exec()
+        Player.countDocuments({email: email}).exec()
 			.then((count)  => {
 				if (count !== 0) return reject(new Error('Email already exists.'));
 				return resolve(count);

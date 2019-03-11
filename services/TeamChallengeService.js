@@ -122,10 +122,10 @@ const TeamChallengeService = {
 
         return new Promise((resolve, reject) => {
             if (challenger._id.toString() === challengee._id.toString()) return reject(new Error('Teams can not challenge themselves.'));
-            let challengerIncoming = TeamChallenge.count({challengee: challenger._id, winner: null}).exec();
-            let challengerOutgoing = TeamChallenge.count({challenger: challenger._id, winner: null}).exec();
-            let challengeeIncoming = TeamChallenge.count({challengee: challengee._id, winner: null}).exec();
-            let challengeeOutgoing = TeamChallenge.count({challenger: challengee._id, winner: null}).exec();
+            let challengerIncoming = TeamChallenge.countDocuments({challengee: challenger._id, winner: null}).exec();
+            let challengerOutgoing = TeamChallenge.countDocuments({challenger: challenger._id, winner: null}).exec();
+            let challengeeIncoming = TeamChallenge.countDocuments({challengee: challengee._id, winner: null}).exec();
+            let challengeeOutgoing = TeamChallenge.countDocuments({challenger: challengee._id, winner: null}).exec();
             let challengesBetween  = TeamChallenge.getUnresolvedBetweenTeams(teams);
 
             return Promise.all([challengerIncoming, challengerOutgoing, challengeeIncoming, challengeeOutgoing, challengesBetween])

@@ -24,7 +24,7 @@ teamSchema.statics.getTeamsByPlayerId = function(playerId) {
 teamSchema.statics.usernameExists = function(username) {
     console.log(`Checking if team username, ${username}, exists.`);
     return new Promise((resolve, reject) => {
-        Team.count({username: username}).exec()
+        Team.countDocuments({username: username}).exec()
             .then((count) => {
                 if (count !== 0) return reject(new Error('Team username already exists.'));
                 return resolve(username);
