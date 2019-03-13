@@ -19,7 +19,7 @@ const PlayerChallengeService = {
         ])
             .then(PlayerChallengeService.verifyAllowedToChallenge)
             .then(Challenge.createByPlayers)
-            .then(function(challenge) {
+            .then((challenge) => {
                 MailerService.newChallenge(challenge._id);
                 SocketService.IO.sockets.emit('challenge:issued');
                 return challenge;
@@ -28,14 +28,14 @@ const PlayerChallengeService = {
 
     doForfeit(challengeId, clientId) {
         return Challenge.findById(challengeId).exec()
-            .then(function(challenge) {
+            .then((challenge) => {
                 if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
                 return ChallengeService.verifyChallengeeByPlayerId(challenge, clientId, 'Only the challengee can forfeit this challenge.');
             })
             .then(ChallengeService.setForfeit)
             .then(PlayerChallengeService.updateLastGames)
             .then(ChallengeService.swapRanks)
-            .then(function() {
+            .then(() => {
                 MailerService.forfeitedChallenge(challengeId);
                 SocketService.IO.sockets.emit('challenge:forfeited');
             });
@@ -43,12 +43,12 @@ const PlayerChallengeService = {
 
     doRevoke(challengeId, clientId) {
         return Challenge.findById(challengeId).exec()
-            .then(function(challenge) {
+            .then((challenge) => {
                 if (!challenge) return Promise.reject(new Error('Could not find the challenge.'));
                 return ChallengeService.verifyChallengerByPlayerId(challenge, clientId, 'Only the challenger can revoke this challenge.');
             })
             .then(Challenge.removeByDocument)
-            .then(function(challenge) {
+            .then((challenge) => {
                 MailerService.revokedChallenge(challenge.challenger, challenge.challengee);
                 SocketService.IO.sockets.emit('challenge:revoked');
             });
@@ -58,18 +58,18 @@ const PlayerChallengeService = {
         if (!challengeId) return Promise.reject(new Error('This is not a valid challenge.'));
 
         return Challenge.findById(challengeId).exec()
-            .then(function(challenge) {
+            .then((challenge) => {
                 return ChallengeService.verifyInvolvedByPlayerId(challenge, clientId, 'Only an involved player can resolve this challenge.');
             })
             .then(PlayerChallengeService.verifyForfeitIsNotRequired)
-            .then(function(challenge) {
+            .then((challenge) => {
                 return ChallengeService.setScore(challenge, challengerScore, challengeeScore);
             })
             .then(PlayerChallengeService.updateLastGames)
-            .then(function(challenge) {
+            .then((challenge) => {
                 if (challengerScore > challengeeScore) return ChallengeService.swapRanks(challenge);
             })
-            .then(function() {
+            .then(() => {
                 MailerService.resolvedChallenge(challengeId);
                 SocketService.IO.sockets.emit('challenge:resolved');
             });
@@ -79,33 +79,38 @@ const PlayerChallengeService = {
         let challenger = players[0];
         let challengee = players[1];
 
-        return new Promise(function(resolve, reject) {
-            if (!challenger.active || !challengee.active) return reject(new Error('Both players must have active accounts'));
+        return new Promise((resolve, reject) => {
+            let activePlayerCheck = PlayerChallengeService.verifyActivePlayers(players);
             let existingChallengesCheck = PlayerChallengeService.verifyChallengesBetweenPlayers(players);
             let rankCheck = ChallengeService.verifyRank(challenger, challengee);
             let tierCheck = ChallengeService.verifyTier(challenger, challengee);
             let reissueTimeCheck = Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime);
             let businessDayCheck = ChallengeService.verifyBusinessDay();
 
-            return Promise.all([existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
-                .then(function() {return resolve(players);})
+            return Promise.all([activePlayerCheck, existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
+                .then(() => resolve(players))
                 .catch(reject);
         });
+    },
+
+    verifyActivePlayers(players) {
+        if (players.find(player => !player.active)) return Promise.reject(new Error('Both players must have active accounts'));
+        return Promise.resolve(players);
     },
 
     verifyChallengesBetweenPlayers(players) {
         let challenger = players[0];
         let challengee = players[1];
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
 
-            let challengerIncoming = Challenge.count({challengee: challenger._id, winner: null}).exec();
-            let challengerOutgoing = Challenge.count({challenger: challenger._id, winner: null}).exec();
-            let challengeeIncoming = Challenge.count({challengee: challengee._id, winner: null}).exec();
-            let challengeeOutgoing = Challenge.count({challenger: challengee._id, winner: null}).exec();
+            let challengerIncoming = Challenge.countDocuments({challengee: challenger._id, winner: null}).exec();
+            let challengerOutgoing = Challenge.countDocuments({challenger: challenger._id, winner: null}).exec();
+            let challengeeIncoming = Challenge.countDocuments({challengee: challengee._id, winner: null}).exec();
+            let challengeeOutgoing = Challenge.countDocuments({challenger: challengee._id, winner: null}).exec();
             let challengesBetween  = Challenge.getUnresolvedBetweenPlayers(players);
 
             return Promise.all([challengerIncoming, challengerOutgoing, challengeeIncoming, challengeeOutgoing, challengesBetween])
-                .then(function (counts) {
+                .then((counts) => {
                     if (counts[0] >= ChallengeService.ALLOWED_INCOMING) return reject(new Error(`${challenger.username} cannot have more than ${ChallengeService.ALLOWED_INCOMING} incoming challenges.`));
                     if (counts[1] >= ChallengeService.ALLOWED_OUTGOING) return reject(new Error(`${challenger.username} cannot have more than ${ChallengeService.ALLOWED_OUTGOING} outgoing challenges.`));
                     if (counts[2] >= ChallengeService.ALLOWED_INCOMING) return reject(new Error(`${challengee.username} cannot have more than ${ChallengeService.ALLOWED_INCOMING} incoming challenges.`));
@@ -121,7 +126,7 @@ const PlayerChallengeService = {
 
     verifyForfeitIsNotRequired(challenge) {
         console.log('Verifying player challenge forfeit');
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             let dateIssued = challenge.createdAt;
             let expires = Util.addBusinessDays(dateIssued, PlayerChallengeService.ALLOWED_CHALLENGE_DAYS);
             if (expires < new Date()) return reject(new Error('This challenge has expired. It must be forfeited.'));
@@ -130,7 +135,7 @@ const PlayerChallengeService = {
     },
 
     updateLastGames(challenge) {
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             console.log(`Updating last games for the challenge with id of [${challenge._id}]`);
 
             let gameTime = challenge.updatedAt;
@@ -138,7 +143,7 @@ const PlayerChallengeService = {
             let challengeeUpdate = Player.findByIdAndUpdate(challenge.challengee, {$set: {lastGame: gameTime}}).exec();
 
             return Promise.all([challengerUpdate, challengeeUpdate])
-                .then(function() {return resolve(challenge);})
+                .then(() => resolve(challenge))
                 .catch(reject);
         });
     }

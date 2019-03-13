@@ -3,27 +3,27 @@ const router = express.Router();
 const AuthService = require('../services/AuthService');
 const MailerService = require('../services/MailerService');
 
-router.post('/password/reset/enable', function(req, res, next) {
+router.post('/password/reset/enable', (req, res, next) => {
    let playerId = req.body.playerId;
 
    console.log('Attempting to enable password reset.');
    AuthService.enablePasswordResetByPlayerId(playerId)
-       .then(function(authorization) {
+       .then((authorization) => {
            return MailerService.resetPassword(authorization.getResetKey());
        })
-       .then(function(email) {
+       .then((email) => {
            res.json({message: `Recovery key has been sent to ${AuthService.maskEmail(email)}`});
        })
        .catch(next);
 });
 
-router.post('/password/reset/change', function(req, res, next) {
+router.post('/password/reset/change', (req, res, next) => {
     let password = req.body.password ? req.body.password.trim() : '';
     let resetKey = req.body.resetKey;
 
     console.log('Attempting to reset password.');
     AuthService.resetPasswordByResetKey(password, resetKey)
-        .then(function() {
+        .then(() => {
             res.json({message: 'Password has been successfully reset.'});
         })
         .catch(next);
@@ -33,9 +33,9 @@ router.post('/password/reset/change', function(req, res, next) {
 /**
  * Gets information needed for login selection
  */
-router.get('/logins', function(req, res, next) {
+router.get('/logins', (req, res, next) => {
     AuthService.getLogins()
-        .then(function(logins) {
+        .then((logins) => {
             res.json({message: logins});
         })
         .catch(next);

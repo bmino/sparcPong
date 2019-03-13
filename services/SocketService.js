@@ -7,7 +7,7 @@ const SocketService = {
     init(io) {
         SocketService.IO = io;
 
-        SocketService.IO.on('connection', function(socket) {
+        SocketService.IO.on('connection', (socket) => {
             console.log('New socket connection...');
             SocketService.addSocket(socket);
 
@@ -17,44 +17,44 @@ const SocketService = {
             // Give initial list of online users
             socket.emit('client:online', SocketService.getOnlineClientIds());
 
-            socket.on('disconnect', function() {
+            socket.on('disconnect', () => {
                 console.log('Disconnected socket connection...');
                 SocketService.removeSocket(socket);
                 SocketService.IO.sockets.emit('client:online', SocketService.getOnlineClientIds());
                 SocketService.IO.sockets.emit('client:leave', SocketService.getClientCount());
             });
 
-            socket.on('login', function(credentials) {
+            socket.on('login', (credentials) => {
                 console.log('Received "login" socket event.');
                 let userId = credentials.playerId;
                 let password = credentials.password;
 
                 AuthService.login(userId, password)
-                    .then(function(token) {
+                    .then((token) => {
                         SocketService.loginUser(userId, socket);
                         SocketService.IO.sockets.emit('client:online', SocketService.getOnlineClientIds());
                         socket.emit('login:success', token);
                     })
-                    .catch(function(err) {
+                    .catch((err) => {
                         console.error(err);
                         socket.emit('login:error', err.message);
                     });
             });
 
-            socket.on('flash', function(token) {
+            socket.on('flash', (token) => {
                 console.log('Received "flash" socket event.');
                 AuthService.flash(token)
-                    .then(function(payload) {
+                    .then((payload) => {
                         SocketService.loginUser(payload.playerId, socket);
                         SocketService.IO.sockets.emit('client:online', SocketService.getOnlineClientIds());
                         socket.emit('flash:success', token);
                     })
-                    .catch(function(err) {
+                    .catch((err) =>  {
                         socket.emit('flash:error', err.message);
                     });
             });
 
-            socket.on('logout', function(userId) {
+            socket.on('logout', (userId) => {
                 console.log('Received "logout" socket event.');
                 SocketService.logoffUser(userId, socket);
                 SocketService.IO.sockets.emit('client:online', SocketService.getOnlineClientIds());
@@ -68,7 +68,7 @@ const SocketService = {
 
     getOnlineClientIds() {
         let uniqueIds = [];
-        Object.keys(SocketService.SOCKETS).forEach(function(socketId) {
+        Object.keys(SocketService.SOCKETS).forEach((socketId) => {
             let socket = SocketService.SOCKETS[socketId];
             let userId = socket.userId;
             if (!userId) return;

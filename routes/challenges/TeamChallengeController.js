@@ -10,12 +10,12 @@ const AuthService = require('../../services/AuthService');
  * @param: challengerId
  * @param: challengeeId
  */
-router.post('/', function(req, res, next) {
+router.post('/', (req, res, next) => {
     let challengeeId = req.body.challengeeId;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
     TeamChallengeService.doChallenge(challengeeId, clientId)
-        .then(function() {
+        .then(() => {
             res.json({message: 'Challenge issued!'});
         })
         .catch(next);
@@ -25,7 +25,7 @@ router.post('/', function(req, res, next) {
  * Get all challenges involving a team.
  * @param: teamId
  */
-router.get('/:teamId', function(req, res, next) {
+router.get('/:teamId', (req, res, next) => {
     let teamId = req.params.teamId;
 
     if (!teamId) return next(new Error('This is not a valid team.'));
@@ -40,7 +40,7 @@ router.get('/:teamId', function(req, res, next) {
         .then(TeamChallenge.populateTeamsAndTeamMembers);
 
     Promise.all([resolvedChallenges, outgoingChallenges, incomingChallenges])
-        .then(function(challenges) {
+        .then((challenges) => {
             res.json({message: {resolved: challenges[0], outgoing: challenges[1], incoming: challenges[2]}});
         })
         .catch(next);
@@ -51,12 +51,12 @@ router.get('/:teamId', function(req, res, next) {
  * Revoke challenge.
  * @param: challengeId
  */
-router.delete('/revoke', function(req, res, next) {
+router.delete('/revoke', (req, res, next) => {
     let challengeId = req.body.challengeId;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
     TeamChallengeService.doRevoke(challengeId, clientId)
-        .then(function() {
+        .then(() => {
             res.json({message: 'Successfully revoked challenge.'});
         })
         .catch(next);
@@ -68,14 +68,14 @@ router.delete('/revoke', function(req, res, next) {
  * @param: challengerScore
  * @param: challengeeScore
  */
-router.post('/resolve', function(req, res, next) {
+router.post('/resolve', (req, res, next) => {
     let challengeId = req.body.challengeId;
     let challengerScore = req.body.challengerScore;
     let challengeeScore = req.body.challengeeScore;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
     TeamChallengeService.resolveChallenge(challengeId, challengerScore, challengeeScore, clientId)
-        .then(function() {
+        .then(() => {
             res.json({message: 'Successfully resolved challenge.'});
         })
         .catch(next);
@@ -85,12 +85,12 @@ router.post('/resolve', function(req, res, next) {
  * Forfeits an expired challenge.
  * @param: challengeId
  */
-router.post('/forfeit', function(req, res, next) {
+router.post('/forfeit', (req, res, next) => {
     let challengeId = req.body.challengeId;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
     TeamChallengeService.doForfeit(challengeId, clientId)
-        .then(function() {
+        .then(() => {
             res.json({message: 'Challenge successfully forfeited.'});
         })
         .catch(next);

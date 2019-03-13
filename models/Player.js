@@ -24,9 +24,9 @@ playerSchema.statics.findByAuthorization = function(authorization) {
 
 playerSchema.statics.usernameExists = function(username) {
     console.log(`Checking if player username exists: ${username}`);
-    return new Promise(function (resolve, reject) {
-        Player.count({username: username}).exec()
-			.then(function(count) {
+    return new Promise((resolve, reject) => {
+        Player.countDocuments({username: username}).exec()
+			.then((count)  => {
 				if (count !== 0) return reject(new Error('Player username already exists.'));
 				return resolve(username);
 			})
@@ -36,9 +36,9 @@ playerSchema.statics.usernameExists = function(username) {
 
 playerSchema.statics.emailExists = function(email) {
     console.log(`Checking if email exists: ${email}`);
-    return new Promise(function(resolve, reject) {
-        Player.count({email: email}).exec()
-			.then(function(count) {
+    return new Promise((resolve, reject)  => {
+        Player.countDocuments({email: email}).exec()
+			.then((count)  => {
 				if (count !== 0) return reject(new Error('Email already exists.'));
 				return resolve(count);
         });
@@ -47,9 +47,9 @@ playerSchema.statics.emailExists = function(email) {
 
 playerSchema.statics.lowestRank = function() {
 	console.log('Finding lowest player rank.');
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         return Player.find().sort({'rank': -1}).limit(1).exec()
-            .then(function (lowestRankPlayer) {
+            .then((lowestRankPlayer) => {
                 let lowestRank = 0;
                 if (lowestRankPlayer && lowestRankPlayer.length > 0) {
                     lowestRank = lowestRankPlayer[0].rank;

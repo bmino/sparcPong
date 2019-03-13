@@ -46,7 +46,7 @@ function ReportTeamChallengeController($scope, teamChallengeService, modalServic
             bodyText: 'Are you sure you wish to revoke this challenge?'
         };
         modalService.showModal({}, modalOptions)
-            .then(function () {
+            .then(() => {
                 teamChallengeService.revokeChallenge(challenge._id)
                     .then(function (success) {
                         let modalOptions = {
@@ -74,7 +74,7 @@ function ReportTeamChallengeController($scope, teamChallengeService, modalServic
             bodyText: 'Are you sure you wish to forfeit to ' + challenge.challenger.username + '?'
         };
         modalService.showModal({}, modalOptions)
-            .then(function () {
+            .then(() => {
                 teamChallengeService.forfeitChallenge(challenge._id)
                     .then(function (success) {
                         modalOptions = {

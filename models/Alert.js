@@ -14,13 +14,11 @@ const alertSchema = new Schema({
     }
 });
 
-alertSchema.statics.attachToPlayer = function(player) {
+alertSchema.statics.attachToPlayer = (player) => {
     console.log('Creating player alert settings.');
     let newAlert = new Alert();
     return newAlert.save()
-        .then(function(alert) {
-            return player.attachAlert(alert);
-        });
+        .then((alert) => player.attachAlert(alert));
 };
 
 const Alert = mongoose.model('Alert', alertSchema);

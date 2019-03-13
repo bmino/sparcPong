@@ -12,7 +12,7 @@ const ManualTaskService = {
         console.log('[Manual] - Challenge task has been engaged');
 
         return Player.find({}).sort('rank').exec()
-            .then(function(players) {
+            .then((players) => {
                 return ManualTaskService.issueChallenges(players, players.length-1, players.length-2);
             });
     },
@@ -21,11 +21,11 @@ const ManualTaskService = {
         console.log('[Manual] - Forfeit task (singles) has been engaged');
 
         return Challenge.getAllExpired()
-            .then(function(challenges) {
+            .then((challenges) => {
                 console.log(`[Manual] - Found ${challenges.length} expired challenges (singles)`);
 
                 let forfeitPromises = [];
-                challenges.forEach(function(challenge) {
+                challenges.forEach((challenge) => {
                     let promise = PlayerChallengeService.doForfeit(challenge._id, challenge.challengee);
                     forfeitPromises.push(promise);
                 });
@@ -38,11 +38,11 @@ const ManualTaskService = {
         console.log('[Manual] - Forfeit task (doubles) has been engaged');
 
         return TeamChallenge.getAllExpired()
-            .then(function(challenges) {
+            .then((challenges) => {
                 console.log(`[Manual] - Found ${challenges.length} expired challenges (doubles)`);
 
                 let forfeitPromises = [];
-                challenges.forEach(function(challenge) {
+                challenges.forEach((challenge) => {
                     let promise = TeamChallengeService.doForfeit(challenge._id, challenge.challengee.leader);
                     forfeitPromises.push(promise);
                 });
@@ -59,7 +59,7 @@ const ManualTaskService = {
             Challenge.getIncoming(playerId),
             Challenge.getOutgoing(playerId)
         ])
-            .then(function(results) {
+            .then((results) => {
                 let player = results[0];
                 let incoming = results[1];
                 let outgoing = results[2];
@@ -68,11 +68,25 @@ const ManualTaskService = {
                 if (incoming.length) return PlayerChallengeService.doForfeit(incoming[0]._id, playerId);
                 if (outgoing.length) return PlayerChallengeService.doRevoke(outgoing[0]._id, playerId);
             })
-            .then(function() {
+            .then(() => {
                 return Player.findByIdAndUpdate(playerId, {active: false, rank: -404}).exec();
             })
-            .then(function(inactivePlayer) {
+            .then((inactivePlayer) => {
                 return Player.update({rank: {$gt: inactivePlayer.rank}}, {$inc: {rank: -1}}, {multi: true}).exec();
+            });
+    },
+
+    activatePlayer(playerId) {
+        console.log('[Manual] - Activating player');
+
+        return Promise.all([
+            Player.findById(playerId),
+            Player.lowestRank()
+        ])
+            .then(([player, lowestRank]) => {
+                if (!player) return Promise.reject(new Error('Could not find player'));
+                if (player.active) return Promise.reject(new Error('Player is already active'));
+                return Player.findByIdAndUpdate(playerId, {active: true, rank: lowestRank+1}).exec();
             });
     },
 
@@ -86,18 +100,18 @@ const ManualTaskService = {
 
         console.log(`[Manual] - Attempting to match ${players[challengerIndex].username} vs ${players[challengeeIndex].username}`);
         return PlayerChallengeService.doChallenge(players[challengeeIndex]._id, players[challengerIndex]._id)
-            .then(function(issuedChallenge) {
+            .then((issuedChallenge) => {
                 console.log('[Manual] - Challenge issued successfully');
                 MailerService.newAutoChallenge(issuedChallenge._id);
                 issued++;
                 challengerIndex--;
                 challengeeIndex = challengerIndex - 1;
             })
-            .catch(function(err) {
+            .catch((err) => {
                 console.error(`[Manual] - ${err}`);
                 challengeeIndex--;
             })
-            .then(function() {
+            .then(() => {
                 return ManualTaskService.issueChallenges(players, challengerIndex, challengeeIndex, issued);
             });
     }

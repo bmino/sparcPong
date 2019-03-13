@@ -22,7 +22,7 @@ const TeamService = {
         let lowestTeamRank = Team.lowestRank();
 
         return Promise.all([verifyUsername, usernameExists, validateLeaderTeamsCount, validatePartnerTeamsCount, validateLeader, validatePartner, lowestTeamRank])
-            .then(function(values) {
+            .then((values) => {
                 let team = new Team();
                 team.username = teamUsername;
                 team.leader = leaderId;
@@ -30,7 +30,7 @@ const TeamService = {
                 team.rank = values[6] + 1;
                 return team.save();
             })
-            .then(function() {
+            .then(() => {
                 SocketService.IO.sockets.emit('team:new', teamUsername);
                 console.log('Successfully created a new team.');
             });
@@ -41,16 +41,16 @@ const TeamService = {
 
         return NameService.verifyUsername(newUsername)
             .then(Team.usernameExists)
-            .then(function() {
+            .then(() => {
                 return Team.findById(teamId).exec();
             })
-            .then(function(team) {
+            .then((team) => {
                 if (!team) return Promise.reject(new Error('Could not find team.'));
                 console.log('Changing team username.');
                 team.username = newUsername;
                 return team.save();
             })
-            .then(function() {
+            .then(() => {
                 SocketService.IO.sockets.emit('team:change:username');
             });
     },
@@ -62,7 +62,7 @@ const TeamService = {
             Player.findById(playerId),
             Team.getTeamsByPlayerId(playerId)
         ])
-            .then(function(results) {
+            .then((results) => {
                 let player = results[0];
                 let teams = results[1];
                 if (!player) return Promise.reject(new Error('Could not find player'));

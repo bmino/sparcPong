@@ -16,7 +16,7 @@ authorizationSchema.methods.setPassword = function(password) {
     let self = this;
     let salt = bcrypt.genSaltSync();
     return bcrypt.hash(password, salt)
-        .then(function(passwordHash) {
+        .then((passwordHash) => {
             self.password = passwordHash;
             self.reset.key = null;
             return self.save();

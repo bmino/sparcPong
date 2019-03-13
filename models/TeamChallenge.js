@@ -65,8 +65,8 @@ teamChallengeSchema.statics.getResolved = function(teamId) {
 
 teamChallengeSchema.statics.getAllExpired = function() {
     return TeamChallenge.find({winner: null}).populate('challenger challengee').exec()
-        .then(function(challenges) {
-            return challenges.filter(function(challenge) {
+        .then((challenges) => {
+            return challenges.filter((challenge) => {
                 let expirationDate = Util.addBusinessDays(challenge.createdAt, process.env.ALLOWED_CHALLENGE_DAYS_TEAM || 5);
                 return expirationDate < new Date();
             });

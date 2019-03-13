@@ -51,14 +51,14 @@ app.use('/manual',							require('./routes/ManualTaskController'));
 
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
     let err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
     console.error(err);
     res.status(err.status || 500);
     res.json(err.message);

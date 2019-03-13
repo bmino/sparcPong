@@ -17,7 +17,7 @@ const ChallengeService = {
         console.log('Verifying enough time has passed before another challenge can be issued.');
         if (!challenges || challenges.length === 0) return Promise.resolve(challenges);
 
-        let mostRecentChallenge = challenges.sort(function (a, b) {
+        let mostRecentChallenge = challenges.sort((a, b) => {
             return (a.updatedAt > b.updatedAt) ? -1 : 1;
         })[0];
 
@@ -65,25 +65,25 @@ const ChallengeService = {
         console.log('Swapping rankings');
         let populatedEntity = null;
         return entity.populate('challenger challengee').execPopulate()
-            .then(function(populatedEntityResult) {
+            .then((populatedEntityResult) => {
                 populatedEntity = populatedEntityResult;
                 return ChallengeService.setRank(populatedEntity.challenger, ChallengeService.TEMP_RANK)
             })
-            .then(function(challengerOldRank) {
+            .then((challengerOldRank) => {
                 return ChallengeService.setRank(populatedEntity.challengee, challengerOldRank);
             })
-            .then(function(challengeeOldRank) {
+            .then((challengeeOldRank) => {
                 return ChallengeService.setRank(populatedEntity.challenger, challengeeOldRank);
             });
     },
 
     setRank(entity, newRank) {
         console.log(`Changing rank of ${entity.username} from [${entity.rank}] to [${newRank}]`);
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             let oldRank = entity.rank;
             entity.rank = newRank;
             entity.save()
-                .then(function() {return resolve(oldRank);})
+                .then(() => {return resolve(oldRank);})
                 .catch(reject);
         });
     },

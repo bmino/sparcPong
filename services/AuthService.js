@@ -17,7 +17,7 @@ const AuthService = {
 
     login(playerId, password) {
         console.log(`Attempting to log in player id: ${playerId}`);
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             AuthService.validateCredentials(playerId, password)
                 .then(AuthService.createToken)
                 .then(resolve)
@@ -27,7 +27,7 @@ const AuthService = {
 
     flash(token) {
         console.log('Attempting to re-log player.');
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             AuthService.validateTokenCredentials(token)
                 .then(resolve)
                 .catch(reject);
@@ -36,7 +36,7 @@ const AuthService = {
 
     createToken(playerId) {
         console.log(`Attempting to create token for ${playerId}`);
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             let payload = {
                 playerId: playerId,
                 iat: new Date().getTime()
@@ -67,9 +67,9 @@ const AuthService = {
 
     enablePasswordResetByPlayerId(playerId) {
         console.log('Attempting to generate a password reset key.');
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             Authorization.findByPlayerId(playerId)
-                .then(function(auth) {
+                .then((auth) => {
                     if (!auth) return reject(new Error('Could not find an authentication record for this player.'));
                     if (!auth.getResetDate()) return auth.enablePasswordReset();
 
@@ -86,12 +86,12 @@ const AuthService = {
 
     resetPasswordByResetKey(password, resetKey) {
         console.log('Attempting to reset a password by reset key.');
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             AuthService.validatePasswordStrength(password)
-                .then(function () {
+                .then(() => {
                     return Authorization.findByResetKey(resetKey);
                 })
-                .then(function (auth) {
+                .then((auth) => {
                     if (!auth) return reject(new Error('Invalid password reset key.'));
                     if (!resetKey) return reject(new Error('A password reset key was not provided.'));
                     if (auth.getResetKey() !== resetKey) return reject(new Error('Invalid password reset key.'));
@@ -110,12 +110,12 @@ const AuthService = {
 
     resetPasswordByExistingPassword(newPassword, existingPassword, playerId) {
         console.log('Attempting to reset password by existing password.');
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             AuthService.validatePasswordStrength(newPassword)
-                .then(function () {
+                .then(() => {
                     return Authorization.findByPlayerId(playerId);
                 })
-                .then(function (authorization) {
+                .then((authorization) => {
                     if (!authorization) return reject(new Error('Could not find an authentication record for this player.'));
                     if (!authorization.user.active) return reject(new Error('User has been deactivated.'));
                     if (!authorization.isPasswordEqualTo(existingPassword)) return reject(new Error('Incorrect current password.'));
@@ -128,9 +128,9 @@ const AuthService = {
 
     validateCredentials(playerId, password) {
         console.log('Validating credentials.');
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             Authorization.findByPlayerId(playerId)
-                .then(function(authorization) {
+                .then((authorization) => {
                     if (!authorization) return reject(new Error('Could not find an authentication record for this player.'));
                     if (!authorization.user.active) return reject(new Error('User has been deactivated.'));
                     if (authorization.isPasswordEqualTo(password)) return resolve(playerId);
@@ -142,7 +142,7 @@ const AuthService = {
 
     validateTokenCredentials(token) {
         console.log('Validating credentials via existing token.');
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             let payload = AuthService.verifyToken(token);
             if (!payload) return reject(new Error('Invalid token credential.'));
             return resolve(payload);
@@ -150,7 +150,7 @@ const AuthService = {
     },
 
     validatePasswordStrength(password) {
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             if (password === null || password === undefined) return reject(new Error('Password must be defined.'));
             if (!AuthService.JWT_SECRET_KEY) return  reject(new Error('Application key has not been defined. A ladder administrator must configure this.'));
             if (password.length < AuthService.PASSWORD_MIN_LENGTH) return reject(new Error(`Password must be at least ${AuthService.PASSWORD_MIN_LENGTH} characters in length.`));
@@ -161,7 +161,7 @@ const AuthService = {
 
     getLogins() {
         return Player.find({active: true}, 'username _id').exec()
-            .then(function(players) {
+            .then((players) => {
                 return players;
             });
     },
@@ -169,7 +169,7 @@ const AuthService = {
     maskEmail(email) {
         let emailParts = email.split('@');
         let maskedName = '';
-        emailParts[0].split('').forEach(function(letter, index) {
+        emailParts[0].split('').forEach((letter, index) => {
             maskedName += (index % 2 === 0 ? letter : '*');
         });
         return `${maskedName}@${emailParts[1]}`;
