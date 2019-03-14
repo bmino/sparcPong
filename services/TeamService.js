@@ -8,8 +8,8 @@ const TeamService = {
     PLAYER_TEAMS_MAX: 1,
 
     createTeam(username, leaderId, partnerId) {
-        if (typeof username !== 'string' || username.length === 0) return Promise.reject(new Error('Invalid username data type.'));
-        if (!leaderId || !partnerId || leaderId === partnerId) return Promise.reject(new Error('Invalid team members.'));
+        if (typeof username !== 'string' || username.length === 0) return Promise.reject(new Error('Invalid username data type'));
+        if (!leaderId || !partnerId || leaderId === partnerId) return Promise.reject(new Error('Invalid team members'));
 
         let teamUsername = username ? username.trim() : null;
 
@@ -37,7 +37,7 @@ const TeamService = {
     },
 
     changeTeamName(teamId, newUsername) {
-        if (!teamId) return Promise.reject(new Error('You must provide a team id.'));
+        if (!teamId) return Promise.reject(new Error('You must provide a team id'));
 
         return NameService.verifyUsername(newUsername)
             .then(Team.usernameExists)
@@ -45,7 +45,7 @@ const TeamService = {
                 return Team.findById(teamId).exec();
             })
             .then((team) => {
-                if (!team) return Promise.reject(new Error('Could not find team.'));
+                if (!team) return Promise.reject(new Error('Could not find team'));
                 console.log('Changing team username.');
                 team.username = newUsername;
                 return team.save();
@@ -71,7 +71,7 @@ const TeamService = {
                 let count = teams.length;
                 let team_s = TeamService.PLAYER_TEAMS_MAX > 1 ? 'teamss' : 'team';
                 console.log(`Found ${count} teams associated with this player.`);
-                if (count >= TeamService.PLAYER_TEAMS_MAX) return Promise.reject(new Error(`Players may not be a part of more than ${TeamService.PLAYER_TEAMS_MAX} ${team_s}.`));
+                if (count >= TeamService.PLAYER_TEAMS_MAX) return Promise.reject(new Error(`Players may not be a part of more than ${TeamService.PLAYER_TEAMS_MAX} ${team_s}`));
                 return Promise.resolve(count);
             })
             .catch(Promise.reject);

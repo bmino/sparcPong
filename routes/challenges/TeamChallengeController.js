@@ -28,7 +28,7 @@ router.post('/', (req, res, next) => {
 router.get('/:teamId', (req, res, next) => {
     let teamId = req.params.teamId;
 
-    if (!teamId) return next(new Error('This is not a valid team.'));
+    if (!teamId) return next(new Error('This is not a valid team'));
 
     let resolvedChallenges = TeamChallenge.getResolved(teamId)
         .then(TeamChallenge.populateTeams);

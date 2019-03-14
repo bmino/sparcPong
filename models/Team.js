@@ -26,7 +26,7 @@ teamSchema.statics.usernameExists = function(username) {
     return new Promise((resolve, reject) => {
         Team.countDocuments({username: username}).exec()
             .then((count) => {
-                if (count !== 0) return reject(new Error('Team username already exists.'));
+                if (count !== 0) return reject(new Error('Team username already exists'));
                 return resolve(username);
             })
             .catch(reject);

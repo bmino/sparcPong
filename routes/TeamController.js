@@ -60,7 +60,7 @@ router.get('/', (req, res, next) => {
  */
 router.get('/fetch/:teamId', (req, res, next) => {
     let teamId = req.params.teamId;
-    if (!teamId) return next(new Error('You must specify a team id.'));
+    if (!teamId) return next(new Error('You must specify a team id'));
 
     Team.findById(teamId).populate('leader partner').exec()
         .then((team) => {
@@ -76,7 +76,7 @@ router.get('/fetch/:teamId', (req, res, next) => {
  */
 router.get('/fetch/lookup/:playerId', (req, res, next) => {
     let playerId = req.params.playerId;
-    if (!playerId) return next(new Error('You must specify a player id.'));
+    if (!playerId) return next(new Error('You must specify a player id'));
 
     Team.getTeamsByPlayerId(playerId)
         .then((teams) => {
@@ -93,7 +93,7 @@ router.get('/fetch/lookup/:playerId', (req, res, next) => {
  */
 router.get('/record/:teamId', (req, res, next) => {
     let teamId = req.params.teamId;
-    if (!teamId) return next(new Error('You must specify a team id.'));
+    if (!teamId) return next(new Error('You must specify a team id'));
 
     TeamChallenge.getResolved(teamId)
         .then((challenges) => {

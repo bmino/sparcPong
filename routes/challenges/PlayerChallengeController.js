@@ -27,7 +27,7 @@ router.post('/', (req, res, next) => {
  */
 router.get('/:playerId', (req, res, next) => {
     let playerId = req.params.playerId;
-    if (!playerId) return next(new Error('This is not a valid player.'));
+    if (!playerId) return next(new Error('This is not a valid player'));
 
     let resolvedChallenges = Challenge.getResolved(playerId)
         .then(Challenge.populatePlayers);

@@ -11,11 +11,11 @@ const AuthService = require('../services/AuthService');
 router.get('/', (req, res, next) => {
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-	if (!clientId) return next(new Error('You must provide a valid player id.'));
+	if (!clientId) return next(new Error('You must provide a valid player id'));
 
 	Player.findById(clientId).populate('alerts').exec()
 		.then((player) => {
-			if (!player || !player.alerts) return Promise.reject(new Error("Could not find the player's alert settings."));
+			if (!player || !player.alerts) return Promise.reject(new Error('Could not find the player\'s alert settings'));
 			let alerts = {};
 
             alerts.challenged = player.alerts.challenged;
@@ -38,12 +38,12 @@ router.post('/', (req, res, next) => {
     let newAlerts = req.body.alerts;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-    if (!clientId) return next(new Error('You must provide a valid player id.'));
-	if (!newAlerts) return next(new Error('Uh oh, the alert preferences got lost along the way.'));
+    if (!clientId) return next(new Error('You must provide a valid player id'));
+	if (!newAlerts) return next(new Error('Uh oh, the alert preferences got lost along the way'));
 	
 	Player.findById(clientId).populate('alerts').exec()
 		.then((player) => {
-            if (!player || !player.alerts) return Promise.reject(new Error("Could not find the player's alert settings."));
+            if (!player || !player.alerts) return Promise.reject(new Error('Could not find the player\'s alert settings'));
 
             player.alerts.challenged = newAlerts.challenged ;
             player.alerts.revoked = newAlerts.revoked ;
