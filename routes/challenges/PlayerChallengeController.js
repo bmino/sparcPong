@@ -97,4 +97,23 @@ router.post('/forfeit', (req, res, next) => {
 });
 
 
+/**
+ * Get the wins and losses for a player
+ * @param: playerId
+ */
+router.get('/record/:playerId', (req, res, next) => {
+    const { playerId } = req.params;
+
+    if (!playerId) return next(new Error('You must specify a player id'));
+
+    Challenge.getResolved(playerId)
+        .then((challenges) => {
+            const wins = challenges.filter(challenge => challenge.winner.toString() === playerId.toString()).length;
+            const losses = challenges.length - wins;
+            res.json({message: {wins: wins, losses: losses}});
+        })
+        .catch(next);
+});
+
+
 module.exports = router;

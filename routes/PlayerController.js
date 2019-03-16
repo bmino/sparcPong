@@ -3,7 +3,6 @@ const router = express.Router();
 const auth = require('../middleware/jwtMiddleware');
 const mongoose = require('mongoose');
 const Player = mongoose.model('Player');
-const Challenge = mongoose.model('Challenge');
 const PlayerService = require('../services/PlayerService');
 const AuthService = require('../services/AuthService');
 
@@ -141,27 +140,5 @@ router.get('/fetch/:playerId', auth.jwtAuthProtected, (req, res, next) => {
         .catch(next);
 });
 
-
-/**
- * Get the wins and losses for a player
- *
- * @param: playerId
- */
-router.get('/record/:playerId', auth.jwtAuthProtected, (req, res, next) => {
-    let playerId = req.params.playerId;
-    if (!playerId) return next(new Error('You must specify a player id'));
-
-    Challenge.getResolved(playerId)
-        .then((challenges) => {
-            let wins = 0;
-            let losses = 0;
-            challenges.forEach((challenge) => {
-                if (challenge.winner.toString() === playerId.toString()) wins++;
-                else losses++;
-            });
-            res.json({message: {wins: wins, losses: losses}});
-        })
-        .catch(next);
-});
 
 module.exports = router;

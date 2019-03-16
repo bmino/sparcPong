@@ -65,7 +65,13 @@ function TeamChallengeService($http) {
         return request.then( handleSuccess, handleError );
     };
 
-
+    service.getRecord = function(teamId) {
+        let request = $http({
+            method: "get",
+            url: "api/challenge/team/record/"+teamId
+        });
+        return request.then( handleSuccess, handleError );
+    };
 
 
     function handleSuccess(response) {

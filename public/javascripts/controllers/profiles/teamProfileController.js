@@ -69,7 +69,7 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
     }
 
     function getRecord() {
-        return teamService.getRecord($scope.profileId)
+        return teamChallengeService.getRecord($scope.profileId)
             .then(function(data) {
                 if (data) {
                     $scope.wins = data.wins;
