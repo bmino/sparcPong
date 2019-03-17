@@ -17,8 +17,8 @@ teamSchema.methods.hasMemberByPlayerId = function(playerId) {
     return false;
 };
 
-teamSchema.statics.getTeamsByPlayerId = function(playerId) {
-	return Team.find({$or: [{leader: playerId}, {partner: playerId}]}).exec();
+teamSchema.statics.getTeamByPlayerId = function(playerId) {
+	return Team.findOne({$or: [{leader: playerId}, {partner: playerId}]}).exec();
 };
 
 teamSchema.statics.usernameExists = function(username) {

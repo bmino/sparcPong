@@ -74,13 +74,13 @@ router.get('/fetch/:teamId', auth.jwtAuthProtected, (req, res, next) => {
  *
  * @param: playerId
  */
-router.get('/fetch/lookup/:playerId', auth.jwtAuthProtected, (req, res, next) => {
+router.get('/fetch/byPlayerId/:playerId', auth.jwtAuthProtected, (req, res, next) => {
     let playerId = req.params.playerId;
     if (!playerId) return next(new Error('You must specify a player id'));
 
-    Team.getTeamsByPlayerId(playerId)
-        .then((teams) => {
-            res.json({message: teams});
+    Team.getTeamByPlayerId(playerId)
+        .then((team) => {
+            res.json({message: team});
         })
         .catch(next);
 });

@@ -8,7 +8,6 @@ const NameService = require('./NameService');
 const SocketService = require('./SocketService');
 
 const PlayerService = {
-    PLAYER_TEAMS_MAX: 1,
 
     createPlayer(username, password, firstName, lastName, phone, email) {
         let player = new Player();

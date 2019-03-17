@@ -5,7 +5,6 @@ const NameService = require('./NameService');
 const SocketService = require('./SocketService');
 
 const TeamService = {
-    PLAYER_TEAMS_MAX: 1,
 
     createTeam(username, leaderId, partnerId) {
         if (typeof username !== 'string' || username.length === 0) return Promise.reject(new Error('Invalid username data type'));
@@ -68,11 +67,10 @@ const TeamService = {
                 if (!player) return Promise.reject(new Error('Could not find player'));
                 if (!player.active) return Promise.reject(new Error('Deactivated players cannot join a team'));
 
-                let count = teams.length;
-                let team_s = TeamService.PLAYER_TEAMS_MAX > 1 ? 'teams' : 'team';
-                console.log(`Found ${count} teams associated with this player.`);
-                if (count >= TeamService.PLAYER_TEAMS_MAX) return Promise.reject(new Error(`Players may not be a part of more than ${TeamService.PLAYER_TEAMS_MAX} ${team_s}`));
-                return Promise.resolve(count);
+                const teamCount = teams.length;
+                console.log(`Found ${teamCount} team(s) associated with this player.`);
+                if (teamCount >= 1) return Promise.reject(new Error(`Players may not be a part of more than one team`));
+                return Promise.resolve(teamCount);
             });
     }
 };

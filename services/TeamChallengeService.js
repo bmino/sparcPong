@@ -12,14 +12,14 @@ const TeamChallengeService = {
 
     doChallenge(challengeeId, clientId) {
         return Promise.all([
-            Team.getTeamsByPlayerId(clientId),
+            Team.getTeamByPlayerId(clientId),
             Team.findById(challengeeId).exec()
         ])
             .then((results) => {
-                let playerTeams = results[0];
+                let playerTeam = results[0];
                 let challengeeTeam = results[1];
-                if (!playerTeams || playerTeams.length === 0) return Promise.reject(new Error('Player must be a member of a team'));
-                return TeamChallengeService.verifyAllowedToChallenge([playerTeams[0], challengeeTeam]);
+                if (!playerTeam) return Promise.reject(new Error('Player must be a member of a team'));
+                return TeamChallengeService.verifyAllowedToChallenge([playerTeam, challengeeTeam]);
             })
             .then((teams) => {
                 if (!teams[0].hasMemberByPlayerId(clientId)) {

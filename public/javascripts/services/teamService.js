@@ -54,10 +54,10 @@ function TeamService($http) {
         return request.then( handleSuccess, handleError );
     };
 
-    service.lookupTeams = function(playerId) {
+    service.lookupTeamByPlayerId = function(playerId) {
         let request = $http({
             method: "get",
-            url: "api/team/fetch/lookup/"+playerId
+            url: "api/team/fetch/byPlayerId/"+playerId
         });
         return request.then( handleSuccess, handleError );
     };
