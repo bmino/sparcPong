@@ -7,7 +7,7 @@ const EmailService = require('./EmailService');
 const NameService = require('./NameService');
 const SocketService = require('./SocketService');
 
-const TeamService = {
+const PlayerService = {
     PLAYER_TEAMS_MAX: 1,
 
     createPlayer(username, password, firstName, lastName, phone, email) {
@@ -105,4 +105,4 @@ const TeamService = {
 };
 
 
-module.exports = TeamService;
+module.exports = PlayerService;
