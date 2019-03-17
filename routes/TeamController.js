@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/jwtMiddleware');
 const mongoose = require('mongoose');
 const Team = mongoose.model('Team');
 const TeamService = require('../services/TeamService');
@@ -11,7 +12,7 @@ const TeamService = require('../services/TeamService');
  * @param: leaderId
  * @param: partnerId
  */
-router.post('/', (req, res, next) => {
+router.post('/', auth.jwtAuthProtected, (req, res, next) => {
     let username = req.body.username;
     let leaderId = req.body.leaderId;
     let partnerId = req.body.partnerId;
@@ -29,7 +30,7 @@ router.post('/', (req, res, next) => {
  * @param: teamId
  * @param: newUsername
  */
-router.post('/change/username', (req, res, next) => {
+router.post('/change/username', auth.jwtAuthProtected, (req, res, next) => {
     let teamId = req.body.teamId;
     let newUsername = req.body.newUsername ? req.body.newUsername.trim() : null;
 
@@ -44,7 +45,7 @@ router.post('/change/username', (req, res, next) => {
 /**
  * Get all teams
  */
-router.get('/', (req, res, next) => {
+router.get('/', auth.jwtAuthProtected, (req, res, next) => {
     Team.find({})
         .then((teams) => {
             res.json({message: teams});
@@ -57,7 +58,7 @@ router.get('/', (req, res, next) => {
  *
  * @param: teamId
  */
-router.get('/fetch/:teamId', (req, res, next) => {
+router.get('/fetch/:teamId', auth.jwtAuthProtected, (req, res, next) => {
     let teamId = req.params.teamId;
     if (!teamId) return next(new Error('You must specify a team id'));
 
@@ -73,7 +74,7 @@ router.get('/fetch/:teamId', (req, res, next) => {
  *
  * @param: playerId
  */
-router.get('/fetch/lookup/:playerId', (req, res, next) => {
+router.get('/fetch/lookup/:playerId', auth.jwtAuthProtected, (req, res, next) => {
     let playerId = req.params.playerId;
     if (!playerId) return next(new Error('You must specify a player id'));
 
