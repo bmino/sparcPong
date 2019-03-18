@@ -34,7 +34,7 @@ if (process.env.MORGAN_FORMAT) app.use(morgan(process.env.MORGAN_FORMAT));
 
 
 // JWT Security
-app.use(['/api/challenge/*', '/api/playerAlerts/*', '/api/envBridge/*'], auth.jwtAuthProtected);
+app.use(['/api/challenge*', '/api/playerAlerts*', '/api/envBridge*'], auth.jwtAuthProtected);
 
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
