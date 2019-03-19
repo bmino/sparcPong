@@ -30,7 +30,7 @@ const PlayerChallengeService = {
         return Challenge.findById(challengeId).exec()
             .then((challenge) => {
                 if (!challenge) return Promise.reject(new Error('Could not find the challenge'));
-                return ChallengeService.verifyChallengeeByPlayerId(challenge, clientId, 'Only the challengee can forfeit this challenge.');
+                return ChallengeService.verifyChallengeeByPlayerId(challenge, clientId, 'Only the challengee can forfeit this challenge');
             })
             .then(ChallengeService.setForfeit)
             .then(PlayerChallengeService.updateLastGames)
@@ -45,7 +45,7 @@ const PlayerChallengeService = {
         return Challenge.findById(challengeId).exec()
             .then((challenge) => {
                 if (!challenge) return Promise.reject(new Error('Could not find the challenge'));
-                return ChallengeService.verifyChallengerByPlayerId(challenge, clientId, 'Only the challenger can revoke this challenge.');
+                return ChallengeService.verifyChallengerByPlayerId(challenge, clientId, 'Only the challenger can revoke this challenge');
             })
             .then(Challenge.removeByDocument)
             .then((challenge) => {
@@ -59,7 +59,7 @@ const PlayerChallengeService = {
 
         return Challenge.findById(challengeId).exec()
             .then((challenge) => {
-                return ChallengeService.verifyInvolvedByPlayerId(challenge, clientId, 'Only an involved player can resolve this challenge.');
+                return ChallengeService.verifyInvolvedByPlayerId(challenge, clientId, 'Only an involved player can resolve this challenge');
             })
             .then(PlayerChallengeService.verifyForfeitIsNotRequired)
             .then((challenge) => {
