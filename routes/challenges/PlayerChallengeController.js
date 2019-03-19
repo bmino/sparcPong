@@ -11,8 +11,10 @@ const AuthService = require('../../services/AuthService');
  * @param: challengeeId
  */
 router.post('/', (req, res, next) => {
-    let challengeeId = req.body.challengeeId;
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const { challengeeId } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
+
+    if (!challengeeId) return next(new Error('Challengee id is required'));
 
     PlayerChallengeService.doChallenge(challengeeId, clientId)
         .then(() => {
@@ -26,24 +28,19 @@ router.post('/', (req, res, next) => {
  * Get all challenges involving a player.
  */
 router.get('/:playerId', (req, res, next) => {
-    let playerId = req.params.playerId;
-    if (!playerId) return next(new Error('This is not a valid player'));
+    const { playerId } = req.params;
 
-    let resolvedChallenges = Challenge.getResolved(playerId)
-        .then(Challenge.populatePlayers);
+    if (!playerId) return next(new Error('Player id is required'));
 
-    let outgoingChallenges = Challenge.getOutgoing(playerId)
-        .then(Challenge.populatePlayers);
-
-    let incomingChallenges = Challenge.getIncoming(playerId)
-        .then(Challenge.populatePlayers);
-
-    Promise.all([resolvedChallenges, outgoingChallenges, incomingChallenges])
-        .then((challenges) => {
-            res.json({message: {resolved: challenges[0], outgoing: challenges[1], incoming: challenges[2]}});
+    Promise.all([
+        Challenge.getResolved(playerId).then(Challenge.populatePlayers),
+        Challenge.getOutgoing(playerId).then(Challenge.populatePlayers),
+        Challenge.getIncoming(playerId).then(Challenge.populatePlayers)
+    ])
+        .then(([resolved, outgoing, incoming]) => {
+            res.json({message: {resolved, outgoing, incoming}});
         })
         .catch(next);
-
 });
 
 
@@ -52,8 +49,10 @@ router.get('/:playerId', (req, res, next) => {
  * @param: challengeId
  */
 router.delete('/revoke', (req, res, next) => {
-    let challengeId = req.body.challengeId;
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const { challengeId } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
+
+    if (!challengeId) return next(new Error('Challenge id is required'));
 
     PlayerChallengeService.doRevoke(challengeId, clientId)
         .then(() => {
@@ -69,10 +68,12 @@ router.delete('/revoke', (req, res, next) => {
  * @param: challengeeScore
  */
 router.post('/resolve', (req, res, next) => {
-    let challengeId = req.body.challengeId;
-    let challengerScore = req.body.challengerScore;
-    let challengeeScore = req.body.challengeeScore;
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const { challengeId, challengerScore, challengeeScore } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
+
+    if (!challengeId) return next(new Error('Challenge id is required'));
+    if (challengerScore === undefined) return next(new Error('Challenger score is required'));
+    if (challengeeScore === undefined) return next(new Error('Challengee score is required'));
 
     PlayerChallengeService.doResolve(challengeId, challengerScore, challengeeScore, clientId)
         .then(() => {
@@ -86,8 +87,10 @@ router.post('/resolve', (req, res, next) => {
  * @param: challengeId
  */
 router.post('/forfeit', (req, res, next) => {
-    let challengeId = req.body.challengeId;
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const { challengeId } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
+
+    if (!challengeId) return next(new Error('Challenge id is required'));
 
     PlayerChallengeService.doForfeit(challengeId, clientId)
         .then(() => {
@@ -104,7 +107,7 @@ router.post('/forfeit', (req, res, next) => {
 router.get('/record/:playerId', (req, res, next) => {
     const { playerId } = req.params;
 
-    if (!playerId) return next(new Error('You must specify a player id'));
+    if (!playerId) return next(new Error('Player id is required'));
 
     Challenge.getResolved(playerId)
         .then((challenges) => {

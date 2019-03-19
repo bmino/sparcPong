@@ -4,20 +4,27 @@ const auth = require('../middleware/jwtMiddleware');
 const mongoose = require('mongoose');
 const Team = mongoose.model('Team');
 const TeamService = require('../services/TeamService');
+const AuthService = require('../services/AuthService');
 
 /**
  * Create new team
- *
  * @param: username
  * @param: leaderId
  * @param: partnerId
  */
 router.post('/', auth.jwtAuthProtected, (req, res, next) => {
-    let username = req.body.username;
-    let leaderId = req.body.leaderId;
-    let partnerId = req.body.partnerId;
+    const { username, leaderId, partnerId } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
 
-    TeamService.createTeam(username, leaderId, partnerId)
+    if (!username) return next(new Error('Username is required'));
+    if (!leaderId) return next(new Error('Leader id is required'));
+    if (!partnerId) return next(new Error('Partner id is required'));
+
+    if (typeof username !== 'string' || username.length === 0) {
+        return next(new Error('Invalid username data type'));
+    }
+
+    TeamService.createTeam(username.trim(), leaderId, partnerId, clientId)
         .then(() => {
             res.json({message: 'Team created!'});
         })
@@ -26,15 +33,22 @@ router.post('/', auth.jwtAuthProtected, (req, res, next) => {
 
 /**
  * Change team username
- *
  * @param: teamId
  * @param: newUsername
  */
 router.post('/change/username', auth.jwtAuthProtected, (req, res, next) => {
-    let teamId = req.body.teamId;
-    let newUsername = req.body.newUsername ? req.body.newUsername.trim() : null;
+    const { teamId, newUsername } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
 
-    TeamService.changeTeamName(teamId, newUsername)
+    if (!teamId) return next(new Error('Team id is required'));
+    if (!newUsername) return next(new Error('New username is required'));
+
+    if (typeof newUsername !== 'string' || newUsername.length === 0) {
+        return next(new Error('Invalid username data type'));
+    }
+
+
+    TeamService.changeTeamName(teamId, newUsername.trim(), clientId)
         .then(() => {
             res.json({message: `Successfully changed your team name to ${newUsername}!`});
         })
@@ -55,12 +69,12 @@ router.get('/', auth.jwtAuthProtected, (req, res, next) => {
 
 /**
  * Get team by id
- *
  * @param: teamId
  */
 router.get('/fetch/:teamId', auth.jwtAuthProtected, (req, res, next) => {
-    let teamId = req.params.teamId;
-    if (!teamId) return next(new Error('You must specify a team id'));
+    const { teamId } = req.params;
+
+    if (!teamId) return next(new Error('Team id is required'));
 
     Team.findById(teamId).populate('leader partner').exec()
         .then((team) => {
@@ -71,12 +85,12 @@ router.get('/fetch/:teamId', auth.jwtAuthProtected, (req, res, next) => {
 
 /**
  * Get teams by playerId
- *
  * @param: playerId
  */
 router.get('/fetch/byPlayerId/:playerId', auth.jwtAuthProtected, (req, res, next) => {
-    let playerId = req.params.playerId;
-    if (!playerId) return next(new Error('You must specify a player id'));
+    const { playerId } = req.params;
+
+    if (!playerId) return next(new Error('Player id is required'));
 
     Team.getTeamByPlayerId(playerId)
         .then((team) => {

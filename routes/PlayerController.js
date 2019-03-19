@@ -8,7 +8,6 @@ const AuthService = require('../services/AuthService');
 
 /**
  * Creates new player
- *
  * @param: username
  * @param: password
  * @param: firstName
@@ -43,40 +42,40 @@ router.post('/', (req, res, next) => {
 
 /**
  * Changes player username
- *
  * @param: newName
  */
 router.post('/change/username', auth.jwtAuthProtected, (req, res, next) => {
-    let { newUsername } = req.body;
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const { newUsername } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
 
-    if (!clientId) return next(new Error('Client id is required'));
     if (!newUsername) return next(new Error('New username is required'));
 
-    PlayerService.changeUsername(newUsername, clientId)
+    if (typeof newUsername !== 'string') {
+        return next(new Error('Invalid username data type'));
+    }
+
+    PlayerService.changeUsername(newUsername.trim(), clientId)
         .then(() => {
-            res.json({message: `Successfully changed your username to ${newUsername}`});
+            res.json({message: `Successfully changed your username!`});
         })
         .catch(next);
 });
 
 /**
  * Changes player password
- *
  * @param: oldPassword
  * @param: newPassword
  */
 router.post('/change/password', auth.jwtAuthProtected, (req, res, next) => {
     const { oldPassword, newPassword } = req.body;
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const clientId = AuthService.verifyToken(req.token).playerId;
 
-    if (!clientId) return next(new Error('Client id is required'));
     if (!oldPassword) return next(new Error('Old password is required'));
     if (!newPassword) return next(new Error('New password is required'));
 
     PlayerService.changePassword(oldPassword.trim(), newPassword.trim(), clientId)
         .then(() => {
-            res.json({message: 'Successfully changed your password'});
+            res.json({message: 'Successfully changed your password!'});
         })
         .catch(next);
 });
@@ -84,16 +83,17 @@ router.post('/change/password', auth.jwtAuthProtected, (req, res, next) => {
 
 /**
  * Changes player email
- *
  * @param: newEmail
  */
 router.post('/change/email', auth.jwtAuthProtected, (req, res, next) => {
-    let newEmail = req.body.newEmail ? req.body.newEmail.trim() : null;
+    const { newEmail } = req.body;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-    PlayerService.changeEmail(newEmail, clientId)
+    if (!newEmail) return next(new Error('New email is required'));
+
+    PlayerService.changeEmail(newEmail.trim(), clientId)
         .then(() => {
-            res.json({message: `Successfully changed your email to ${newEmail}!`});
+            res.json({message: `Successfully changed your email!`});
         })
         .catch(next);
 });
@@ -125,11 +125,11 @@ router.get('/', auth.jwtAuthProtected, (req, res, next) => {
 
 /**
  * Get player by id
- *
  * @param: playerId
  */
 router.get('/fetch/:playerId', auth.jwtAuthProtected, (req, res, next) => {
-    let playerId = req.params.playerId;
+    const { playerId } = req.params;
+
     if (!playerId) return next(new Error('You must specify a player id'));
 
     Player.findById(playerId).exec()
