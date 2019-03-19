@@ -6,45 +6,40 @@ const SocketService = require('./SocketService');
 
 const TeamService = {
 
-    createTeam(username, leaderId, partnerId) {
-        if (typeof username !== 'string' || username.length === 0) return Promise.reject(new Error('Invalid username data type'));
+    createTeam(username, leaderId, partnerId, clientId) {
         if (!leaderId || !partnerId || leaderId === partnerId) return Promise.reject(new Error('Invalid team members'));
+        if (clientId !== leaderId && clientId !== partnerId) return Promise.reject(new Error('You must be a member of a created team'));
 
-        let teamUsername = username ? username.trim() : null;
-
-        let verifyUsername = NameService.verifyUsername(teamUsername);
-        let usernameExists = Team.usernameExists(teamUsername);
-        let validateLeaderTeamsCount = TeamService.verifyPlayerCanJoinById(leaderId);
-        let validatePartnerTeamsCount = TeamService.verifyPlayerCanJoinById(partnerId);
-        let validateLeader = Player.findById(leaderId).exec();
-        let validatePartner = Player.findById(partnerId).exec();
-        let lowestTeamRank = Team.lowestRank();
-
-        return Promise.all([verifyUsername, usernameExists, validateLeaderTeamsCount, validatePartnerTeamsCount, validateLeader, validatePartner, lowestTeamRank])
-            .then((values) => {
+        return Promise.all([
+            Team.lowestRank(),
+            NameService.verifyUsername(username),
+            Team.usernameExists(username),
+            TeamService.verifyPlayerCanJoinById(leaderId),
+            TeamService.verifyPlayerCanJoinById(partnerId),
+            Player.findById(leaderId).exec(),
+            Player.findById(partnerId).exec(),
+        ])
+            .then(([rank, ...results]) => {
                 let team = new Team();
-                team.username = teamUsername;
+                team.username = username;
                 team.leader = leaderId;
                 team.partner = partnerId;
-                team.rank = values[6] + 1;
+                team.rank = rank + 1;
                 return team.save();
             })
             .then(() => {
-                SocketService.IO.sockets.emit('team:new', teamUsername);
+                SocketService.IO.sockets.emit('team:new', username);
                 console.log('Successfully created a new team.');
             });
     },
 
-    changeTeamName(teamId, newUsername) {
-        if (!teamId) return Promise.reject(new Error('You must provide a team id'));
-
+    changeTeamName(teamId, newUsername, clientId) {
         return NameService.verifyUsername(newUsername)
             .then(Team.usernameExists)
-            .then(() => {
-                return Team.findById(teamId).exec();
-            })
+            .then(() => Team.findById(teamId).exec())
             .then((team) => {
                 if (!team) return Promise.reject(new Error('Could not find team'));
+                if (clientId.toString() !== team.leader.toString()) return Promise.reject(new Error('Only the team leader can update the team name'));
                 console.log('Changing team username.');
                 team.username = newUsername;
                 return team.save();
@@ -59,18 +54,13 @@ const TeamService = {
 
         return Promise.all([
             Player.findById(playerId),
-            Team.getTeamsByPlayerId(playerId)
+            Team.getTeamByPlayerId(playerId)
         ])
-            .then((results) => {
-                let player = results[0];
-                let teams = results[1];
+            .then(([player, team]) => {
                 if (!player) return Promise.reject(new Error('Could not find player'));
                 if (!player.active) return Promise.reject(new Error('Deactivated players cannot join a team'));
-
-                const teamCount = teams.length;
-                console.log(`Found ${teamCount} team(s) associated with this player.`);
-                if (teamCount >= 1) return Promise.reject(new Error(`Players may not be a part of more than one team`));
-                return Promise.resolve(teamCount);
+                if (team) return Promise.reject(new Error(`Players may not be a part of more than one team`));
+                return Promise.resolve(playerId);
             });
     }
 };

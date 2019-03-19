@@ -29,7 +29,7 @@ const PlayerChallengeService = {
     doForfeit(challengeId, clientId) {
         return Challenge.findById(challengeId).exec()
             .then((challenge) => {
-                if (!challenge) return Promise.reject(new Error('Could not find the challenge'));
+                if (!challenge) return Promise.reject(new Error('Invalid challenge id'));
                 return ChallengeService.verifyChallengeeByPlayerId(challenge, clientId, 'Only the challengee can forfeit this challenge');
             })
             .then(ChallengeService.setForfeit)
@@ -43,7 +43,7 @@ const PlayerChallengeService = {
     doRevoke(challengeId, clientId) {
         return Challenge.findById(challengeId).exec()
             .then((challenge) => {
-                if (!challenge) return Promise.reject(new Error('Could not find the challenge'));
+                if (!challenge) return Promise.reject(new Error('Invalid challenge id'));
                 return ChallengeService.verifyChallengerByPlayerId(challenge, clientId, 'Only the challenger can revoke this challenge');
             })
             .then(Challenge.removeByDocument)
@@ -54,16 +54,13 @@ const PlayerChallengeService = {
     },
 
     doResolve(challengeId, challengerScore, challengeeScore, clientId) {
-        if (!challengeId) return Promise.reject(new Error('This is not a valid challenge'));
-
         return Challenge.findById(challengeId).exec()
             .then((challenge) => {
+                if (!challenge) return Promise.reject(new Error('Invalid challenge id'));
                 return ChallengeService.verifyInvolvedByPlayerId(challenge, clientId, 'Only an involved player can resolve this challenge');
             })
             .then(PlayerChallengeService.verifyForfeitIsNotRequired)
-            .then((challenge) => {
-                return ChallengeService.setScore(challenge, challengerScore, challengeeScore);
-            })
+            .then((challenge) => ChallengeService.setScore(challenge, challengerScore, challengeeScore))
             .then((challenge) => {
                 if (challengerScore > challengeeScore) return ChallengeService.swapRanks(challenge);
             })
@@ -74,21 +71,17 @@ const PlayerChallengeService = {
     },
 
     verifyAllowedToChallenge(players) {
-        let challenger = players[0];
-        let challengee = players[1];
+        const [challenger, challengee] = players;
 
-        return new Promise((resolve, reject) => {
-            let activePlayerCheck = PlayerChallengeService.verifyActivePlayers(players);
-            let existingChallengesCheck = PlayerChallengeService.verifyChallengesBetweenPlayers(players);
-            let rankCheck = ChallengeService.verifyRank(challenger, challengee);
-            let tierCheck = ChallengeService.verifyTier(challenger, challengee);
-            let reissueTimeCheck = Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime);
-            let businessDayCheck = ChallengeService.verifyBusinessDay();
-
-            return Promise.all([activePlayerCheck, existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
-                .then(() => resolve(players))
-                .catch(reject);
-        });
+        return Promise.all([
+            PlayerChallengeService.verifyActivePlayers(players),
+            PlayerChallengeService.verifyChallengesBetweenPlayers(players),
+            ChallengeService.verifyRank(challenger, challengee),
+            ChallengeService.verifyTier(challenger, challengee),
+            Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime),
+            ChallengeService.verifyBusinessDay()
+        ])
+            .then(() => players);
     },
 
     verifyActivePlayers(players) {
@@ -97,41 +90,27 @@ const PlayerChallengeService = {
     },
 
     verifyChallengesBetweenPlayers(players) {
-        let challenger = players[0];
-        let challengee = players[1];
-        return new Promise((resolve, reject) => {
+        const [challenger, challengee] = players;
 
-            let challengerIncoming = Challenge.countDocuments({challengee: challenger._id, winner: null}).exec();
-            let challengerOutgoing = Challenge.countDocuments({challenger: challenger._id, winner: null}).exec();
-            let challengeeIncoming = Challenge.countDocuments({challengee: challengee._id, winner: null}).exec();
-            let challengeeOutgoing = Challenge.countDocuments({challenger: challengee._id, winner: null}).exec();
-            let challengesBetween  = Challenge.getUnresolvedBetweenPlayers(players);
-
-            return Promise.all([challengerIncoming, challengerOutgoing, challengeeIncoming, challengeeOutgoing, challengesBetween])
-                .then((counts) => {
-                    if (counts[0] >= ChallengeService.ALLOWED_INCOMING) return reject(new Error(`${challenger.username} cannot have more than ${ChallengeService.ALLOWED_INCOMING} incoming challenges`));
-                    if (counts[1] >= ChallengeService.ALLOWED_OUTGOING) return reject(new Error(`${challenger.username} cannot have more than ${ChallengeService.ALLOWED_OUTGOING} outgoing challenges`));
-                    if (counts[2] >= ChallengeService.ALLOWED_INCOMING) return reject(new Error(`${challengee.username} cannot have more than ${ChallengeService.ALLOWED_INCOMING} incoming challenges`));
-                    if (counts[3] >= ChallengeService.ALLOWED_OUTGOING) return reject(new Error(`${challengee.username} cannot have more than ${ChallengeService.ALLOWED_OUTGOING} outgoing challenges`));
-                    if (counts[4].length >= 1) return reject(new Error(`A challenge already exists between ${challenger.username} and ${challengee.username}`));
-
-                    return resolve(players);
-                })
-                .then(resolve)
-                .catch(reject);
-        });
+        return Promise.all([
+            Challenge.countDocuments({challengee: challenger._id, winner: null}).exec(),
+            Challenge.countDocuments({challenger: challenger._id, winner: null}).exec(),
+            Challenge.countDocuments({challengee: challengee._id, winner: null}).exec(),
+            Challenge.countDocuments({challenger: challengee._id, winner: null}).exec(),
+            Challenge.getUnresolvedBetweenPlayers(players)
+        ])
+            .then(([challengerIncoming, challengerOutgoing, challengeeIncoming, challengeeOutgoing, challengesBetween]) => {
+                if (challengerIncoming >= ChallengeService.ALLOWED_INCOMING) return Promise.reject(new Error(`${challenger.username} cannot have more than ${ChallengeService.ALLOWED_INCOMING} incoming challenges`));
+                if (challengerOutgoing >= ChallengeService.ALLOWED_OUTGOING) return Promise.reject(new Error(`${challenger.username} cannot have more than ${ChallengeService.ALLOWED_OUTGOING} outgoing challenges`));
+                if (challengeeIncoming >= ChallengeService.ALLOWED_INCOMING) return Promise.reject(new Error(`${challengee.username} cannot have more than ${ChallengeService.ALLOWED_INCOMING} incoming challenges`));
+                if (challengeeOutgoing >= ChallengeService.ALLOWED_OUTGOING) return Promise.reject(new Error(`${challengee.username} cannot have more than ${ChallengeService.ALLOWED_OUTGOING} outgoing challenges`));
+                if (challengesBetween.length >= 1) return Promise.reject(new Error(`A challenge already exists between ${challenger.username} and ${challengee.username}`));
+            })
+            .then(() => players);
     },
 
     verifyForfeitIsNotRequired(challenge) {
         console.log('Verifying player challenge forfeit');
-        return new Promise((resolve, reject) => {
-            let dateIssued = challenge.createdAt;
-            let expires = Util.addBusinessDays(dateIssued, PlayerChallengeService.ALLOWED_CHALLENGE_DAYS);
-            if (expires < new Date()) return reject(new Error('This challenge has expired. It must be forfeited'));
-            return resolve(challenge);
-        });
-    },
-
 
         const expires = Util.addBusinessDays(challenge.createdAt, PlayerChallengeService.ALLOWED_CHALLENGE_DAYS);
         if (expires < new Date()) return Promise.reject(new Error('This challenge has expired and must be forfeited'));
