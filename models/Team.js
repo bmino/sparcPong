@@ -6,7 +6,6 @@ let teamSchema = new Schema({
 	leader: { type: Schema.ObjectId, ref: 'Player', required: true },
 	partner: { type: Schema.ObjectId, ref: 'Player', required: false },
 	rank: { type: Number, default: 0 },
-	lastGame: { type: Date, default: null },
     active: { type: Boolean, required: true, default: true }
 });
 

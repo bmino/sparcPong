@@ -33,7 +33,6 @@ const PlayerChallengeService = {
                 return ChallengeService.verifyChallengeeByPlayerId(challenge, clientId, 'Only the challengee can forfeit this challenge');
             })
             .then(ChallengeService.setForfeit)
-            .then(PlayerChallengeService.updateLastGames)
             .then(ChallengeService.swapRanks)
             .then(() => {
                 MailerService.forfeitedChallenge(challengeId);
@@ -65,7 +64,6 @@ const PlayerChallengeService = {
             .then((challenge) => {
                 return ChallengeService.setScore(challenge, challengerScore, challengeeScore);
             })
-            .then(PlayerChallengeService.updateLastGames)
             .then((challenge) => {
                 if (challengerScore > challengeeScore) return ChallengeService.swapRanks(challenge);
             })
@@ -134,19 +132,12 @@ const PlayerChallengeService = {
         });
     },
 
-    updateLastGames(challenge) {
-        return new Promise((resolve, reject) => {
-            console.log(`Updating last games for the challenge with id of [${challenge._id}]`);
 
-            let gameTime = challenge.updatedAt;
-            let challengerUpdate = Player.findByIdAndUpdate(challenge.challenger, {$set: {lastGame: gameTime}}).exec();
-            let challengeeUpdate = Player.findByIdAndUpdate(challenge.challengee, {$set: {lastGame: gameTime}}).exec();
-
-            return Promise.all([challengerUpdate, challengeeUpdate])
-                .then(() => resolve(challenge))
-                .catch(reject);
-        });
+        const expires = Util.addBusinessDays(challenge.createdAt, PlayerChallengeService.ALLOWED_CHALLENGE_DAYS);
+        if (expires < new Date()) return Promise.reject(new Error('This challenge has expired and must be forfeited'));
+        return Promise.resolve(challenge);
     }
+
 };
 
 

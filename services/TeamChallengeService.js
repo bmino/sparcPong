@@ -44,7 +44,6 @@ const TeamChallengeService = {
             .then((teamChallenge) => {
                 return ChallengeService.setScore(teamChallenge, challengerScore, challengeeScore);
             })
-            .then(TeamChallengeService.updateLastGames)
             .then((teamChallenge) => {
                 if (challengerScore > challengeeScore) return ChallengeService.swapRanks(teamChallenge);
             })
@@ -79,7 +78,6 @@ const TeamChallengeService = {
                 return TeamChallengeService.verifyAllowedToForfeit(teamChallenge, clientId);
             })
             .then(ChallengeService.setForfeit)
-            .then(TeamChallengeService.updateLastGames)
             .then(ChallengeService.swapRanks)
             .then(() => {
                 MailerService.forfeitedTeamChallenge(challengeId);
@@ -192,25 +190,6 @@ const TeamChallengeService = {
             let expires = Util.addBusinessDays(dateIssued, TeamChallengeService.ALLOWED_CHALLENGE_DAYS_TEAM);
             if (expires < new Date()) return reject(new Error('This challenge has expired. It must be forfeited'));
             return resolve(challenge);
-        });
-    },
-
-    updateLastGames(challenge) {
-        console.log(`Updating last games for the challenge with id of [${challenge._id}]`);
-        return new Promise((resolve, reject) => {
-            return TeamChallenge.populateById(challenge._id)
-                .then((c) => {
-                    let setTimeOption = {$set: {lastGame: c.updatedAt}};
-                    let challengerLeaderUpdate = Player.findByIdAndUpdate(c.challenger.leader._id, setTimeOption).exec();
-                    let challengerPartnerUpdate = Player.findByIdAndUpdate(c.challenger.partner._id, setTimeOption).exec();
-                    let challengeeLeaderUpdate = Player.findByIdAndUpdate(c.challengee.leader._id, setTimeOption).exec();
-                    let challengeePartnerUpdate = Player.findByIdAndUpdate(c.challengee.partner._id, setTimeOption).exec();
-
-                    return Promise.all([challengerLeaderUpdate, challengerPartnerUpdate, challengeeLeaderUpdate, challengeePartnerUpdate])
-                        .then(() => {return resolve(challenge);})
-                        .catch(reject);
-                });
-
         });
     }
 };
