@@ -56,7 +56,7 @@ function PlayerProfileController($scope, $routeParams, jwtService, socket, playe
     }
 
     function getRecord() {
-        return playerService.getRecord($scope.profileId)
+        return playerChallengeService.getRecord($scope.profileId)
             .then(function(data) {
                 if (data) {
                     $scope.wins = data.wins;

@@ -65,7 +65,13 @@ function PlayerChallengeService($http) {
         return request.then( handleSuccess, handleError );
     };
 
-
+    service.getRecord = function(playerId) {
+        let request = $http({
+            method: "get",
+            url: "api/challenge/player/record/"+playerId
+        });
+        return request.then( handleSuccess, handleError );
+    };
 
 
     function handleSuccess(response) {

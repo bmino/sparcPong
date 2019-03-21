@@ -3,13 +3,11 @@ const router = express.Router();
 const auth = require('../middleware/jwtMiddleware');
 const mongoose = require('mongoose');
 const Player = mongoose.model('Player');
-const Challenge = mongoose.model('Challenge');
 const PlayerService = require('../services/PlayerService');
 const AuthService = require('../services/AuthService');
 
 /**
  * Creates new player
- *
  * @param: username
  * @param: password
  * @param: firstName
@@ -18,22 +16,24 @@ const AuthService = require('../services/AuthService');
  * @param: email
  */
 router.post('/', (req, res, next) => {
-    if ((req.body.username && typeof req.body.username !== 'string') ||
-        (req.body.password && typeof req.body.password !== 'string') ||
-        (req.body.firstName && typeof req.body.firstName !== 'string') ||
-        (req.body.lastName && typeof req.body.lastName !== 'string') ||
-        (req.body.phone && typeof req.body.phone !== 'number') ||
-        (req.body.email && typeof req.body.email !== 'string'))
-        return next(new Error('Invalid data type of Player parameters.'));
+    const { username, password, firstName, lastName, phone, email } = req.body;
+    
+    if (!username) return next(new Error('Username is required'));
+    if (!password) return next(new Error('Password is required'));
+    if (!firstName) return next(new Error('First name is required'));
+    if (!lastName) return next(new Error('Last name is required'));
+    if (!phone) return next(new Error('Phone is required'));
+    if (!email) return next(new Error('Email is required'));
 
-    let playerUsername = req.body.username.trim();
-    let playerPassword = req.body.password.trim();
-    let playerFirstName = req.body.firstName.trim();
-    let playerLastName = req.body.lastName.trim();
-    let playerPhone = req.body.phone;
-    let playerEmail = req.body.email.trim();
+    if ((typeof username !== 'string') ||
+        (typeof password !== 'string') ||
+        (typeof firstName !== 'string') ||
+        (typeof lastName !== 'string') ||
+        (typeof phone !== 'number') ||
+        (typeof email !== 'string'))
+        return next(new Error('Invalid data type of Player parameters'));
 
-    PlayerService.createPlayer(playerUsername, playerPassword, playerFirstName, playerLastName, playerPhone, playerEmail)
+    PlayerService.createPlayer(username.trim(), password.trim(), firstName.trim(), lastName.trim(), phone, email.trim())
         .then(() => {
             res.json({message: 'Player created!'});
         })
@@ -42,36 +42,40 @@ router.post('/', (req, res, next) => {
 
 /**
  * Changes player username
- *
  * @param: newName
  */
 router.post('/change/username', auth.jwtAuthProtected, (req, res, next) => {
-    let newUsername = req.body.newUsername ? req.body.newUsername.trim() : null;
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const { newUsername } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
 
-    if (!clientId) return next(new Error('You must provide a valid player id.'));
+    if (!newUsername) return next(new Error('New username is required'));
 
-    PlayerService.changeUsername(newUsername, clientId)
+    if (typeof newUsername !== 'string') {
+        return next(new Error('Invalid username data type'));
+    }
+
+    PlayerService.changeUsername(newUsername.trim(), clientId)
         .then(() => {
-            res.json({message: `Successfully changed your username to ${newUsername}`});
+            res.json({message: `Successfully changed your username!`});
         })
         .catch(next);
 });
 
 /**
  * Changes player password
- *
  * @param: oldPassword
  * @param: newPassword
  */
 router.post('/change/password', auth.jwtAuthProtected, (req, res, next) => {
-    let oldPassword = req.body.oldPassword ? req.body.oldPassword.trim() : '';
-    let newPassword = req.body.newPassword ? req.body.newPassword.trim() : '';
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const { oldPassword, newPassword } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
 
-    PlayerService.changePassword(oldPassword, newPassword, clientId)
+    if (!oldPassword) return next(new Error('Old password is required'));
+    if (!newPassword) return next(new Error('New password is required'));
+
+    PlayerService.changePassword(oldPassword.trim(), newPassword.trim(), clientId)
         .then(() => {
-            res.json({message: 'Successfully changed your password'});
+            res.json({message: 'Successfully changed your password!'});
         })
         .catch(next);
 });
@@ -79,16 +83,17 @@ router.post('/change/password', auth.jwtAuthProtected, (req, res, next) => {
 
 /**
  * Changes player email
- *
  * @param: newEmail
  */
 router.post('/change/email', auth.jwtAuthProtected, (req, res, next) => {
-    let newEmail = req.body.newEmail ? req.body.newEmail.trim() : null;
+    const { newEmail } = req.body;
     let clientId = AuthService.verifyToken(req.token).playerId;
 
-    PlayerService.changeEmail(newEmail, clientId)
+    if (!newEmail) return next(new Error('New email is required'));
+
+    PlayerService.changeEmail(newEmail.trim(), clientId)
         .then(() => {
-            res.json({message: `Successfully changed your email to ${newEmail}!`});
+            res.json({message: `Successfully changed your email!`});
         })
         .catch(next);
 });
@@ -120,42 +125,20 @@ router.get('/', auth.jwtAuthProtected, (req, res, next) => {
 
 /**
  * Get player by id
- *
  * @param: playerId
  */
 router.get('/fetch/:playerId', auth.jwtAuthProtected, (req, res, next) => {
-    let playerId = req.params.playerId;
-    if (!playerId) return next(new Error('You must specify a player id.'));
+    const { playerId } = req.params;
+
+    if (!playerId) return next(new Error('You must specify a player id'));
 
     Player.findById(playerId).exec()
         .then((player) => {
-            if (!player) return Promise.reject(new Error('No player was found for that id.'));
+            if (!player) return Promise.reject(new Error('No player was found for that id'));
             res.json({message: player});
         })
         .catch(next);
 });
 
-
-/**
- * Get the wins and losses for a player
- *
- * @param: playerId
- */
-router.get('/record/:playerId', auth.jwtAuthProtected, (req, res, next) => {
-    let playerId = req.params.playerId;
-    if (!playerId) return next(new Error('You must specify a player id.'));
-
-    Challenge.getResolved(playerId)
-        .then((challenges) => {
-            let wins = 0;
-            let losses = 0;
-            challenges.forEach((challenge) => {
-                if (challenge.winner.toString() === playerId.toString()) wins++;
-                else losses++;
-            });
-            res.json({message: {wins: wins, losses: losses}});
-        })
-        .catch(next);
-});
 
 module.exports = router;

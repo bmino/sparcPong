@@ -10,7 +10,7 @@ const ChallengeService = {
     verifyBusinessDay() {
         console.log('Verifying challenges can be issued today.');
         if (Util.isBusinessDay(new Date()) || ChallengeService.CHALLENGE_ANYTIME) return Promise.resolve();
-        return Promise.reject(new Error('You can only issue challenges on business days.'));
+        return Promise.reject(new Error('You can only issue challenges on business days'));
     },
 
     verifyReissueTime(challenges) {
@@ -24,12 +24,12 @@ const ChallengeService = {
         let reissueTime = Util.addHours(mostRecentChallenge.updatedAt, ChallengeService.CHALLENGE_BACK_DELAY_HOURS);
         if (reissueTime < new Date()) return Promise.resolve(challenges);
 
-        return Promise.reject(new Error(`You must wait at least ${ChallengeService.CHALLENGE_BACK_DELAY_HOURS} hours before re-challenging the same opponent.`));
+        return Promise.reject(new Error(`You must wait at least ${ChallengeService.CHALLENGE_BACK_DELAY_HOURS} hours before re-challenging the same opponent`));
     },
 
     verifyRank(challenger, challengee) {
         console.log('Verifying rank limitations');
-        if (challenger.rank < challengee.rank) return Promise.reject(new Error('You cannot challenger an opponent below your rank.'));
+        if (challenger.rank < challengee.rank) return Promise.reject(new Error('You cannot challenger an opponent below your rank'));
         return Promise.resolve();
     },
 
@@ -41,24 +41,29 @@ const ChallengeService = {
         if (!challengeeTier) return Promise.reject(new Error(`${challengee.username} is not in any tier`));
 
         if (Math.abs(challengerTier - challengeeTier) > 1)
-            return Promise.reject(new Error('You cannot challenge an opponent beyond 1 tier.'));
+            return Promise.reject(new Error('You cannot challenge an opponent beyond 1 tier'));
         return Promise.resolve();
     },
 
     verifyInvolvedByPlayerId(entity, playerId, message) {
         if (entity.challenger.toString() === playerId.toString() ||
             entity.challengee.toString() === playerId.toString()) return Promise.resolve(entity);
-        return Promise.reject(new Error(message || 'Expected the player to be the challenger or challengee.'));
+        return Promise.reject(new Error(message || 'Expected the player to be the challenger or challengee'));
+    },
+
+    verifyChallengeIsUnresolved(entity) {
+        if (!entity.winner) return Promise.resolve(entity);
+        return Promise.reject(new Error('This challenge has already been resolved'));
     },
 
     verifyChallengerByPlayerId(entity, playerId, message) {
         if (entity.challenger.toString() === playerId.toString()) return Promise.resolve(entity);
-        return Promise.reject(new Error(message || 'Expected the player to be the challenger.'));
+        return Promise.reject(new Error(message || 'Expected the player to be the challenger'));
     },
 
     verifyChallengeeByPlayerId(entity, playerId, message) {
         if (entity.challengee.toString() === playerId.toString()) return Promise.resolve(entity);
-        return Promise.reject(new Error(message || 'Expected the player to be the challengee.'));
+        return Promise.reject(new Error(message || 'Expected the player to be the challengee'));
     },
 
     swapRanks(entity) {
@@ -90,11 +95,11 @@ const ChallengeService = {
 
     setScore(challenge, challengerScore, challengeeScore) {
         console.log(`Setting score for challenge id [${challenge._id}]`);
-        if (challengerScore < 0 || challengeeScore < 0) return Promise.reject(new Error('Both scores must be positive.'));
-        if (!Number.isInteger(challengerScore) || !Number.isInteger(challengeeScore)) return Promise.reject(new Error('Both scores must be integers.'));
-        if (challengerScore + challengeeScore < 2) return Promise.reject(new Error('A valid set consists of at least 2 games.'));
-        if (challengerScore + challengeeScore > 5) return Promise.reject(new Error('No more than 5 games should be played in a set.'));
-        if (challengerScore === challengeeScore) return Promise.reject(new Error('The final score cannot be equal.'));
+        if (challengerScore < 0 || challengeeScore < 0) return Promise.reject(new Error('Both scores must be positive'));
+        if (!Number.isInteger(challengerScore) || !Number.isInteger(challengeeScore)) return Promise.reject(new Error('Both scores must be integers'));
+        if (challengerScore + challengeeScore < 2) return Promise.reject(new Error('A valid set consists of at least 2 games'));
+        if (challengerScore + challengeeScore > 5) return Promise.reject(new Error('No more than 5 games should be played in a set'));
+        if (challengerScore === challengeeScore) return Promise.reject(new Error('The final score cannot be equal'));
 
         challenge.setScore(challengerScore, challengeeScore);
         return challenge.save();

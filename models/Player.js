@@ -7,7 +7,6 @@ let playerSchema = new Schema({
 	lastName: { type: String, required: true },
 	alerts: { type: Schema.ObjectId, ref: 'Alert' },
 	rank: { type: Number, default: 0 },
-	lastGame: { type: Date, default: null },
 	phone: Number,
 	email: String,
     active: { type: Boolean, required: true, default: true }
@@ -27,7 +26,7 @@ playerSchema.statics.usernameExists = function(username) {
     return new Promise((resolve, reject) => {
         Player.countDocuments({username: username}).exec()
 			.then((count)  => {
-				if (count !== 0) return reject(new Error('Player username already exists.'));
+				if (count !== 0) return reject(new Error('Player username already exists'));
 				return resolve(username);
 			})
 			.catch(reject);
@@ -39,7 +38,7 @@ playerSchema.statics.emailExists = function(email) {
     return new Promise((resolve, reject)  => {
         Player.countDocuments({email: email}).exec()
 			.then((count)  => {
-				if (count !== 0) return reject(new Error('Email already exists.'));
+				if (count !== 0) return reject(new Error('Email already exists'));
 				return resolve(count);
         });
     });

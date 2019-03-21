@@ -1,23 +1,30 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/jwtMiddleware');
 const mongoose = require('mongoose');
 const Team = mongoose.model('Team');
-const TeamChallenge = mongoose.model('TeamChallenge');
 const TeamService = require('../services/TeamService');
+const AuthService = require('../services/AuthService');
 
 /**
  * Create new team
- *
  * @param: username
  * @param: leaderId
  * @param: partnerId
  */
-router.post('/', (req, res, next) => {
-    let username = req.body.username;
-    let leaderId = req.body.leaderId;
-    let partnerId = req.body.partnerId;
+router.post('/', auth.jwtAuthProtected, (req, res, next) => {
+    const { username, leaderId, partnerId } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
 
-    TeamService.createTeam(username, leaderId, partnerId)
+    if (!username) return next(new Error('Username is required'));
+    if (!leaderId) return next(new Error('Leader id is required'));
+    if (!partnerId) return next(new Error('Partner id is required'));
+
+    if (typeof username !== 'string' || username.length === 0) {
+        return next(new Error('Invalid username data type'));
+    }
+
+    TeamService.createTeam(username.trim(), leaderId, partnerId, clientId)
         .then(() => {
             res.json({message: 'Team created!'});
         })
@@ -26,15 +33,22 @@ router.post('/', (req, res, next) => {
 
 /**
  * Change team username
- *
  * @param: teamId
  * @param: newUsername
  */
-router.post('/change/username', (req, res, next) => {
-    let teamId = req.body.teamId;
-    let newUsername = req.body.newUsername ? req.body.newUsername.trim() : null;
+router.post('/change/username', auth.jwtAuthProtected, (req, res, next) => {
+    const { teamId, newUsername } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
 
-    TeamService.changeTeamName(teamId, newUsername)
+    if (!teamId) return next(new Error('Team id is required'));
+    if (!newUsername) return next(new Error('New username is required'));
+
+    if (typeof newUsername !== 'string' || newUsername.length === 0) {
+        return next(new Error('Invalid username data type'));
+    }
+
+
+    TeamService.changeTeamName(teamId, newUsername.trim(), clientId)
         .then(() => {
             res.json({message: `Successfully changed your team name to ${newUsername}!`});
         })
@@ -45,7 +59,7 @@ router.post('/change/username', (req, res, next) => {
 /**
  * Get all teams
  */
-router.get('/', (req, res, next) => {
+router.get('/', auth.jwtAuthProtected, (req, res, next) => {
     Team.find({})
         .then((teams) => {
             res.json({message: teams});
@@ -55,12 +69,12 @@ router.get('/', (req, res, next) => {
 
 /**
  * Get team by id
- *
  * @param: teamId
  */
-router.get('/fetch/:teamId', (req, res, next) => {
-    let teamId = req.params.teamId;
-    if (!teamId) return next(new Error('You must specify a team id.'));
+router.get('/fetch/:teamId', auth.jwtAuthProtected, (req, res, next) => {
+    const { teamId } = req.params;
+
+    if (!teamId) return next(new Error('Team id is required'));
 
     Team.findById(teamId).populate('leader partner').exec()
         .then((team) => {
@@ -71,39 +85,16 @@ router.get('/fetch/:teamId', (req, res, next) => {
 
 /**
  * Get teams by playerId
- *
  * @param: playerId
  */
-router.get('/fetch/lookup/:playerId', (req, res, next) => {
-    let playerId = req.params.playerId;
-    if (!playerId) return next(new Error('You must specify a player id.'));
+router.get('/fetch/byPlayerId/:playerId', auth.jwtAuthProtected, (req, res, next) => {
+    const { playerId } = req.params;
 
-    Team.getTeamsByPlayerId(playerId)
-        .then((teams) => {
-            res.json({message: teams});
-        })
-        .catch(next);
-});
+    if (!playerId) return next(new Error('Player id is required'));
 
-
-/**
- * Get wins and losses for a team
- *
- * @param: teamId
- */
-router.get('/record/:teamId', (req, res, next) => {
-    let teamId = req.params.teamId;
-    if (!teamId) return next(new Error('You must specify a team id.'));
-
-    TeamChallenge.getResolved(teamId)
-        .then((challenges) => {
-            let wins = 0;
-            let losses = 0;
-            challenges.forEach((challenge) => {
-                if (challenge.winner.toString() === teamId.toString()) wins++;
-                else losses++;
-            });
-            res.json({message: {wins: wins, losses: losses}});
+    Team.getTeamByPlayerId(playerId)
+        .then((team) => {
+            res.json({message: team});
         })
         .catch(next);
 });

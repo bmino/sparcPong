@@ -6,7 +6,6 @@ let teamSchema = new Schema({
 	leader: { type: Schema.ObjectId, ref: 'Player', required: true },
 	partner: { type: Schema.ObjectId, ref: 'Player', required: false },
 	rank: { type: Number, default: 0 },
-	lastGame: { type: Date, default: null },
     active: { type: Boolean, required: true, default: true }
 });
 
@@ -17,8 +16,8 @@ teamSchema.methods.hasMemberByPlayerId = function(playerId) {
     return false;
 };
 
-teamSchema.statics.getTeamsByPlayerId = function(playerId) {
-	return Team.find({$or: [{leader: playerId}, {partner: playerId}]}).exec();
+teamSchema.statics.getTeamByPlayerId = function(playerId) {
+	return Team.findOne({$or: [{leader: playerId}, {partner: playerId}]}).exec();
 };
 
 teamSchema.statics.usernameExists = function(username) {
@@ -26,7 +25,7 @@ teamSchema.statics.usernameExists = function(username) {
     return new Promise((resolve, reject) => {
         Team.countDocuments({username: username}).exec()
             .then((count) => {
-                if (count !== 0) return reject(new Error('Team username already exists.'));
+                if (count !== 0) return reject(new Error('Team username already exists'));
                 return resolve(username);
             })
             .catch(reject);

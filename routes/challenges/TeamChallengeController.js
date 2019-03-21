@@ -28,7 +28,7 @@ router.post('/', (req, res, next) => {
 router.get('/:teamId', (req, res, next) => {
     let teamId = req.params.teamId;
 
-    if (!teamId) return next(new Error('This is not a valid team.'));
+    if (!teamId) return next(new Error('This is not a valid team'));
 
     let resolvedChallenges = TeamChallenge.getResolved(teamId)
         .then(TeamChallenge.populateTeams);
@@ -92,6 +92,28 @@ router.post('/forfeit', (req, res, next) => {
     TeamChallengeService.doForfeit(challengeId, clientId)
         .then(() => {
             res.json({message: 'Challenge successfully forfeited.'});
+        })
+        .catch(next);
+});
+
+
+/**
+ * Get wins and losses for a team
+ * @param: teamId
+ */
+router.get('/record/:teamId', (req, res, next) => {
+    let teamId = req.params.teamId;
+    if (!teamId) return next(new Error('You must specify a team id'));
+
+    TeamChallenge.getResolved(teamId)
+        .then((challenges) => {
+            let wins = 0;
+            let losses = 0;
+            challenges.forEach((challenge) => {
+                if (challenge.winner.toString() === teamId.toString()) wins++;
+                else losses++;
+            });
+            res.json({message: {wins: wins, losses: losses}});
         })
         .catch(next);
 });

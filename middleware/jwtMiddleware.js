@@ -6,17 +6,17 @@ const jwtValidBeginningTime = AuthService.JWT_REJECT_IAT_BEFORE;
 
 function authorizationHeaderExists(req, res, next) {
     if (!req.headers || !req.headers.authorization) {
-        return res.status(401).send('No Authorization header.');
+        return res.status(401).send('No Authorization header');
     }
 
     let authHeader = req.headers.authorization.split(' ');
 
     if (authHeader.length <= 1) {
-        return res.status(401).send('Invalid Authorization header. No credentials provided.');
+        return res.status(401).send('Invalid Authorization header. No credentials provided');
     }
 
     if (authHeader[0].toLowerCase() !== jwtAuthHeaderPrefix.toLowerCase()) {
-        return res.status(401).send('Unexpected Authorization header prefix.');
+        return res.status(401).send('Unexpected Authorization header prefix');
     }
 
     next();
@@ -26,11 +26,11 @@ function validateJWT(req, res, next) {
     try {
         const jwtToken = req.headers.authorization.split(' ')[1];
         const payload = jwt.verify(jwtToken, jwtSecret);
-        if (!payload || !payload.iat) return res.status(401).send('JWT security token did not contain an \'issued at time.\'');
-        if (payload.iat < jwtValidBeginningTime) return res.status(401).send('Jwt security token is outdated.');
+        if (!payload || !payload.iat) return res.status(401).send('JWT security token did not contain an \'issued at time\'');
+        if (payload.iat < jwtValidBeginningTime) return res.status(401).send('Jwt security token is outdated');
     } catch (err) {
         console.error(err);
-        return res.status(401).send('Could not validate jwt security token.');
+        return res.status(401).send('Could not validate jwt security token');
     }
 
     next();

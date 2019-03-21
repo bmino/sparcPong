@@ -54,23 +54,13 @@ function TeamService($http) {
         return request.then( handleSuccess, handleError );
     };
 
-    service.lookupTeams = function(playerId) {
+    service.lookupTeamByPlayerId = function(playerId) {
         let request = $http({
             method: "get",
-            url: "api/team/fetch/lookup/"+playerId
+            url: "api/team/fetch/byPlayerId/"+playerId
         });
         return request.then( handleSuccess, handleError );
     };
-
-    service.getRecord = function(teamId) {
-        let request = $http({
-            method: "get",
-            url: "api/team/record/"+teamId
-        });
-        return request.then( handleSuccess, handleError );
-    };
-
-
 
 
     function handleSuccess(response) {

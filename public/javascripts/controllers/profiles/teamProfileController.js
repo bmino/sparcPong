@@ -27,13 +27,13 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
         } else {
             console.log('Profile id not given. Looking up teams.');
             let clientId = jwtService.getDecodedToken().playerId;
-            teamService.lookupTeams(clientId)
-                .then(function(teams) {
-                    if (!teams || teams.length === 0) {
+            teamService.lookupTeamByPlayerId(clientId)
+                .then(function(team) {
+                    if (!team) {
                         $location.path('signUp/team');
                     } else {
-                        console.log('Found team [' + teams[0].username + ']');
-                        $scope.profileId = teams[0]._id;
+                        console.log('Found team [' + team.username + ']');
+                        $scope.profileId = team._id;
                         loadTeam();
                         fetchChallenges();
                         getRecord();
@@ -69,7 +69,7 @@ function TeamProfileController($scope, $routeParams, $location, socket, jwtServi
     }
 
     function getRecord() {
-        return teamService.getRecord($scope.profileId)
+        return teamChallengeService.getRecord($scope.profileId)
             .then(function(data) {
                 if (data) {
                     $scope.wins = data.wins;

@@ -203,7 +203,7 @@ const MailerService = {
             .then(Player.findByAuthorization)
             .then((player) => {
                 if (!player) return reject(new Error(`Player could not be found`));
-                if (!player.email) return reject(new Error(`Could not find an email for this player.`));
+                if (!player.email) return reject(new Error(`Could not find an email for this player`));
                 return MailerService.sendEmail(`Password Reset`, `Your reset key is: ${resetKey}\n You may reset your password at ${MailerService.LADDER_URL}/#!/resetPassword/${encodeURIComponent(resetKey)}`, player.email);
             })
             .catch((err) => {

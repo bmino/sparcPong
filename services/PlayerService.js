@@ -7,35 +7,30 @@ const EmailService = require('./EmailService');
 const NameService = require('./NameService');
 const SocketService = require('./SocketService');
 
-const TeamService = {
-    PLAYER_TEAMS_MAX: 1,
+const PlayerService = {
 
     createPlayer(username, password, firstName, lastName, phone, email) {
-        let player = new Player();
-        player.username = username;
-        player.firstName = firstName;
-        player.lastName = lastName;
-        player.phone = phone;
-        player.email = email;
-
         return Promise.all([
+            Player.lowestRank(),
             AuthService.validatePasswordStrength(password),
             NameService.verifyRealName(firstName, lastName),
             NameService.verifyUsername(username),
             Player.usernameExists(username),
             EmailService.verifyEmail(email),
-            Player.emailExists(email),
-            Player.lowestRank()
+            Player.emailExists(email)
         ])
             .then((values) => {
-                // Set initial rank and persist player
-                player.rank = values[6] + 1;
+                let player = new Player();
+                player.username = username;
+                player.firstName = firstName;
+                player.lastName = lastName;
+                player.phone = phone;
+                player.email = email;
+                player.rank = values[0] + 1;
                 return player.save();
             })
             .then(Alert.attachToPlayer)
-            .then((createdPlayer) => {
-                return Authorization.attachToPlayerWithPassword(createdPlayer, password)
-            })
+            .then((createdPlayer) => Authorization.attachToPlayerWithPassword(createdPlayer, password))
             .then(() => {
                 SocketService.IO.sockets.emit('player:new', username);
                 console.log('Successfully created a new player.');
@@ -43,15 +38,13 @@ const TeamService = {
     },
 
     changeUsername(newUsername, clientId) {
-        if (!clientId) return Promise.reject(new Error('You must provide a valid player id.'));
+        if (!clientId) return Promise.reject(new Error('You must provide a valid player id'));
 
         return NameService.verifyUsername(newUsername)
             .then(Player.usernameExists)
-            .then(() => {
-                return Player.findById(clientId).exec()
-            })
+            .then(() => Player.findById(clientId).exec())
             .then((player) => {
-                if (!player) return Promise.reject(new Error('Could not find your account.'));
+                if (!player) return Promise.reject(new Error('Could not find your account'));
                 player.username = newUsername;
                 return player.save();
             })
@@ -61,7 +54,7 @@ const TeamService = {
     },
 
     changePassword(oldPassword, newPassword, clientId) {
-        if (!clientId) return Promise.reject(new Error('You must provide a valid player id.'));
+        if (!clientId) return Promise.reject(new Error('You must provide a valid player id'));
 
         return AuthService.resetPasswordByExistingPassword(newPassword, oldPassword, clientId)
             .then(() => {
@@ -70,15 +63,13 @@ const TeamService = {
     },
 
     changeEmail(newEmail, clientId) {
-        if (!clientId) return Promise.reject(new Error('You must provide a valid player id.'));
+        if (!clientId) return Promise.reject(new Error('You must provide a valid player id'));
 
         return EmailService.verifyEmail(newEmail)
             .then(Player.emailExists)
-            .then(() => {
-                return Player.findById(clientId).exec();
-            })
+            .then(() => Player.findById(clientId).exec())
             .then((player) => {
-                if (!player) return Promise.reject(new Error('Could not find your current account.'));
+                if (!player) return Promise.reject(new Error('Could not find your current account'));
                 console.log('Changing player email.');
                 player.email = newEmail;
                 return player.save();
@@ -89,11 +80,11 @@ const TeamService = {
     },
 
     removeEmail(clientId) {
-        if (!clientId) return Promise.reject(new Error('You must provide a valid player id.'));
+        if (!clientId) return Promise.reject(new Error('You must provide a valid player id'));
 
         return Player.findById(clientId).exec()
             .then((player) => {
-                if (!player) return Promise.reject(new Error('Could not find your current account.'));
+                if (!player) return Promise.reject(new Error('Could not find your current account'));
                 player.email = '';
                 return player.save();
             })
@@ -105,4 +96,4 @@ const TeamService = {
 };
 
 
-module.exports = TeamService;
+module.exports = PlayerService;

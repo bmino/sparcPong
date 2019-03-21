@@ -106,14 +106,6 @@ function PlayerService($http) {
         return request.then( handleSuccess, handleError );
     };
 
-    service.getRecord = function(playerId) {
-        let request = $http({
-            method: "get",
-            url: "api/player/record/"+playerId
-        });
-        return request.then( handleSuccess, handleError );
-    };
-
 
     function handleSuccess(response) {
         return response.data.message;
