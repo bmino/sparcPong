@@ -1,27 +1,17 @@
 require('dotenv').config({path: 'config/application.env'});
 
-// Mongo
-require('./models/index.js');
-require('mongoose').connect(process.env.MONGODB_URI, {
-    useCreateIndex: true,
-    useNewUrlParser: true,
-    promiseLibrary: global.Promise
-});
-
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 const path = require('path');
 const favicon = require('serve-favicon');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const models = require('./models'); // Register schemas
+const auth = require('./middleware/jwtMiddleware');
 const SocketService = require('./services/SocketService');
-SocketService.init(require('socket.io')(server));
-
-// Start Server
-server.listen(process.env.PORT, () => {
-    console.log(`Server is listening on port ${process.env.PORT}`);
-});
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -49,19 +39,37 @@ app.use('/api/envBridge',					require('./routes/EnvironmentBridgeController'));
 app.use('/manual',							require('./routes/ManualTaskController'));
 
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use((req, res, next) => {
     let err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
 
-// error handler
+// Error handler
 app.use((err, req, res, next) => {
     console.error(err);
     res.status(err.status || 500);
     res.json(err.message);
 });
 
+SocketService.init(io);
 
-module.exports = app;
+if (!process.env.DISABLE_MONGOOSE_CONNECT) {
+    mongoose
+        .connect(process.env.MONGODB_URI, {
+            useCreateIndex: true,
+            useNewUrlParser: true,
+            promiseLibrary: Promise
+        })
+        .catch(console.error);
+} else {
+    console.log('Mongoose connection was blocked by DISABLE_MONGOOSE_CONNECT environment variable');
+}
+
+const listeningServer = server.listen(process.env.PORT, () => {
+    console.log(`Server is listening on port ${listeningServer.address().port}`);
+});
+
+module.exports = listeningServer;
+
