@@ -61,6 +61,7 @@ const TeamChallengeService = {
                 if (!challenge) return Promise.reject(new Error('Could not find the challenge'));
                 return TeamChallengeService.verifyAllowedToRevoke(challenge, clientId);
             })
+            .then(ChallengeService.verifyChallengeIsUnresolved)
             .then(TeamChallenge.removeByDocument)
             .then((challenge) => {
                 MailerService.revokedTeamChallenge(challenge.challenger, challenge.challengee);
@@ -77,6 +78,7 @@ const TeamChallengeService = {
             .then((teamChallenge) => {
                 return TeamChallengeService.verifyAllowedToForfeit(teamChallenge, clientId);
             })
+            .then(ChallengeService.verifyChallengeIsUnresolved)
             .then(ChallengeService.setForfeit)
             .then(ChallengeService.swapRanks)
             .then(() => {

@@ -51,6 +51,11 @@ const ChallengeService = {
         return Promise.reject(new Error(message || 'Expected the player to be the challenger or challengee'));
     },
 
+    verifyChallengeIsUnresolved(entity) {
+        if (!entity.winner) return Promise.resolve(entity);
+        return Promise.reject(new Error('This challenge has already been resolved'));
+    },
+
     verifyChallengerByPlayerId(entity, playerId, message) {
         if (entity.challenger.toString() === playerId.toString()) return Promise.resolve(entity);
         return Promise.reject(new Error(message || 'Expected the player to be the challenger'));

@@ -32,6 +32,7 @@ const PlayerChallengeService = {
                 if (!challenge) return Promise.reject(new Error('Invalid challenge id'));
                 return ChallengeService.verifyChallengeeByPlayerId(challenge, clientId, 'Only the challengee can forfeit this challenge');
             })
+            .then(ChallengeService.verifyChallengeIsUnresolved)
             .then(ChallengeService.setForfeit)
             .then(ChallengeService.swapRanks)
             .then(() => {
@@ -46,6 +47,7 @@ const PlayerChallengeService = {
                 if (!challenge) return Promise.reject(new Error('Invalid challenge id'));
                 return ChallengeService.verifyChallengerByPlayerId(challenge, clientId, 'Only the challenger can revoke this challenge');
             })
+            .then(ChallengeService.verifyChallengeIsUnresolved)
             .then(Challenge.removeByDocument)
             .then((challenge) => {
                 MailerService.revokedChallenge(challenge.challenger, challenge.challengee);
