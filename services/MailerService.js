@@ -202,13 +202,13 @@ const MailerService = {
         return Authorization.findByResetKey(resetKey)
             .then(Player.findByAuthorization)
             .then((player) => {
-                if (!player) return reject(new Error(`Player could not be found`));
-                if (!player.email) return reject(new Error(`Could not find an email for this player`));
+                if (!player) return Promise.reject(new Error(`Player could not be found`));
+                if (!player.email) return Promise.reject(new Error(`Could not find an email for this player`));
                 return MailerService.sendEmail(`Password Reset`, `Your reset key is: ${resetKey}\n You may reset your password at ${MailerService.LADDER_URL}/#!/resetPassword/${encodeURIComponent(resetKey)}`, player.email);
             })
             .catch((err) => {
                 console.error(err);
-                return reject(new Error(`Error sending password reset email`));
+                return Promise.reject(new Error(`Error sending password reset email`));
             });
     },
 
@@ -229,7 +229,7 @@ const MailerService = {
         return MailerService.transporter.sendMail(mailOptions)
             .then((response) => {
                 console.log(`${subject} email sent to ${address}`);
-                return resolve(address);
+                return Promise.resolve(address);
             })
             .catch((err) => {
                 console.error(err);
