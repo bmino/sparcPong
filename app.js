@@ -24,7 +24,7 @@ if (process.env.MORGAN_FORMAT) app.use(morgan(process.env.MORGAN_FORMAT));
 
 
 // JWT Security
-app.use(['/api/challenge*', '/api/playerAlerts*', '/api/envBridge*'], auth.jwtAuthProtected);
+app.use(['/api/challenge*', '/api/alerts*', '/api/envBridge*'], auth.jwtAuthProtected);
 
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
@@ -34,7 +34,7 @@ app.use('/api/player',						require('./routes/PlayerController'));
 app.use('/api/team',						require('./routes/TeamController'));
 app.use('/api/challenge/player',			require('./routes/challenges/PlayerChallengeController'));
 app.use('/api/challenge/team',				require('./routes/challenges/TeamChallengeController'));
-app.use('/api/playerAlerts',				require('./routes/AlertController'));
+app.use('/api/alerts',				        require('./routes/AlertController'));
 app.use('/api/envBridge',					require('./routes/EnvironmentBridgeController'));
 app.use('/manual',							require('./routes/ManualTaskController'));
 

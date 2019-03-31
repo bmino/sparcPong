@@ -73,7 +73,7 @@ function PlayerService($http) {
     service.getAlerts = function() {
         let request = $http({
             method: "get",
-            url: "api/playerAlerts/"
+            url: "api/alerts/"
         });
         return request.then( handleSuccess, handleError );
     };
@@ -81,7 +81,7 @@ function PlayerService($http) {
     service.updateAlerts = function(alerts) {
         let request = $http({
             method: "post",
-            url: "api/playerAlerts/",
+            url: "api/alerts/",
             data: {
                 alerts: alerts
             }
