@@ -17,43 +17,33 @@ const AuthService = {
 
     login(playerId, password) {
         console.log(`Attempting to log in player id: ${playerId}`);
-        return new Promise((resolve, reject) => {
-            AuthService.validateCredentials(playerId, password)
-                .then(AuthService.createToken)
-                .then(resolve)
-                .catch(reject);
-        });
+        return AuthService.validateCredentials(playerId, password)
+            .then(AuthService.createToken);
     },
 
     flash(token) {
         console.log('Attempting to re-log player.');
-        return new Promise((resolve, reject) => {
-            AuthService.validateTokenCredentials(token)
-                .then(resolve)
-                .catch(reject);
-        });
+        return AuthService.validateTokenCredentials(token);
     },
 
     createToken(playerId) {
         console.log(`Attempting to create token for ${playerId}`);
-        return new Promise((resolve, reject) => {
-            let payload = {
-                playerId: playerId,
-                iat: new Date().getTime()
-            };
-            let options = {
-                algorithm: AuthService.JWT_ALGORITHM,
-                expiresIn: AuthService.JWT_EXPIRATION_DAYS + 'd'
-            };
-            try {
-                let token = jwt.sign(payload, AuthService.JWT_SECRET_KEY, options);
-                console.log('Successfully created a token');
-                return resolve(token);
-            } catch (err) {
-                console.error(err);
-                return reject(err);
-            }
-        });
+        const payload = {
+            playerId: playerId,
+            iat: new Date().getTime()
+        };
+        const options = {
+            algorithm: AuthService.JWT_ALGORITHM,
+            expiresIn: AuthService.JWT_EXPIRATION_DAYS + 'd'
+        };
+        try {
+            const token = jwt.sign(payload, AuthService.JWT_SECRET_KEY, options);
+            console.log('Successfully created a token');
+            return Promise.resolve(token);
+        } catch (err) {
+            console.error(err);
+            return Promise.reject(err);
+        }
     },
 
     verifyToken(token) {
@@ -67,92 +57,73 @@ const AuthService = {
 
     enablePasswordResetByPlayerId(playerId) {
         console.log('Attempting to generate a password reset key.');
-        return new Promise((resolve, reject) => {
-            Authorization.findByPlayerId(playerId)
-                .then((auth) => {
-                    if (!auth) return reject(new Error('Could not find an authentication record for this player'));
-                    if (!auth.getResetDate()) return auth.enablePasswordReset();
+        return Authorization.findByPlayerId(playerId)
+            .then((auth) => {
+                if (!auth) return Promise.reject(new Error('Could not find an authentication record for this player'));
+                if (!auth.reset.date) return auth.enablePasswordReset();
 
-                    let previousResetExpiration = Util.addHours(new Date(auth.getResetDate()), AuthService.PASSWORD_RESET_REPEAT_HOURS);
-                    if (previousResetExpiration > new Date()) {
-                        return reject(new Error(`Cannot reset passwords multiple times within ${AuthService.PASSWORD_RESET_REPEAT_HOURS} hours`));
-                    }
-                    return auth.enablePasswordReset();
-                })
-                .then(resolve)
-                .catch(reject);
-        });
+                let previousResetExpiration = Util.addHours(new Date(auth.reset.date), AuthService.PASSWORD_RESET_REPEAT_HOURS);
+                if (previousResetExpiration > new Date()) {
+                    return Promise.reject(new Error(`Cannot reset passwords multiple times within ${AuthService.PASSWORD_RESET_REPEAT_HOURS} hours`));
+                }
+                return auth.enablePasswordReset();
+            });
     },
 
     resetPasswordByResetKey(password, resetKey) {
         console.log('Attempting to reset a password by reset key.');
-        return new Promise((resolve, reject) => {
-            AuthService.validatePasswordStrength(password)
-                .then(() => Authorization.findByResetKey(resetKey))
-                .then((auth) => {
-                    if (!auth) return reject(new Error('Invalid password reset key'));
-                    if (!resetKey) return reject(new Error('A password reset key was not provided'));
-                    if (auth.getResetKey() !== resetKey) return reject(new Error('Invalid password reset key'));
-                    if (!auth.getResetDate()) return auth.setPassword(password);
+        return AuthService.validatePasswordStrength(password)
+            .then(() => Authorization.findByResetKey(resetKey))
+            .then((auth) => {
+                if (!auth) return Promise.reject(new Error('Invalid password reset key'));
+                if (!resetKey) return Promise.reject(new Error('A password reset key was not provided'));
+                if (auth.reset.key !== resetKey) return Promise.reject(new Error('Invalid password reset key'));
+                if (!auth.reset.date) return auth.setPassword(password);
 
-                    let resetWindowExpiration = Util.addMinutes(auth.getResetDate(), AuthService.PASSWORD_RESET_WINDOW_MINUTES);
-                    if (resetWindowExpiration < new Date()) {
-                        return reject(new Error(`Passwords can only be reset within a ${AuthService.PASSWORD_RESET_WINDOW_MINUTES} minute window`));
-                    }
-                    return auth.setPassword(password);
-                })
-                .then(resolve)
-                .catch(reject);
-        });
+                let resetWindowExpiration = Util.addMinutes(auth.reset.date, AuthService.PASSWORD_RESET_WINDOW_MINUTES);
+                if (resetWindowExpiration < new Date()) {
+                    return Promise.reject(new Error(`Passwords can only be reset within a ${AuthService.PASSWORD_RESET_WINDOW_MINUTES} minute window`));
+                }
+                return auth.setPassword(password);
+            });
     },
 
     resetPasswordByExistingPassword(newPassword, existingPassword, playerId) {
         console.log('Attempting to reset password by existing password.');
-        return new Promise((resolve, reject) => {
-            AuthService.validatePasswordStrength(newPassword)
-                .then(() => Authorization.findByPlayerId(playerId))
-                .then((authorization) => {
-                    if (!authorization) return reject(new Error('Could not find an authentication record for this player'));
-                    if (!authorization.user.active) return reject(new Error('User has been deactivated'));
-                    if (!authorization.isPasswordEqualTo(existingPassword)) return reject(new Error('Incorrect current password'));
-                    return authorization.setPassword(newPassword);
-                })
-                .then(resolve)
-                .catch(reject);
-        });
+        return AuthService.validatePasswordStrength(newPassword)
+            .then(() => Authorization.findByPlayerId(playerId))
+            .then((authorization) => {
+                if (!authorization) return Promise.reject(new Error('Could not find an authentication record for this player'));
+                if (!authorization.user.active) return Promise.reject(new Error('User has been deactivated'));
+                if (!authorization.isPasswordEqualTo(existingPassword)) return Promise.reject(new Error('Incorrect current password'));
+                return authorization.setPassword(newPassword);
+            });
     },
 
     validateCredentials(playerId, password) {
         console.log('Validating credentials.');
-        return new Promise((resolve, reject) => {
-            Authorization.findByPlayerId(playerId)
-                .then((authorization) => {
-                    if (!authorization) return reject(new Error('Could not find an authentication record for this player'));
-                    if (!authorization.user.active) return reject(new Error('User has been deactivated'));
-                    if (authorization.isPasswordEqualTo(password)) return resolve(playerId);
-                    return reject(new Error('Incorrect password'));
-                })
-                .catch(reject);
-        });
+        return Authorization.findByPlayerId(playerId)
+            .then((authorization) => {
+                if (!authorization) return Promise.reject(new Error('Could not find an authentication record for this player'));
+                if (!authorization.user.active) return Promise.reject(new Error('User has been deactivated'));
+                if (!authorization.isPasswordEqualTo(password)) return Promise.reject(new Error('Incorrect password'));
+                return Promise.resolve(playerId);
+            });
     },
 
     validateTokenCredentials(token) {
         console.log('Validating credentials via existing token.');
-        return new Promise((resolve, reject) => {
-            let payload = AuthService.verifyToken(token);
-            if (!payload) return reject(new Error('Invalid token credential'));
-            return resolve(payload);
-        });
+        const payload = AuthService.verifyToken(token);
+        if (!payload) return Promise.reject(new Error('Invalid token credential'));
+        return Promise.resolve(payload);
     },
 
     validatePasswordStrength(password) {
-        return new Promise((resolve, reject) => {
-            if (password === null || password === undefined) return reject(new Error('Password must be defined'));
-            if (!AuthService.JWT_SECRET_KEY) return  reject(new Error('Application key has not been defined. A ladder administrator must configure this'));
-            if (password.length < AuthService.PASSWORD_MIN_LENGTH) return reject(new Error(`Password must be at least ${AuthService.PASSWORD_MIN_LENGTH} characters in length`));
-            if (password.length > AuthService.PASSWORD_MAX_LENGTH) return reject(new Error(`Password cannot be longer than ${AuthService.PASSWORD_MAX_LENGTH} characters`));
-            return resolve(password);
-        });
+        if (password === null || password === undefined) return Promise.reject(new Error('Password must be defined'));
+        if (!AuthService.JWT_SECRET_KEY) return Promise.reject(new Error('Application key has not been defined. A ladder administrator must configure this'));
+        if (password.length < AuthService.PASSWORD_MIN_LENGTH) return Promise.reject(new Error(`Password must be at least ${AuthService.PASSWORD_MIN_LENGTH} characters in length`));
+        if (password.length > AuthService.PASSWORD_MAX_LENGTH) return Promise.reject(new Error(`Password cannot be longer than ${AuthService.PASSWORD_MAX_LENGTH} characters`));
+        return Promise.resolve(password);
     },
 
     getLogins() {
@@ -160,7 +131,7 @@ const AuthService = {
     },
 
     maskEmail(email) {
-        let emailParts = email.split('@');
+        const emailParts = email.split('@');
         let maskedName = '';
         emailParts[0].split('').forEach((letter, index) => {
             maskedName += (index % 2 === 0 ? letter : '*');

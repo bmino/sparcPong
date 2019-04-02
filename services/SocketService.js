@@ -24,14 +24,12 @@ const SocketService = {
                 SocketService.IO.sockets.emit('client:leave', SocketService.getClientCount());
             });
 
-            socket.on('login', (credentials) => {
+            socket.on('login', ({ playerId, password }) => {
                 console.log('Received "login" socket event.');
-                let userId = credentials.playerId;
-                let password = credentials.password;
 
-                AuthService.login(userId, password)
+                AuthService.login(playerId, password)
                     .then((token) => {
-                        SocketService.loginUser(userId, socket);
+                        SocketService.loginUser(playerId, socket);
                         SocketService.IO.sockets.emit('client:online', SocketService.getOnlineClientIds());
                         socket.emit('login:success', token);
                     })
@@ -69,8 +67,7 @@ const SocketService = {
     getOnlineClientIds() {
         let uniqueIds = [];
         Object.keys(SocketService.SOCKETS).forEach((socketId) => {
-            let socket = SocketService.SOCKETS[socketId];
-            let userId = socket.userId;
+            const userId = SocketService.SOCKETS[socketId].userId;
             if (!userId) return;
             if (uniqueIds.indexOf(userId) < 0) uniqueIds.push(userId);
         });

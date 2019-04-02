@@ -14,7 +14,7 @@ let authorizationSchema = new Schema({
 
 authorizationSchema.methods.setPassword = function(password) {
     let self = this;
-    let salt = bcrypt.genSaltSync();
+    const salt = bcrypt.genSaltSync();
     return bcrypt.hash(password, salt)
         .then((passwordHash) => {
             self.password = passwordHash;
@@ -24,26 +24,14 @@ authorizationSchema.methods.setPassword = function(password) {
 };
 
 authorizationSchema.methods.isPasswordEqualTo = function(password) {
-    let self = this;
     if (password === null || password === undefined) return Promise.reject(new Error('Password must be defined'));
-    return bcrypt.compareSync(password, self.password);
+    return bcrypt.compareSync(password, this.password);
 };
 
 authorizationSchema.methods.enablePasswordReset = function() {
-    let self = this;
-    self.reset.key = uuid();
-    self.reset.date = new Date();
-    return self.save();
-};
-
-authorizationSchema.methods.getResetKey = function() {
-    let self = this;
-    return self.reset.key;
-};
-
-authorizationSchema.methods.getResetDate = function() {
-    let self = this;
-    return self.reset.date;
+    this.reset.key = uuid();
+    this.reset.date = new Date();
+    return this.save();
 };
 
 authorizationSchema.statics.findByResetKey = function(resetKey) {

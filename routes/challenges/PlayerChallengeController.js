@@ -113,7 +113,7 @@ router.get('/record/:playerId', (req, res, next) => {
         .then((challenges) => {
             const wins = challenges.filter(challenge => challenge.winner.toString() === playerId.toString()).length;
             const losses = challenges.length - wins;
-            res.json({message: {wins: wins, losses: losses}});
+            res.json({message: {wins, losses}});
         })
         .catch(next);
 });

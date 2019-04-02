@@ -9,7 +9,7 @@ function authorizationHeaderExists(req, res, next) {
         return res.status(401).send('No Authorization header');
     }
 
-    let authHeader = req.headers.authorization.split(' ');
+    const authHeader = req.headers.authorization.split(' ');
 
     if (authHeader.length <= 1) {
         return res.status(401).send('Invalid Authorization header. No credentials provided');
@@ -27,7 +27,7 @@ function validateJWT(req, res, next) {
         const jwtToken = req.headers.authorization.split(' ')[1];
         const payload = jwt.verify(jwtToken, jwtSecret);
         if (!payload || !payload.iat) return res.status(401).send('JWT security token did not contain an \'issued at time\'');
-        if (payload.iat < jwtValidBeginningTime) return res.status(401).send('Jwt security token is outdated');
+        if (payload.iat < jwtValidBeginningTime) return res.status(401).send('JWT security token is outdated');
     } catch (err) {
         console.error(err);
         return res.status(401).send('Could not validate jwt security token');
@@ -37,7 +37,7 @@ function validateJWT(req, res, next) {
 }
 
 function makeTokenAvailable (req, res, next) {
-    let authHeader = req.headers.authorization.split(' ');
+    const authHeader = req.headers.authorization.split(' ');
     req.token = authHeader[1];
     next();
 }

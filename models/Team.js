@@ -22,30 +22,24 @@ teamSchema.statics.getTeamByPlayerId = function(playerId) {
 
 teamSchema.statics.usernameExists = function(username) {
     console.log(`Checking if team username, ${username}, exists.`);
-    return new Promise((resolve, reject) => {
-        Team.countDocuments({username: username}).exec()
-            .then((count) => {
-                if (count !== 0) return reject(new Error('Team username already exists'));
-                return resolve(username);
-            })
-            .catch(reject);
-    });
+    return Team.countDocuments({username: username}).exec()
+        .then((count) => {
+            if (count !== 0) return Promise.reject(new Error('Team username already exists'));
+            return Promise.resolve(username);
+        });
 };
 
 teamSchema.statics.lowestRank = function() {
     console.log('Finding lowest team rank.');
-    return new Promise((resolve, reject) => {
-        Team.find().sort({'rank': -1}).limit(1).exec()
-            .then((lowestRankTeam) => {
-                let lowestRank = 0;
-                if (lowestRankTeam && lowestRankTeam.length > 0) {
-                    lowestRank = lowestRankTeam[0].rank;
-                }
-                console.log(`Found lowest rank of ${lowestRank}`);
-                return resolve(lowestRank);
-            })
-            .catch(reject);
-    });
+    return Team.find().sort({'rank': -1}).limit(1).exec()
+        .then((lowestRankTeam) => {
+            let lowestRank = 0;
+            if (lowestRankTeam && lowestRankTeam.length > 0) {
+                lowestRank = lowestRankTeam[0].rank;
+            }
+            console.log(`Found lowest rank of ${lowestRank}`);
+            return Promise.resolve(lowestRank);
+        });
 };
 
 const Team = mongoose.model('Team', teamSchema);
