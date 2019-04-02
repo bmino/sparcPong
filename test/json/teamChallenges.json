@@ -1,0 +1,43 @@
+[
+  {
+    "_id": "000000000000000000000001",
+    "challenger": "000000000000000000000002",
+    "challengee": "000000000000000000000001",
+    "winner": "000000000000000000000001",
+    "challengerScore": 1,
+    "challengeeScore": 3
+  },
+  {
+    "_id": "000000000000000000000002",
+    "challenger": "000000000000000000000002",
+    "challengee": "000000000000000000000001",
+    "winner": "000000000000000000000001",
+    "challengerScore": 2,
+    "challengeeScore": 3
+  },
+  {
+    "_id": "000000000000000000000003",
+    "challenger": "000000000000000000000002",
+    "challengee": "000000000000000000000001",
+    "winner": "000000000000000000000002",
+    "challengerScore": 3,
+    "challengeeScore": 1
+  },
+  {
+    "_id": "000000000000000000000004",
+    "challenger": "000000000000000000000004",
+    "challengee": "000000000000000000000002",
+    "winner": null,
+    "challengerScore": null,
+    "challengeeScore": null
+  },
+  {
+    "_id": "000000000000000000000005",
+    "challenger": "000000000000000000000009",
+    "challengee": "000000000000000000000008",
+    "winner": null,
+    "challengerScore": null,
+    "challengeeScore": null,
+    "createdAt": "1/1/18 2:00:00 AM UTC"
+  }
+]
