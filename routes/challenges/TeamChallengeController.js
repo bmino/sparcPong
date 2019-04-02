@@ -11,8 +11,10 @@ const AuthService = require('../../services/AuthService');
  * @param: challengeeId
  */
 router.post('/', (req, res, next) => {
-    let challengeeId = req.body.challengeeId;
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const { challengeeId } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
+
+    if (!challengeeId) return next(new Error('Challengee id is required'));
 
     TeamChallengeService.doChallenge(challengeeId, clientId)
         .then(() => {
@@ -26,22 +28,17 @@ router.post('/', (req, res, next) => {
  * @param: teamId
  */
 router.get('/:teamId', (req, res, next) => {
-    let teamId = req.params.teamId;
+    const { teamId } = req.params;
 
     if (!teamId) return next(new Error('This is not a valid team'));
 
-    let resolvedChallenges = TeamChallenge.getResolved(teamId)
-        .then(TeamChallenge.populateTeams);
-
-    let outgoingChallenges = TeamChallenge.getOutgoing(teamId)
-        .then(TeamChallenge.populateTeamsAndTeamMembers);
-
-    let incomingChallenges = TeamChallenge.getIncoming(teamId)
-        .then(TeamChallenge.populateTeamsAndTeamMembers);
-
-    Promise.all([resolvedChallenges, outgoingChallenges, incomingChallenges])
-        .then((challenges) => {
-            res.json({message: {resolved: challenges[0], outgoing: challenges[1], incoming: challenges[2]}});
+    Promise.all([
+        TeamChallenge.getResolved(teamId).then(TeamChallenge.populateTeams),
+        TeamChallenge.getOutgoing(teamId).then(TeamChallenge.populateTeamsAndTeamMembers),
+        TeamChallenge.getIncoming(teamId).then(TeamChallenge.populateTeamsAndTeamMembers)
+    ])
+        .then(([resolved, outgoing, incoming]) => {
+            res.json({message: {resolved, outgoing, incoming}});
         })
         .catch(next);
 
@@ -52,8 +49,10 @@ router.get('/:teamId', (req, res, next) => {
  * @param: challengeId
  */
 router.delete('/revoke', (req, res, next) => {
-    let challengeId = req.body.challengeId;
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const { challengeId } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
+
+    if (!challengeId) return next(new Error('Challenge id is required'));
 
     TeamChallengeService.doRevoke(challengeId, clientId)
         .then(() => {
@@ -69,12 +68,14 @@ router.delete('/revoke', (req, res, next) => {
  * @param: challengeeScore
  */
 router.post('/resolve', (req, res, next) => {
-    let challengeId = req.body.challengeId;
-    let challengerScore = req.body.challengerScore;
-    let challengeeScore = req.body.challengeeScore;
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const { challengeId, challengerScore, challengeeScore } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
 
-    TeamChallengeService.resolveChallenge(challengeId, challengerScore, challengeeScore, clientId)
+    if (!challengeId) return next(new Error('Challenge id is required'));
+    if (challengerScore === undefined) return next(new Error('Challenger score is required'));
+    if (challengeeScore === undefined) return next(new Error('Challengee score is required'));
+
+    TeamChallengeService.doResolve(challengeId, challengerScore, challengeeScore, clientId)
         .then(() => {
             res.json({message: 'Successfully resolved challenge.'});
         })
@@ -86,8 +87,10 @@ router.post('/resolve', (req, res, next) => {
  * @param: challengeId
  */
 router.post('/forfeit', (req, res, next) => {
-    let challengeId = req.body.challengeId;
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const { challengeId } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
+
+    if (!challengeId) return next(new Error('Challenge id is required'));
 
     TeamChallengeService.doForfeit(challengeId, clientId)
         .then(() => {
@@ -102,18 +105,15 @@ router.post('/forfeit', (req, res, next) => {
  * @param: teamId
  */
 router.get('/record/:teamId', (req, res, next) => {
-    let teamId = req.params.teamId;
-    if (!teamId) return next(new Error('You must specify a team id'));
+    const { teamId } = req.params;
+
+    if (!teamId) return next(new Error('Team id is required'));
 
     TeamChallenge.getResolved(teamId)
         .then((challenges) => {
-            let wins = 0;
-            let losses = 0;
-            challenges.forEach((challenge) => {
-                if (challenge.winner.toString() === teamId.toString()) wins++;
-                else losses++;
-            });
-            res.json({message: {wins: wins, losses: losses}});
+            const wins = challenges.filter(challenge => challenge.winner.toString() === teamId.toString()).length;
+            const losses = challenges.length - wins;
+            res.json({message: {wins, losses}});
         })
         .catch(next);
 });

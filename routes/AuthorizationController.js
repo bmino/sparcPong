@@ -4,13 +4,12 @@ const AuthService = require('../services/AuthService');
 const MailerService = require('../services/MailerService');
 
 router.post('/password/reset/enable', (req, res, next) => {
-   let playerId = req.body.playerId;
+   const { playerId } = req.body;
 
-   console.log('Attempting to enable password reset.');
+   if (!playerId) return next(new Error('Player id is required'));
+
    AuthService.enablePasswordResetByPlayerId(playerId)
-       .then((authorization) => {
-           return MailerService.resetPassword(authorization.getResetKey());
-       })
+       .then((authorization) => MailerService.resetPassword(authorization.reset.key))
        .then((email) => {
            res.json({message: `Recovery key has been sent to ${AuthService.maskEmail(email)}`});
        })
@@ -18,11 +17,12 @@ router.post('/password/reset/enable', (req, res, next) => {
 });
 
 router.post('/password/reset/change', (req, res, next) => {
-    let password = req.body.password ? req.body.password.trim() : '';
-    let resetKey = req.body.resetKey;
+    const { password, resetKey } = req.body;
 
-    console.log('Attempting to reset password.');
-    AuthService.resetPasswordByResetKey(password, resetKey)
+    if (!password) return next(new Error('Password is required'));
+    if (!resetKey) return next(new Error('Reset key is required'));
+
+    AuthService.resetPasswordByResetKey(password.trim(), resetKey)
         .then(() => {
             res.json({message: 'Password has been successfully reset.'});
         })

@@ -23,41 +23,33 @@ playerSchema.statics.findByAuthorization = function(authorization) {
 
 playerSchema.statics.usernameExists = function(username) {
     console.log(`Checking if player username exists: ${username}`);
-    return new Promise((resolve, reject) => {
-        Player.countDocuments({username: username}).exec()
-			.then((count)  => {
-				if (count !== 0) return reject(new Error('Player username already exists'));
-				return resolve(username);
-			})
-			.catch(reject);
-    });
+    return Player.countDocuments({username: username}).exec()
+        .then((count)  => {
+            if (count !== 0) return Promise.reject(new Error('Player username already exists'));
+            return Promise.resolve(username);
+        });
 };
 
 playerSchema.statics.emailExists = function(email) {
     console.log(`Checking if email exists: ${email}`);
-    return new Promise((resolve, reject)  => {
-        Player.countDocuments({email: email}).exec()
-			.then((count)  => {
-				if (count !== 0) return reject(new Error('Email already exists'));
-				return resolve(count);
+    return Player.countDocuments({email: email}).exec()
+        .then((count)  => {
+            if (count !== 0) return Promise.reject(new Error('Email already exists'));
+            return Promise.resolve(count);
         });
-    });
 };
 
 playerSchema.statics.lowestRank = function() {
 	console.log('Finding lowest player rank.');
-    return new Promise((resolve, reject) => {
-        return Player.find().sort({'rank': -1}).limit(1).exec()
-            .then((lowestRankPlayer) => {
-                let lowestRank = 0;
-                if (lowestRankPlayer && lowestRankPlayer.length > 0) {
-                    lowestRank = lowestRankPlayer[0].rank;
-                }
-                console.log(`Found lowest rank of ${lowestRank}`);
-                return resolve(lowestRank);
-            })
-			.catch(reject);
-    });
+    return Player.find().sort({'rank': -1}).limit(1).exec()
+        .then((lowestRankPlayer) => {
+            let lowestRank = 0;
+            if (lowestRankPlayer && lowestRankPlayer.length > 0) {
+                lowestRank = lowestRankPlayer[0].rank;
+            }
+            console.log(`Found lowest rank of ${lowestRank}`);
+            return Promise.resolve(lowestRank);
+        });
 };
 
 const Player = mongoose.model('Player', playerSchema);

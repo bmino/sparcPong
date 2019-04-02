@@ -1,0 +1,200 @@
+[
+  {
+    "_id": "000000000000000000000001",
+    "user": "000000000000000000000001",
+    "password": "$2b$10$Tlab9kYiYX9yArX4FoEY4u7PBCn9nj6jXYll7PGfeTagqxk4Fq0.2",
+    "reset": {
+      "key": "example_reset_key",
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000002",
+    "user": "000000000000000000000002",
+    "password": "$2b$10$wdzUto2kmPbT7d2oeVn8weYnhcNgtTf4KH1Wu2569cQ/k/4ELiiUm",
+    "reset": {
+      "key": "expired_reset_key",
+      "date": "1/1/18 2:00:00 AM UTC"
+    }
+  },
+  {
+    "_id": "000000000000000000000003",
+    "user": "000000000000000000000003",
+    "password": "$2b$10$PuGQbMRXp66cSMPfSM1RyeNFdaxzqXMe2e4VlBQQutxmO/c8AeGS2",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000004",
+    "user": "000000000000000000000004",
+    "password": "$2b$10$cMMYhcfkShfc4gzUp/ogRuwO8XlmOpajeVvP8CXsvr6FnV5XqiPX2",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000005",
+    "user": "000000000000000000000005",
+    "password": "$2b$10$pwx.C9SujmhXASwmHhOxsuE/BIjotHDmFRQTfazAYUxA8UGswJlka",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000006",
+    "user": "000000000000000000000006",
+    "password": "$2b$10$7OJjgWBMWLeAqfKvSS3//OgOYy1YPpDEheaF/T6hZ80EuukcXgQc2",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000007",
+    "user": "000000000000000000000007",
+    "password": "$2b$10$BDgGVgz67No0Jb5irrASFe.3757nTxdCC5Wy9647nuQYLc7Ualmxm",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000008",
+    "user": "000000000000000000000008",
+    "password": "$2b$10$8deP2AXniILt0TJXP8WWmeGsneqZHYLyFLHuZylHIUxuWJBD/DYja",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000009",
+    "user": "000000000000000000000009",
+    "password": "$2b$10$w25Jcy2UUxLGsfEVFhwgmuz2I12xcvhRYR46bCJ94iJ0gsgiqzAJi",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000010",
+    "user": "000000000000000000000010",
+    "password": "$2b$10$5bHfKUy/2t3Uzu7kg/XOeeLBPlJjUS.e5K608Z19jbCdAGQs/m1IK",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000011",
+    "user": "000000000000000000000011",
+    "password": "$2b$10$OFTUnSLP16wDrmaVhxFL.unGHPPDTnKAqvfaqEXy26VuU55fzcN9.",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000012",
+    "user": "000000000000000000000012",
+    "password": "$2b$10$5/u/Dqm.JPvryK1KdqlyhuA8EmXG6axWuEpoEQpQ56HAnSkGiB7KS",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000013",
+    "user": "000000000000000000000013",
+    "password": "$2b$10$YdZnzCLShthpjZUMHBLRJuqnuJOJY8sgrAYO/0j1XLlVKkgCbFM6q",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000014",
+    "user": "000000000000000000000014",
+    "password": "$2b$10$REwA25r.QfGvXBW3Dg.MF.NUwF5Jmk2qy9JXSHQAJo9PZYSjNeYhe",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000015",
+    "user": "000000000000000000000015",
+    "password": "$2b$10$5JjBBLNVwisg/6pGUnY2p.BtxiqU.oS4BmPNoLYKY1AtnK6itIyK.",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000016",
+    "user": "000000000000000000000016",
+    "password": "$2b$10$l62Cj5h2EI6qqsMA.1mF0u4vMSCUF4TLP2jyvi1MQOa.MrK.ZLOkS",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000017",
+    "user": "000000000000000000000017",
+    "password": "$2b$10$XqvXuL0eAXoy108Jjsu50.b5A2H7WU/o.czFmfHJkjNomPIyJ7iXC",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000018",
+    "user": "000000000000000000000018",
+    "password": "$2b$10$SFC.vGVMt/zOikVK1tWmq.96lfI1jbnEou1z08Q7esLfAxt40ClRO",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000019",
+    "user": "000000000000000000000019",
+    "password": "$2b$10$Y62jWnw1bZWAjI21pmhNteJnvwaVfn1mc55aFA9bpCBSqf7.1fPGy",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000020",
+    "user": "000000000000000000000020",
+    "password": "$2b$10$IWxoi4nbdq2/LMzyg9l2U.So6tJH3YTnJ2E/HdK3EPHXlT2SrWdR6",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000021",
+    "user": "000000000000000000000021",
+    "password": "$2b$10$d6no/9gqUuaDfbZXQBGEPuFfsU5wa2j.yU1hmkDBZXnYebAqFlaX2",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  },
+  {
+    "_id": "000000000000000000000022",
+    "user": "000000000000000000000022",
+    "password": "$2b$10$MZJFg7hX46c83Am7Ro0WOOUtYI1pxrmFkzhTaex8jg4eN0kgB/PhG",
+    "reset": {
+      "key": null,
+      "date": null
+    }
+  }
+]

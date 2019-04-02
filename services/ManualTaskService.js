@@ -12,9 +12,7 @@ const ManualTaskService = {
         console.log('[Manual] - Challenge task has been engaged');
 
         return Player.find({}).sort('rank').exec()
-            .then((players) => {
-                return ManualTaskService.issueChallenges(players, players.length-1, players.length-2);
-            });
+            .then((players) => ManualTaskService.issueChallenges(players, players.length-1, players.length-2));
     },
 
     autoForfeitSingles() {
@@ -59,21 +57,14 @@ const ManualTaskService = {
             Challenge.getIncoming(playerId),
             Challenge.getOutgoing(playerId)
         ])
-            .then((results) => {
-                let player = results[0];
-                let incoming = results[1];
-                let outgoing = results[2];
+            .then(([player, incoming, outgoing]) => {
                 if (!player) return Promise.reject(new Error('Could not find player'));
                 if (!player.active) return Promise.reject(new Error('Player is not currently active'));
                 if (incoming.length) return PlayerChallengeService.doForfeit(incoming[0]._id, playerId);
                 if (outgoing.length) return PlayerChallengeService.doRevoke(outgoing[0]._id, playerId);
             })
-            .then(() => {
-                return Player.findByIdAndUpdate(playerId, {active: false, rank: -404}).exec();
-            })
-            .then((inactivePlayer) => {
-                return Player.update({rank: {$gt: inactivePlayer.rank}}, {$inc: {rank: -1}}, {multi: true}).exec();
-            });
+            .then(() => Player.findByIdAndUpdate(playerId, {active: false, rank: -404}).exec())
+            .then((inactivePlayer) => Player.update({rank: {$gt: inactivePlayer.rank}}, {$inc: {rank: -1}}, {multi: true}).exec());
     },
 
     activatePlayer(playerId) {
@@ -111,9 +102,7 @@ const ManualTaskService = {
                 console.error(`[Manual] - ${err}`);
                 challengeeIndex--;
             })
-            .then(() => {
-                return ManualTaskService.issueChallenges(players, challengerIndex, challengeeIndex, issued);
-            });
+            .then(() => ManualTaskService.issueChallenges(players, challengerIndex, challengeeIndex, issued));
     }
 
 };

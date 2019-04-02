@@ -2,26 +2,19 @@ const Util = require('./Util');
 
 const ChallengeService = {
     TEMP_RANK: -1,
-    CHALLENGE_ANYTIME: process.env.CHALLENGE_ANYTIME || false,
     CHALLENGE_BACK_DELAY_HOURS: process.env.CHALLENGE_BACK_DELAY_HOURS === undefined ? 12 : process.env.CHALLENGE_BACK_DELAY_HOURS,
     ALLOWED_OUTGOING: 1,
     ALLOWED_INCOMING: 1,
-
-    verifyBusinessDay() {
-        console.log('Verifying challenges can be issued today.');
-        if (Util.isBusinessDay(new Date()) || ChallengeService.CHALLENGE_ANYTIME) return Promise.resolve();
-        return Promise.reject(new Error('You can only issue challenges on business days'));
-    },
 
     verifyReissueTime(challenges) {
         console.log('Verifying enough time has passed before another challenge can be issued.');
         if (!challenges || challenges.length === 0) return Promise.resolve(challenges);
 
-        let mostRecentChallenge = challenges.sort((a, b) => {
+        const mostRecentChallenge = challenges.sort((a, b) => {
             return (a.updatedAt > b.updatedAt) ? -1 : 1;
         })[0];
 
-        let reissueTime = Util.addHours(mostRecentChallenge.updatedAt, ChallengeService.CHALLENGE_BACK_DELAY_HOURS);
+        const reissueTime = Util.addHours(mostRecentChallenge.updatedAt, ChallengeService.CHALLENGE_BACK_DELAY_HOURS);
         if (reissueTime < new Date()) return Promise.resolve(challenges);
 
         return Promise.reject(new Error(`You must wait at least ${ChallengeService.CHALLENGE_BACK_DELAY_HOURS} hours before re-challenging the same opponent`));
@@ -29,7 +22,7 @@ const ChallengeService = {
 
     verifyRank(challenger, challengee) {
         console.log('Verifying rank limitations');
-        if (challenger.rank < challengee.rank) return Promise.reject(new Error('You cannot challenger an opponent below your rank'));
+        if (challenger.rank < challengee.rank) return Promise.reject(new Error('Cannot challenger an opponent below your rank'));
         return Promise.resolve();
     },
 
@@ -39,31 +32,13 @@ const ChallengeService = {
         let challengeeTier = Util.getTier(challengee.rank);
         if (!challengerTier) return Promise.reject(new Error(`${challenger.username} is not in any tier`));
         if (!challengeeTier) return Promise.reject(new Error(`${challengee.username} is not in any tier`));
-
-        if (Math.abs(challengerTier - challengeeTier) > 1)
-            return Promise.reject(new Error('You cannot challenge an opponent beyond 1 tier'));
+        if (Math.abs(challengerTier - challengeeTier) > 1) return Promise.reject(new Error('Cannot challenge an opponent beyond 1 tier'));
         return Promise.resolve();
-    },
-
-    verifyInvolvedByPlayerId(entity, playerId, message) {
-        if (entity.challenger.toString() === playerId.toString() ||
-            entity.challengee.toString() === playerId.toString()) return Promise.resolve(entity);
-        return Promise.reject(new Error(message || 'Expected the player to be the challenger or challengee'));
     },
 
     verifyChallengeIsUnresolved(entity) {
         if (!entity.winner) return Promise.resolve(entity);
         return Promise.reject(new Error('This challenge has already been resolved'));
-    },
-
-    verifyChallengerByPlayerId(entity, playerId, message) {
-        if (entity.challenger.toString() === playerId.toString()) return Promise.resolve(entity);
-        return Promise.reject(new Error(message || 'Expected the player to be the challenger'));
-    },
-
-    verifyChallengeeByPlayerId(entity, playerId, message) {
-        if (entity.challengee.toString() === playerId.toString()) return Promise.resolve(entity);
-        return Promise.reject(new Error(message || 'Expected the player to be the challengee'));
     },
 
     swapRanks(entity) {
@@ -74,23 +49,16 @@ const ChallengeService = {
                 populatedEntity = populatedEntityResult;
                 return ChallengeService.setRank(populatedEntity.challenger, ChallengeService.TEMP_RANK)
             })
-            .then((challengerOldRank) => {
-                return ChallengeService.setRank(populatedEntity.challengee, challengerOldRank);
-            })
-            .then((challengeeOldRank) => {
-                return ChallengeService.setRank(populatedEntity.challenger, challengeeOldRank);
-            });
+            .then((challengerOldRank) => ChallengeService.setRank(populatedEntity.challengee, challengerOldRank))
+            .then((challengeeOldRank) => ChallengeService.setRank(populatedEntity.challenger, challengeeOldRank));
     },
 
     setRank(entity, newRank) {
         console.log(`Changing rank of ${entity.username} from [${entity.rank}] to [${newRank}]`);
-        return new Promise((resolve, reject) => {
-            let oldRank = entity.rank;
-            entity.rank = newRank;
-            entity.save()
-                .then(() => {return resolve(oldRank);})
-                .catch(reject);
-        });
+        const oldRank = entity.rank;
+        entity.rank = newRank;
+        return entity.save()
+            .then(() => oldRank);
     },
 
     setScore(challenge, challengerScore, challengeeScore) {

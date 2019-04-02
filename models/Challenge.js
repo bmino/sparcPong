@@ -84,7 +84,7 @@ challengeSchema.statics.getAllExpired = function() {
     return Challenge.find({winner: null}).exec()
         .then((challenges) => {
             return challenges.filter((challenge) => {
-                let expirationDate = Util.addBusinessDays(challenge.createdAt, process.env.ALLOWED_CHALLENGE_DAYS || 4);
+                const expirationDate = Util.addBusinessDays(challenge.createdAt, process.env.ALLOWED_CHALLENGE_DAYS || 4);
                 return expirationDate < new Date();
             });
         });

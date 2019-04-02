@@ -30,7 +30,7 @@ const PlayerChallengeService = {
         return Challenge.findById(challengeId).exec()
             .then((challenge) => {
                 if (!challenge) return Promise.reject(new Error('Invalid challenge id'));
-                return ChallengeService.verifyChallengeeByPlayerId(challenge, clientId, 'Only the challengee can forfeit this challenge');
+                return PlayerChallengeService.verifyAllowedToForfeit(challenge, clientId);
             })
             .then(ChallengeService.verifyChallengeIsUnresolved)
             .then(ChallengeService.setForfeit)
@@ -45,7 +45,7 @@ const PlayerChallengeService = {
         return Challenge.findById(challengeId).exec()
             .then((challenge) => {
                 if (!challenge) return Promise.reject(new Error('Invalid challenge id'));
-                return ChallengeService.verifyChallengerByPlayerId(challenge, clientId, 'Only the challenger can revoke this challenge');
+                return PlayerChallengeService.verifyAllowedToRevoke(challenge, clientId);
             })
             .then(ChallengeService.verifyChallengeIsUnresolved)
             .then(Challenge.removeByDocument)
@@ -59,7 +59,7 @@ const PlayerChallengeService = {
         return Challenge.findById(challengeId).exec()
             .then((challenge) => {
                 if (!challenge) return Promise.reject(new Error('Invalid challenge id'));
-                return ChallengeService.verifyInvolvedByPlayerId(challenge, clientId, 'Only an involved player can resolve this challenge');
+                return PlayerChallengeService.verifyInvolvedByPlayerId(challenge, clientId);
             })
             .then(PlayerChallengeService.verifyForfeitIsNotRequired)
             .then((challenge) => ChallengeService.setScore(challenge, challengerScore, challengeeScore))
@@ -80,10 +80,21 @@ const PlayerChallengeService = {
             PlayerChallengeService.verifyChallengesBetweenPlayers(players),
             ChallengeService.verifyRank(challenger, challengee),
             ChallengeService.verifyTier(challenger, challengee),
-            Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime),
-            ChallengeService.verifyBusinessDay()
+            Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime)
         ])
             .then(() => players);
+    },
+
+    verifyAllowedToForfeit(challenge, playerId) {
+        if (challenge.challengee.toString() !== playerId.toString()) return Promise.reject(new Error('Only the challengee can forfeit this challenge'));
+        return Promise.resolve(challenge);
+    },
+
+    verifyInvolvedByPlayerId(challenge, playerId) {
+        if (challenge.challenger.toString() !== playerId.toString() && challenge.challengee.toString() !== playerId.toString()) {
+            return Promise.reject(new Error('Only an involved player can resolve this challenge'));
+        }
+        return Promise.resolve(challenge);
     },
 
     verifyActivePlayers(players) {
@@ -111,9 +122,16 @@ const PlayerChallengeService = {
             .then(() => players);
     },
 
+
+    verifyAllowedToRevoke(challenge, playerId) {
+        if (challenge.challenger.toString() !== playerId.toString()) {
+            return Promise.reject(new Error('Only the challenger can revoke this challenge'));
+        }
+        return Promise.resolve(challenge);
+    },
+
     verifyForfeitIsNotRequired(challenge) {
         console.log('Verifying player challenge forfeit');
-
         const expires = Util.addBusinessDays(challenge.createdAt, PlayerChallengeService.ALLOWED_CHALLENGE_DAYS);
         if (expires < new Date()) return Promise.reject(new Error('This challenge has expired and must be forfeited'));
         return Promise.resolve(challenge);

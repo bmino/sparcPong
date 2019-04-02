@@ -6,24 +6,24 @@ const AuthService = require('../services/AuthService');
 
 
 /**
- * Get player alerts
+ * Get alerts
  */
 router.get('/', (req, res, next) => {
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const clientId = AuthService.verifyToken(req.token).playerId;
 
-	if (!clientId) return next(new Error('You must provide a valid player id'));
+    if (!clientId) return next(new Error('Valid client id is required'));
 
 	Player.findById(clientId).populate('alerts').exec()
 		.then((player) => {
 			if (!player || !player.alerts) return Promise.reject(new Error('Could not find the player\'s alert settings'));
-			let alerts = {};
 
-            alerts.challenged = player.alerts.challenged;
-            alerts.revoked = player.alerts.revoked;
-            alerts.resolved = player.alerts.resolved;
-            alerts.forfeited = player.alerts.forfeited;
-
-            alerts.team = player.alerts.team;
+			const alerts = {
+                challenged: player.alerts.challenged,
+                revoked: player.alerts.revoked,
+                resolved: player.alerts.resolved,
+                forfeited: player.alerts.forfeited,
+                team: player.alerts.team
+            };
 
 			res.json({message: alerts});
         })
@@ -31,29 +31,29 @@ router.get('/', (req, res, next) => {
 });
 
 /**
- * Update player alerts
- * @param: alerts
+ * Update alerts
+ * @param: newAlerts
  */
 router.post('/', (req, res, next) => {
-    let newAlerts = req.body.alerts;
-    let clientId = AuthService.verifyToken(req.token).playerId;
+    const { alerts } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
 
-    if (!clientId) return next(new Error('You must provide a valid player id'));
-	if (!newAlerts) return next(new Error('Uh oh, the alert preferences got lost along the way'));
+    if (!clientId) return next(new Error('Valid client id is required'));
+	if (!alerts) return next(new Error('Alerts is required'));
 	
 	Player.findById(clientId).populate('alerts').exec()
 		.then((player) => {
             if (!player || !player.alerts) return Promise.reject(new Error('Could not find the player\'s alert settings'));
 
-            player.alerts.challenged = newAlerts.challenged ;
-            player.alerts.revoked = newAlerts.revoked ;
-            player.alerts.resolved = newAlerts.resolved ;
-            player.alerts.forfeited = newAlerts.forfeited ;
+            player.alerts.challenged = alerts.challenged;
+            player.alerts.revoked = alerts.revoked;
+            player.alerts.resolved = alerts.resolved;
+            player.alerts.forfeited = alerts.forfeited;
 
-            player.alerts.team.challenged = newAlerts.team.challenged ;
-            player.alerts.team.revoked = newAlerts.team.revoked ;
-            player.alerts.team.resolved = newAlerts.team.resolved ;
-            player.alerts.team.forfeited = newAlerts.team.forfeited ;
+            player.alerts.team.challenged = alerts.team.challenged;
+            player.alerts.team.revoked = alerts.team.revoked;
+            player.alerts.team.resolved = alerts.team.resolved;
+            player.alerts.team.forfeited = alerts.team.forfeited;
 
             return player.alerts.save();
         })

@@ -5,12 +5,12 @@ This ladder currently manages the semi-competitive ping pong scene at Sparc.
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 
 ### Installing Prerequisites
 
-The following dependencies are required to run an instance of sparc pong:
+The following dependencies are required to run an instance of Sparc Pong:
 
 1. NodeJS
 2. Npm
@@ -36,7 +36,13 @@ sudo chmod -R a+w /data
 
 ## Running the tests
 
-There are currently no tests
+```
+npm test
+```
+
+## Configuration
+There are some required configuration parameters that must be set before starting an instance.
+Read the [configuration documentation](./config/readme.md) for instructions on setting these and other optional parameters.
 
 
 ## Deployment
