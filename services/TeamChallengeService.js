@@ -88,20 +88,17 @@ const TeamChallengeService = {
     },
 
     verifyAllowedToChallenge(teams) {
-        let challenger = teams[0];
-        let challengee = teams[1];
-        return new Promise((resolve, reject) => {
-            let activePlayerCheck = TeamChallengeService.verifyActivePlayers(teams);
-            let existingChallengesCheck = TeamChallengeService.verifyChallengesBetweenTeams(teams);
-            let rankCheck = ChallengeService.verifyRank(challenger, challengee);
-            let tierCheck = ChallengeService.verifyTier(challenger, challengee);
-            let reissueTimeCheck = TeamChallenge.getResolvedBetweenTeams(teams).then(ChallengeService.verifyReissueTime);
-            let businessDayCheck = ChallengeService.verifyBusinessDay();
+        let [challenger, challengee] = teams;
 
-            return Promise.all([activePlayerCheck, existingChallengesCheck, rankCheck, tierCheck, reissueTimeCheck, businessDayCheck])
-                .then(() => resolve(teams))
-                .catch(reject);
-        });
+        return Promise.all([
+            TeamChallengeService.verifyActivePlayers(teams),
+            TeamChallengeService.verifyActiveTeams(teams),
+            TeamChallengeService.verifyChallengesBetweenTeams(teams),
+            ChallengeService.verifyRank(challenger, challengee),
+            ChallengeService.verifyTier(challenger, challengee),
+            TeamChallenge.getResolvedBetweenTeams(teams).then(ChallengeService.verifyReissueTime)
+        ])
+            .then(() => teams);
     },
 
     verifyActivePlayers(teams) {

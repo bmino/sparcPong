@@ -2,16 +2,9 @@ const Util = require('./Util');
 
 const ChallengeService = {
     TEMP_RANK: -1,
-    CHALLENGE_ANYTIME: process.env.CHALLENGE_ANYTIME || false,
     CHALLENGE_BACK_DELAY_HOURS: process.env.CHALLENGE_BACK_DELAY_HOURS === undefined ? 12 : process.env.CHALLENGE_BACK_DELAY_HOURS,
     ALLOWED_OUTGOING: 1,
     ALLOWED_INCOMING: 1,
-
-    verifyBusinessDay() {
-        console.log('Verifying challenges can be issued today.');
-        if (Util.isBusinessDay(new Date()) || ChallengeService.CHALLENGE_ANYTIME) return Promise.resolve();
-        return Promise.reject(new Error('You can only issue challenges on business days'));
-    },
 
     verifyReissueTime(challenges) {
         console.log('Verifying enough time has passed before another challenge can be issued.');

@@ -80,8 +80,7 @@ const PlayerChallengeService = {
             PlayerChallengeService.verifyChallengesBetweenPlayers(players),
             ChallengeService.verifyRank(challenger, challengee),
             ChallengeService.verifyTier(challenger, challengee),
-            Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime),
-            ChallengeService.verifyBusinessDay()
+            Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime)
         ])
             .then(() => players);
     },
