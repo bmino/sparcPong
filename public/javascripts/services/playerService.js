@@ -12,7 +12,7 @@ function PlayerService($http) {
     $http.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
 
 
-    service.createPlayer = function(username, password, firstName, lastName, phone, email) {
+    service.createPlayer = function(username, password, firstName, lastName, email) {
         let request = $http({
             method: "post",
             url: "api/player/",
@@ -21,7 +21,6 @@ function PlayerService($http) {
                 password: password,
                 firstName: firstName,
                 lastName: lastName,
-                phone: phone,
                 email: email
             }
         });

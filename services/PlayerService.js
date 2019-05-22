@@ -9,7 +9,7 @@ const SocketService = require('./SocketService');
 
 const PlayerService = {
 
-    createPlayer(username, password, firstName, lastName, phone, email) {
+    createPlayer(username, password, firstName, lastName, email) {
         return Promise.all([
             Player.lowestRank(),
             AuthService.validatePasswordStrength(password),
@@ -24,7 +24,6 @@ const PlayerService = {
                 player.username = username;
                 player.firstName = firstName;
                 player.lastName = lastName;
-                player.phone = phone;
                 player.email = email;
                 player.rank = values[0] + 1;
                 return player.save();

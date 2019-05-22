@@ -7,7 +7,6 @@ let playerSchema = new Schema({
 	lastName: { type: String, required: true },
 	alerts: { type: Schema.ObjectId, ref: 'Alert' },
 	rank: { type: Number, default: 0 },
-	phone: Number,
 	email: String,
     active: { type: Boolean, required: true, default: true }
 });

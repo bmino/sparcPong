@@ -55,7 +55,7 @@ describe('fetches login information', function() {
                 expect(res.body).to.contain.key('message');
                 res.body.message.forEach(user => {
                     expect(user).contain.all.keys('_id', 'username');
-                    expect(user).not.to.contain.any.keys('firstName', 'lastName', 'email', 'phone');
+                    expect(user).not.to.contain.any.keys('firstName', 'lastName', 'email');
                 });
             });
     });
