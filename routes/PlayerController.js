@@ -12,28 +12,25 @@ const AuthService = require('../services/AuthService');
  * @param: password
  * @param: firstName
  * @param: lastName
- * @param: phone
  * @param: email
  */
 router.post('/', (req, res, next) => {
-    const { username, password, firstName, lastName, phone, email } = req.body;
+    const { username, password, firstName, lastName, email } = req.body;
     
     if (!username) return next(new Error('Username is required'));
     if (!password) return next(new Error('Password is required'));
     if (!firstName) return next(new Error('First name is required'));
     if (!lastName) return next(new Error('Last name is required'));
-    if (!phone) return next(new Error('Phone is required'));
     if (!email) return next(new Error('Email is required'));
 
     if ((typeof username !== 'string') ||
         (typeof password !== 'string') ||
         (typeof firstName !== 'string') ||
         (typeof lastName !== 'string') ||
-        (typeof phone !== 'number') ||
         (typeof email !== 'string'))
         return next(new Error('Invalid data type of Player parameters'));
 
-    PlayerService.createPlayer(username.trim(), password.trim(), firstName.trim(), lastName.trim(), phone, email.trim())
+    PlayerService.createPlayer(username.trim(), password.trim(), firstName.trim(), lastName.trim(), email.trim())
         .then(() => {
             res.json({message: 'Player created!'});
         })

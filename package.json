@@ -1,6 +1,6 @@
 {
   "name": "sparc-pong",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "private": false,
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "dotenv": "^5.0.1",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
-    "jquery": "^3.3.1",
+    "jquery": "^3.4.1",
     "jsonwebtoken": "^8.5.0",
     "mongoose": "^5.4.16",
     "morgan": "^1.9.1",
@@ -40,7 +40,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
-    "mocha": "^6.0.2",
+    "mocha": "^6.1.4",
     "mongodb-memory-server": "^4.2.0"
   }
 }

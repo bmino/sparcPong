@@ -16,7 +16,6 @@ const JSON_PLAYER = {
     "password": "test_password",
     "firstName": "John",
     "lastName": "Doe",
-    "phone": 8431234567,
     "email": "john.doe@fake_test_email.net"
 };
 
@@ -54,7 +53,6 @@ describe('player sign up', function() {
                 expect(newPlayer.firstName, 'player first name').to.equal(JSON_PLAYER.firstName);
                 expect(newPlayer.lastName, 'player last name').to.equal(JSON_PLAYER.lastName);
                 expect(newPlayer.email, 'player email').to.equal(JSON_PLAYER.email);
-                expect(newPlayer.phone, 'player phone').to.equal(JSON_PLAYER.phone);
                 expect(newPlayer.active, 'player active status').to.be.true;
             });
     });
@@ -170,17 +168,6 @@ describe('player sign up', function() {
                 .then((res) => {
                     expect(res).to.have.status(500);
                     expect(res.body).to.equal('Last name is required');
-                })
-                .then(expectZeroNewPlayers);
-        });
-
-        it('must provide phone', function() {
-            return requester
-                .post('/api/player')
-                .send({ ...JSON_PLAYER, phone: undefined })
-                .then((res) => {
-                    expect(res).to.have.status(500);
-                    expect(res.body).to.equal('Phone is required');
                 })
                 .then(expectZeroNewPlayers);
         });

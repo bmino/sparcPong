@@ -11,7 +11,6 @@ function SignUpPlayerController($scope, $location, modalService, playerService) 
 		password: '',
 		firstName: '',
 		lastName: '',
-		phone: null,
 		email: ''
 	};
 	$scope.confirmPassword = '';
@@ -27,7 +26,7 @@ function SignUpPlayerController($scope, $location, modalService, playerService) 
         };
         if ($scope.player.password !== $scope.confirmPassword) return modalService.showAlertModal({}, modalOptions);
 
-		playerService.createPlayer($scope.player.username, $scope.player.password, $scope.player.firstName, $scope.player.lastName, $scope.player.phone, $scope.player.email)
+		playerService.createPlayer($scope.player.username, $scope.player.password, $scope.player.firstName, $scope.player.lastName, $scope.player.email)
 			.then(creationSuccess, creationError);
 	};
 
@@ -54,7 +53,6 @@ function SignUpPlayerController($scope, $location, modalService, playerService) 
             username: '',
             firstName: '',
             lastName: '',
-            phone: null,
             email: ''
         };
         $scope.confirmPassword = '';
