@@ -81,6 +81,7 @@ const TeamChallengeService = {
             TeamChallengeService.verifyActivePlayers(teams),
             TeamChallengeService.verifyActiveTeams(teams),
             TeamChallengeService.verifyChallengesBetweenTeams(teams),
+            ChallengeService.verifyEnabled(),
             ChallengeService.verifyRank(challenger, challengee),
             ChallengeService.verifyTier(challenger, challengee),
             TeamChallenge.getResolvedBetweenTeams(teams).then(ChallengeService.verifyReissueTime)
