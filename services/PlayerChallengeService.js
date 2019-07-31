@@ -78,6 +78,7 @@ const PlayerChallengeService = {
         return Promise.all([
             PlayerChallengeService.verifyActivePlayers(players),
             PlayerChallengeService.verifyChallengesBetweenPlayers(players),
+            ChallengeService.verifyEnabled(),
             ChallengeService.verifyRank(challenger, challengee),
             ChallengeService.verifyTier(challenger, challengee),
             Challenge.getResolvedBetweenPlayers(players).then(ChallengeService.verifyReissueTime)

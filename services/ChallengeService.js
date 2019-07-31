@@ -2,6 +2,7 @@ const Util = require('./Util');
 
 const ChallengeService = {
     TEMP_RANK: -1,
+    CHALLENGE_DISABLED: process.env.CHALLENGE_DISABLED === "true",
     CHALLENGE_BACK_DELAY_HOURS: process.env.CHALLENGE_BACK_DELAY_HOURS === undefined ? 12 : process.env.CHALLENGE_BACK_DELAY_HOURS,
     ALLOWED_OUTGOING: 1,
     ALLOWED_INCOMING: 1,
@@ -39,6 +40,11 @@ const ChallengeService = {
     verifyChallengeIsUnresolved(entity) {
         if (!entity.winner) return Promise.resolve(entity);
         return Promise.reject(new Error('This challenge has already been resolved'));
+    },
+
+    verifyEnabled() {
+        if (ChallengeService.CHALLENGE_DISABLED === true) return Promise.reject(new Error('Challenges are currently disabled'));
+        else return Promise.resolve();
     },
 
     swapRanks(entity) {
