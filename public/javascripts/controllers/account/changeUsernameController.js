@@ -12,8 +12,7 @@ function ChangeUsernameController($scope, jwtService, modalService, playerServic
         let playerId = jwtService.getDecodedToken().playerId;
 
         playerService.getPlayer(playerId)
-            .then(populateUsernameField)
-            .catch(console.log);
+            .then(populateUsernameField);
     }
 
     function populateUsernameField(player) {

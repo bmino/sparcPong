@@ -66,7 +66,6 @@ function changeAlertsController($scope, modalService, playerService) {
 
     function updateAlerts() {
         playerService.updateAlerts(minifiedAlerts())
-            .then(console.log)
             .catch(function (error) {
                 let modalOptions = {
                     headerText: 'Change Alerts',
