@@ -81,5 +81,27 @@ router.get('/activate', (req, res, next) => {
         .catch(next);
 });
 
+/**
+ * Extend a challenge
+ * @param: key
+ * @param: challengeId
+ * @param: hours
+ */
+router.get('/extend', (req, res, next) => {
+    const { key, id, hours } = req.query;
+
+    if (!key || key !== process.env.JWT_SECRET_KEY) return res.json('Invalid key');
+    if (!id) return res.json('Missing challengeId');
+    if (!hours) return res.json('Missing hours');
+
+    return ManualTaskService.extendChallenge(id, hours)
+        .then(() => {
+            const msg = 'Extended challenge';
+            console.log(`[Manual] - ${msg}`);
+            res.json(msg);
+        })
+        .catch(next);
+});
+
 
 module.exports = router;

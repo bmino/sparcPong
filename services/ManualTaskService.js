@@ -103,6 +103,17 @@ const ManualTaskService = {
                 challengeeIndex--;
             })
             .then(() => ManualTaskService.issueChallenges(players, challengerIndex, challengeeIndex, issued));
+    },
+
+    extendChallenge(challengeId, hours) {
+        return Challenge.populateById(challengeId)
+            .catch(() => {
+                throw new Error("Invalid challenge id");
+            })
+            .then((challenge) => {
+                console.log(`[Manual] - Attempting to extend ${challenge.challenger.username} vs ${challenge.challengee.username} challenge by ${hours} hours`);
+                return PlayerChallengeService.doExtension(challengeId, hours, challenge.challenger._id);
+            });
     }
 
 };

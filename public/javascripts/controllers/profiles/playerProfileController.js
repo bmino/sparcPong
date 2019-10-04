@@ -81,6 +81,7 @@ function PlayerProfileController($scope, $routeParams, jwtService, socket, playe
     });
     socket.on('challenge:issued', $scope, fetchChallenges);
     socket.on('challenge:revoked', $scope, fetchChallenges);
+    socket.on('challenge:extended', $scope, fetchChallenges);
 
     init();
 

@@ -69,12 +69,20 @@ const TestUtils = {
         return JSON_PLAYER_CHALLENGES;
     },
 
+    getPlayerChallengeByChallengeId(challengeId) {
+        return JSON_PLAYER_CHALLENGES.find(c => c._id.toString() === challengeId.toString());
+    },
+
     getPlayerChallengesInvolvingPlayerId(playerId) {
         return JSON_PLAYER_CHALLENGES.filter(c => (c.challenger === playerId || c.challengee === playerId));
     },
 
     getTeamChallenges() {
         return JSON_TEAM_CHALLENGES;
+    },
+
+    getTeamChallengeByChallengeId(challengeId) {
+        return JSON_TEAM_CHALLENGES.find(c => c._id.toString() === challengeId.toString());
     },
 
     getTeamChallengesInvolvingTeamId(teamId) {

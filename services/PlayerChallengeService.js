@@ -59,7 +59,7 @@ const PlayerChallengeService = {
         return Challenge.findById(challengeId).exec()
             .then((challenge) => {
                 if (!challenge) return Promise.reject(new Error('Invalid challenge id'));
-                return PlayerChallengeService.verifyInvolvedByPlayerId(challenge, clientId);
+                return PlayerChallengeService.verifyAllowedToResolve(challenge, clientId);
             })
             .then(PlayerChallengeService.verifyForfeitIsNotRequired)
             .then((challenge) => ChallengeService.setScore(challenge, challengerScore, challengeeScore))
@@ -69,6 +69,22 @@ const PlayerChallengeService = {
             .then(() => {
                 MailerService.resolvedChallenge(challengeId);
                 SocketService.IO.sockets.emit('challenge:resolved');
+            });
+    },
+
+    doExtension(challengeId, hours, clientId) {
+        return Challenge.findById(challengeId).exec()
+            .then((challenge) => {
+                if (!challenge) return Promise.reject(new Error('Invalid challenge id'));
+                return PlayerChallengeService.verifyAllowedToExtend(challenge, clientId);
+            })
+            .then(ChallengeService.verifyChallengeIsUnresolved)
+            .then((challenge) => {
+                challenge.createdAt = Util.addHours(challenge.createdAt, hours);
+                return challenge.save();
+            })
+            .then(() => {
+                SocketService.IO.sockets.emit('challenge:extended');
             });
     },
 
@@ -91,10 +107,22 @@ const PlayerChallengeService = {
         return Promise.resolve(challenge);
     },
 
-    verifyInvolvedByPlayerId(challenge, playerId) {
+    verifyAllowedToResolve(challenge, playerId) {
         if (challenge.challenger.toString() !== playerId.toString() && challenge.challengee.toString() !== playerId.toString()) {
             return Promise.reject(new Error('Only an involved player can resolve this challenge'));
         }
+        return Promise.resolve(challenge);
+    },
+
+    verifyAllowedToRevoke(challenge, playerId) {
+        if (challenge.challenger.toString() !== playerId.toString()) {
+            return Promise.reject(new Error('Only the challenger can revoke this challenge'));
+        }
+        return Promise.resolve(challenge);
+    },
+
+    verifyAllowedToExtend(challenge, playerId) {
+        if (challenge.challenger.toString() !== playerId.toString()) return Promise.reject(new Error('Only the challenger can extend this challenge'));
         return Promise.resolve(challenge);
     },
 
@@ -121,14 +149,6 @@ const PlayerChallengeService = {
                 if (challengesBetween.length >= 1) return Promise.reject(new Error(`A challenge already exists between ${challenger.username} and ${challengee.username}`));
             })
             .then(() => players);
-    },
-
-
-    verifyAllowedToRevoke(challenge, playerId) {
-        if (challenge.challenger.toString() !== playerId.toString()) {
-            return Promise.reject(new Error('Only the challenger can revoke this challenge'));
-        }
-        return Promise.resolve(challenge);
     },
 
     verifyForfeitIsNotRequired(challenge) {

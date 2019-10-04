@@ -99,6 +99,25 @@ router.post('/forfeit', (req, res, next) => {
         .catch(next);
 });
 
+/**
+ * Extend a challenge
+ * @param: challengeId
+ * @param: hours
+ */
+router.post('/extend', (req, res, next) => {
+    const { challengeId, hours } = req.body;
+    const clientId = AuthService.verifyToken(req.token).playerId;
+
+    if (!challengeId) return next(new Error('Challenge id is required'));
+    if (!hours) return next(new Error('Hours is required'));
+
+    return PlayerChallengeService.doExtension(challengeId, hours, clientId)
+        .then(() => {
+            res.json({message: 'Challenge successfully extended.'});
+        })
+        .catch(next);
+});
+
 
 /**
  * Get the wins and losses for a player
