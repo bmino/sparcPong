@@ -296,6 +296,6 @@ function expectNoChange() {
             expect(expiredChallenge.challengerScore, 'challenger score').to.be.null;
             expect(expiredChallenge.challengeeScore, 'challengee score').to.be.null;
             expect(expiredChallenge.challenger.rank, 'challenger rank').to.equal(TestUtils.getTeamById(expiredChallenge.challenger._id).rank);
-            expect(expiredChallenge.challengee.rank, 'challenger rank').to.equal(TestUtils.getTeamById(expiredChallenge.challengee._id).rank);
+            expect(expiredChallenge.challengee.rank, 'challengee rank').to.equal(TestUtils.getTeamById(expiredChallenge.challengee._id).rank);
         });
 }
