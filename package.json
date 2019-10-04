@@ -8,39 +8,39 @@
   },
   "engines": {
     "node": "11.10.1",
-    "npm": "6.10.2"
+    "npm": "6.11.3"
   },
   "scripts": {
     "start": "node app.js",
     "test": "mocha test"
   },
   "dependencies": {
-    "angular": "^1.7.7",
-    "angular-cookies": "^1.7.7",
-    "angular-jwt": "^0.1.10",
-    "angular-route": "^1.7.7",
+    "angular": "^1.7.8",
+    "angular-cookies": "^1.7.8",
+    "angular-jwt": "^0.1.11",
+    "angular-route": "^1.7.8",
     "angular-ui-bootstrap": "^2.4.0",
-    "bcrypt": "^3.0.4",
-    "body-parser": "^1.18.3",
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
     "bootstrap": "^3.4.1",
     "dotenv": "^5.0.1",
-    "ejs": "^2.6.1",
-    "express": "^4.16.4",
+    "ejs": "^2.7.1",
+    "express": "^4.17.1",
     "jquery": "^3.4.1",
-    "jsonwebtoken": "^8.5.0",
-    "mongoose": "^5.4.16",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.7.3",
     "morgan": "^1.9.1",
     "nodemailer": "^5.1.1",
     "serve-favicon": "^2.5.0",
-    "socket.io": "^2.2.0",
-    "uuid": "^3.3.2",
+    "socket.io": "^2.3.0",
+    "uuid": "^3.3.3",
     "xoauth2": "^1.2.0"
   },
   "license": "MIT",
   "devDependencies": {
     "chai": "^4.2.0",
-    "chai-http": "^4.2.1",
-    "mocha": "^6.1.4",
-    "mongodb-memory-server": "^4.2.0"
+    "chai-http": "^4.3.0",
+    "mocha": "^6.2.1",
+    "mongodb-memory-server": "^4.2.2"
   }
 }
