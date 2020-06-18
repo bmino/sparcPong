@@ -15,7 +15,7 @@
     "test": "mocha test"
   },
   "dependencies": {
-    "angular": "^1.7.7",
+    "angular": "^1.8.0",
     "angular-cookies": "^1.7.7",
     "angular-jwt": "^0.1.10",
     "angular-route": "^1.7.7",
