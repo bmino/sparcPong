@@ -20,7 +20,7 @@
     "angular-jwt": "^0.1.10",
     "angular-route": "^1.7.7",
     "angular-ui-bootstrap": "^2.4.0",
-    "bcrypt": "^3.0.4",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.18.3",
     "bootstrap": "^3.4.1",
     "dotenv": "^5.0.1",
